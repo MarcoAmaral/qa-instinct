@@ -7,6 +7,38 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-23: an Extension arm on `claude-fable-5-1`, collected before Arm 1
+
+- **What the methodology says.** "Arms": the Extension arm is "the same protocol with another
+  model (a Sonnet-class model first)", reported on its own and never pooled with Arm 1, and
+  conditional on budget. Arm 1 uses `claude-haiku-4-5-20251001` for the agent and the judge, and
+  `RUNBOOK.md` section 2 names that model in both flags. "Cost" estimates Arm 1 at about US$13 with
+  a US$16 cap.
+- **What was done.** Marco decided on 2026-10-23 to collect an Extension arm on
+  `claude-fable-5-1` for the agent and the judge, before Arm 1 and with no Sonnet-class arm first.
+  It is Arm 1's design unchanged: 9 tasks x 4 conditions x 10 runs = 360 generations, 120 of them
+  judged, collected with the `RUNBOOK.md` commands from a clean checkout of `a7ab7ab`, with only
+  `--model` and `--judge-model` changed. Results go to
+  `benchmark/results/2026-10-23-ext-fable-5-1/`. Claude Code 2.1.291 ran in another WSL
+  distribution from the one that holds the checkout, signed in with a claude.ai Team subscription,
+  not the pilot's account, with extra usage off; the run is bounded by that plan's usage limits.
+- **Cost.** At list prices `claude-fable-5-1` costs US$10 / US$50 per million input / output
+  tokens, against US$1 / US$5 for `claude-haiku-4-5-20251001`, ten times as much. On the pilot's
+  token mix the arm is estimated at US$128.8 (generations US$118.4, judge US$10.3) and capped at
+  US$161, Arm 1's margin of 1.25. The model always thinks, so the estimate is a lower bound; the
+  cap cuts whole tasks, as in Arm 1.
+- **Usage guard.** Before each task the collection reads the plan's usage meter and starts no task
+  once the five-hour or weekly figure reaches 95%; a task in flight is stopped at 98%. A task
+  stopped part-way is discarded and collected again whole in a new invocation, and that is a new
+  entry here. Collection does not resume on its own after a limit resets.
+- **What did not change.** `PROMPTS.md`, the fixtures, the graders, the placebo and the analysis.
+  `node benchmark/build.js --check` passes with the frozen digest,
+  `d6a8856973913d63de3ba6039802606028be17feb51704b91b9a457650116e1c`.
+- **Why it matters.** This arm answers none of Arm 1's confirmatory questions, and Arm 1 is still
+  to be collected as frozen. Its judge is `claude-fable-5-1`, so its judge verdicts do not compare
+  with Arm 1's. It replicates on a larger model, which "Known limitations" names as the remedy for
+  "One model in the primary arm, and a small one".
+
 ## 2026-10-20: condition D's files name their author and say which rule they could not apply
 
 - **What the methodology says.** As in the entries below: condition D loads "the repository root,
