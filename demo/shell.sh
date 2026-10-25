@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# demo/shell.sh: sourced by the hidden setup of demo/bem-te-vi.tape (plan 049). Not run directly.
+# demo/shell.sh: sourced by the hidden setup of demo/qa-instinct.tape (plan 049). Not run directly.
 #
 # It sets a bare prompt, enters the throwaway project demo/record.sh prepared, and wraps `claude`
 # so the recorded run is isolated from the recording machine's own Claude Code configuration:

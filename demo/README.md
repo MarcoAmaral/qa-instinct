@@ -1,14 +1,17 @@
 # The README demo
 
-`bem-te-vi.gif` (shown at the top of the README) and `bem-te-vi.mp4` are rendered from
-[`bem-te-vi.tape`](bem-te-vi.tape) by [VHS](https://github.com/charmbracelet/vhs), so the demo can be
+`qa-instinct.gif` (shown at the top of the README) and `qa-instinct.mp4` are rendered from
+[`qa-instinct.tape`](qa-instinct.tape) by [VHS](https://github.com/charmbracelet/vhs), so the demo can be
 made again for each release with one command instead of being re-recorded by hand (plan 049).
+
+> **Until it is rendered again after the rename (plan 065)**, the README shows `bem-te-vi.gif` and
+> `bem-te-vi.mp4`, recorded before the package was renamed, so they show the old `bem-te-vi` command.
 
 ## What it shows
 
 One clip, in one terminal, from an empty folder:
 
-1. `bem-te-vi init --editor claude` installs the package into the project.
+1. `qa-instinct init --editor claude` installs the package into the project.
 2. `cat story.md` shows the story: the ServeRest cart story the [examples](../examples/README.md)
    use, cut to three acceptance criteria ([`story.md`](story.md)).
 3. `claude -p --model sonnet "/qa-cases story.md. Save the test cases as TC-CART.md."` runs the
@@ -63,10 +66,10 @@ demo/record.sh
 
 The script packs this tree with `npm pack`, installs the tarball into a temporary npm prefix
 (nothing is installed globally), creates the throwaway project `/tmp/demo` (or `$DEMO_WORK`) with
-`story.md` in it, and runs `vhs demo/bem-te-vi.tape` from the repository root. It refuses to reuse an
+`story.md` in it, and runs `vhs demo/qa-instinct.tape` from the repository root. It refuses to reuse an
 existing project folder rather than delete it. At the end it prints the run's model, turns and
 cost, and runs the hook again on the file the run wrote. Then watch the result before committing:
-extract a few frames (`ffmpeg -i demo/bem-te-vi.gif -vf fps=1/4 frame-%02d.png`) and check that the
+extract a few frames (`ffmpeg -i demo/qa-instinct.gif -vf fps=1/4 frame-%02d.png`) and check that the
 text is legible and nothing private shows. Update "The last recording" above.
 
 A run costs about US$0.25 on Claude Sonnet; [`shell.sh`](shell.sh) caps it at US$0.50.
