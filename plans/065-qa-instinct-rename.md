@@ -12,6 +12,8 @@
 - **Effort**: M
 - **Depends on**: plan 020 (the last rename, whose keep-list this follows); `decisions/name.md`
 - **Planned at**: commit `a7ab7ab` (`main`), 2026-10-25
+- **Outcome**: done; `qa-instinct` 4.2.0 published on 2026-10-25 (PRs #8, #11, #10, and this
+  one for the demo); see "Outcome"
 
 ## Why this matters
 
@@ -144,3 +146,29 @@ global hook installed earlier keeps working and is still removed by uninstall (k
 - The full CI check list is green on Linux, Windows and macOS.
 - After step 5: `npm view qa-instinct version` prints 4.2.0, and `npx qa-instinct@latest init`
   works in a clean folder; `npm view @marcoamaral/bem-te-vi` returns 404.
+
+## Outcome
+
+- **Steps 1-2**: `qa-instinct` was free on npm and GitHub; the repository was renamed to
+  `MarcoAmaral/qa-instinct` and the old URL answers 301.
+- **Steps 3-4**: PR #8, rebased onto PR #7 (one conflict, both rows of `plans/README.md` kept), the
+  full local CI list and CI on Linux, Windows and macOS green. Two checks failed on the first local
+  run and were fixed in the rename commit: the README's measured always-on sizes (the new name is
+  two characters longer) and the docs drift check, which read the plugin prefix `/qa-instinct:`
+  as an unknown command and now skips a name followed by `:`. An update from an install made at
+  `9381269`, run by hand, removed the 39 unchanged `bem-te-vi-*` rule files, wrote 40
+  `qa-instinct-*` ones and kept the one edited by hand.
+- **The changelog header** still named Bem-te-vi, because the rename left `CHANGELOG.md` alone;
+  PR #11 renamed the header before the release. Past entries are unchanged.
+- **Step 5**: Release Please opened the 4.2.0 release as PR #10 on a new branch, since its branch
+  name follows the package name; the 4.1.2 release PR it had opened for PR #7 (#9) was closed as
+  superseded. `v4.2.0` is tagged at `0cb704d`. Marco published from the tag on 2026-10-25 at
+  20:20 UTC, not from `main`, whose next commit only adds 4.2.0's hashes to
+  `.qa-skills-known-hashes` for the next release. `npm publish` asked for a second browser
+  approval after `npm login`. npm also lists `0.0.0-stage`, the placeholder its staged publishing
+  creates; `latest` is 4.2.0. `npx qa-instinct@latest init --editor claude` installed in a clean
+  folder and `uninstall` removed its 52 files.
+- **Step 6**: `npm view @marcoamaral/bem-te-vi` returns 404.
+- **The demo**, re-recorded with `demo/record.sh` from the 4.2.0 tree: nine test cases, the hook
+  passed, US$0.31 on Claude Sonnet 5.5 (`demo/README.md`, "The last recording").
+- **Local**: the working folder is `~/Projetos/qa-instinct`, its linked worktrees repaired.
