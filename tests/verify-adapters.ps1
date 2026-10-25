@@ -59,8 +59,8 @@ $Rules = @(Get-ChildItem -LiteralPath (Join-Path $ClaudeDir 'rules') -File | Whe
 $Expected = @('copilot/rules/copilot-instructions.md', 'universal/AGENTS.md', 'universal/CLAUDE.md')
 foreach ($key in @('cursor', 'windsurf', 'cline', 'antigravity')) {
     $ext = if ($key -eq 'cursor') { 'mdc' } else { 'md' }
-    $Expected += "$key/rules/bem-te-vi.$ext"
-    foreach ($rule in $Rules) { $Expected += "$key/rules/bem-te-vi-$rule.$ext" }
+    $Expected += "$key/rules/qa-instinct.$ext"
+    foreach ($rule in $Rules) { $Expected += "$key/rules/qa-instinct-$rule.$ext" }
 }
 
 # Skills: one per command, agent and skill, and qa-rules.
@@ -119,7 +119,7 @@ foreach ($key in @('cursor', 'windsurf', 'cline', 'antigravity')) {
             }
         }
     }
-    $guidelines = @(Get-ChildItem -LiteralPath $rulesDir -File -Filter 'bem-te-vi-testing-guidelines.*')
+    $guidelines = @(Get-ChildItem -LiteralPath $rulesDir -File -Filter 'qa-instinct-testing-guidelines.*')
     if ($guidelines.Count -eq 0 -or -not (Select-String -LiteralPath $guidelines[0].FullName -Pattern 'ISTQB' -SimpleMatch -Quiet)) {
         Write-Failure "$key rules lack the testing guidelines"
     }
@@ -129,13 +129,13 @@ foreach ($rel in @('copilot/rules/copilot-instructions.md', 'universal/AGENTS.md
     if (-not (Test-Path -LiteralPath $file)) { continue }
     $lines = [System.IO.File]::ReadAllText($file, $Utf8NoBom) -split "`n"
     foreach ($rule in $Rules) {
-        if (-not ($lines -ccontains "<!-- bem-te-vi-$rule -->")) { Write-Failure "$rel has no section for the $rule rule" }
+        if (-not ($lines -ccontains "<!-- qa-instinct-$rule -->")) { Write-Failure "$rel has no section for the $rule rule" }
     }
     if ($lines[0] -ceq '---') { Write-Failure "$rel must not carry IDE frontmatter" }
 }
 foreach ($u in @('AGENTS', 'CLAUDE')) {
     $file = Get-Out "universal/$u.md"
-    if ((Test-Path -LiteralPath $file) -and -not ((Get-Content -LiteralPath $file -TotalCount 1) -match '^<!-- Bem-te-vi')) {
+    if ((Test-Path -LiteralPath $file) -and -not ((Get-Content -LiteralPath $file -TotalCount 1) -match '^<!-- QA Instinct')) {
         Write-Failure "universal/$u.md is missing its header comment"
     }
 }

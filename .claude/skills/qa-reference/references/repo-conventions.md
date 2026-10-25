@@ -14,7 +14,7 @@ Read this when committing on behalf of the user or writing and editing code in t
 > **Conventional Commits v1.0.0** | Commit Hygiene | AI-Authored Commits | Target Repo Scope
 
 This ruleset governs the format and atomicity of commits the AI makes **in the target/consuming
-repository** — the project that installed this `bem-te-vi` package, not this package's own repo
+repository** — the project that installed this `qa-instinct` package, not this package's own repo
 (which governs its own contribution process via its `CONTRIBUTING.md`). AI agents must apply
 these rules whenever they commit code on behalf of a user in a target repo.
 
@@ -64,7 +64,7 @@ When a commit introduces a breaking change, signal it using one of the two stand
 
 This rule applies to commits the AI makes **inside the target/consuming repository** — the
 project where this package has been installed. It does not govern commits made to the
-`bem-te-vi` package's own repository; that repo has its own commit conventions defined in its
+`qa-instinct` package's own repository; that repo has its own commit conventions defined in its
 root `CONTRIBUTING.md`.
 
 ---
@@ -74,7 +74,7 @@ root `CONTRIBUTING.md`.
 > **Respect Existing Config** | No Imposed Style | Target Repo Scope
 
 This ruleset governs how the AI handles linting and code formatting when writing or editing
-code **in a target/consuming repository** — the project that installed this `bem-te-vi`
+code **in a target/consuming repository** — the project that installed this `qa-instinct`
 package. AI agents must apply these rules before writing or editing any code in that repo.
 
 ---
@@ -110,5 +110,5 @@ explicitly asks for it.
 ### 🎯 Scope of This Rule
 
 This rule is about respecting **the target repo's own code** style and tooling. It is not
-about linting or formatting this `bem-te-vi` package's own source files — that is a separate
+about linting or formatting this `qa-instinct` package's own source files — that is a separate
 concern scoped to this repo's own development tooling, not something this rule governs.

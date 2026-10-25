@@ -34,7 +34,7 @@ node_modules/
 adapters/
 
 # The demo tape also renders a WebM; only the GIF and MP4 are committed (plan 049)
-demo/bem-te-vi.webm
+demo/qa-instinct.webm
 
 # Generated corpus index (regenerate from any ref with generate-corpus.js; never committed)
 corpus/

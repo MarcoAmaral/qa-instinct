@@ -2,10 +2,10 @@
 
 <#
 .SYNOPSIS
-    Bem-te-vi - Windows PowerShell Installer
+    QA Instinct - Windows PowerShell Installer
 
 .DESCRIPTION
-    Installs Bem-te-vi (ISTQB CTFL v4.0 QA skills: test design, BDD, Playwright, Vitest)
+    Installs QA Instinct (ISTQB CTFL v4.0 QA skills: test design, BDD, Playwright, Vitest)
     to project-level and/or global Claude Code commands directory, with optional
     multi-editor support.
 
@@ -66,7 +66,7 @@ if (($PWD.Path -eq $PSHOME) -and ($startDir -ne $PSHOME) -and ($startDir -match 
 function Write-Header {
     Write-Host ""
     Write-Host ([char]0x2554 + ([string][char]0x2550 * 52) + [char]0x2557) -ForegroundColor Cyan
-    Write-Host ([char]0x2551 + "   Bem-te-vi - Installation Script                " + [char]0x2551) -ForegroundColor Cyan
+    Write-Host ([char]0x2551 + "   QA Instinct - Installation Script                " + [char]0x2551) -ForegroundColor Cyan
     Write-Host ([char]0x2551 + "   QA skills for AI editors                       " + [char]0x2551) -ForegroundColor Cyan
     Write-Host ([char]0x255A + ([string][char]0x2550 * 52) + [char]0x255D) -ForegroundColor Cyan
     Write-Host ""
@@ -200,7 +200,7 @@ function Check-AdapterExists {
 
 # ─── Shared editor -> install-folder mapping ─────────────────────────────────
 # Single source of truth for every non-claude editor's install folders and display label - shared
-# with install.sh and cli/bem-te-vi.js. See .qa-skills-editor-map. Format: tab-separated
+# with install.sh and cli/qa-instinct.js. See .qa-skills-editor-map. Format: tab-separated
 # "<editor>`t<project rules>`t<global rules>`t<project skills>`t<global skills>`t<label>", '-'
 # where the editor has none (plan 047). The generated rule files of adapters\<editor>\rules\ go
 # into the rules folder, and the one Agent Skills tree adapters\skills\ into the skills folder. A
@@ -401,7 +401,7 @@ function Register-GitHook {
         # .git/hooks entirely, so writing there would only pretend to register something.
         $hooksPathCfg = (Invoke-GitQuiet @('-C', $BaseDir, 'config', 'core.hooksPath')).Out
         if ($hooksPathCfg) {
-            Write-Info "core.hooksPath is set ($hooksPathCfg); add the bem-te-vi check to your hook manager yourself:"
+            Write-Info "core.hooksPath is set ($hooksPathCfg); add the qa-instinct check to your hook manager yourself:"
             Write-FilePath 'bash .claude/hooks/validate-tc-format.sh <file>'
             return
         }
@@ -586,7 +586,7 @@ function Purge-GitHook {
 }
 
 # $Scope is 'Project' or 'Global', from -Target, never guessed from the folder: -Target project
-# run from the home folder is a project install, as in install.sh and cli/bem-te-vi.js.
+# run from the home folder is a project install, as in install.sh and cli/qa-instinct.js.
 function Uninstall-ForEditor {
     param(
         [string]$EditorName,
@@ -704,7 +704,7 @@ function Get-Sha256 {
 # The package's own file with CRLF line endings (a Windows checkout with core.autocrlf, a
 # Windows editor) is still the package's file. A file on disk therefore *matches* a hash if its
 # bytes hash to it, or its bytes with every carriage return removed do - the same rule in
-# install.sh and cli/bem-te-vi.js (plans/017). Hashes are still recorded as the raw bytes.
+# install.sh and cli/qa-instinct.js (plans/017). Hashes are still recorded as the raw bytes.
 function Get-Sha256WithoutCR {
     param([string]$Path)
     $bytes = [System.IO.File]::ReadAllBytes((Get-Item -LiteralPath $Path -Force).FullName)
@@ -898,7 +898,7 @@ function Write-ExclusiveFile {
 }
 
 # A symlinked folder below the editor's top-level folder (.claude\rules, .agents\skills, ...) is
-# never written or deleted through: after `bem-te-vi link` those folders are the npm package's own
+# never written or deleted through: after `qa-instinct link` those folders are the npm package's own
 # files, and any other link leads outside the install tree. The top-level folder itself (.claude
 # as a link into a dotfiles repository) is followed, as the editor follows it (plan 033 item 1).
 # Returns the first such folder, relative to BaseDir with forward slashes, or $null.
@@ -924,12 +924,12 @@ function Write-LinkedDir {
     $item = Get-Item -LiteralPath (Join-Path $BaseDir ($Dir -replace '/', [string][System.IO.Path]::DirectorySeparatorChar)) -Force -ErrorAction SilentlyContinue
     $target = if ($item) { $item.Target } else { $null }
     if ($target -is [array]) { $target = $target[0] }
-    # A junction made by Node (bem-te-vi link on Windows without the symlink right) ends in '\'.
+    # A junction made by Node (qa-instinct link on Windows without the symlink right) ends in '\'.
     if ($target) { $target = $target.TrimEnd([char]92, [char]47) }
-    # A link `bem-te-vi link` made points at some package's .claude\<same name>.
+    # A link `qa-instinct link` made points at some package's .claude\<same name>.
     $name = ($Dir -split '/')[-1]
     if ($target -and ('/' + ($target -replace '\\', '/')).EndsWith("/.claude/$name", [System.StringComparison]::OrdinalIgnoreCase)) {
-        $hint = "; run 'bem-te-vi unlink' first"
+        $hint = "; run 'qa-instinct unlink' first"
     }
     Write-Info "$Action $Dir/ - it is a symbolic link; nothing was $Verb through it$hint"
 }
@@ -949,7 +949,7 @@ function Install-File {
     param([string]$BaseDir, [string]$Editor, [string]$SourcePath, [string]$DestinationPath)
     # The relative path is what the manifest records and uninstall resolves against BaseDir. A
     # destination outside BaseDir would record an entry that can never resolve, orphaning the file;
-    # that is a bug in a call site, so refuse loudly, as install.sh and cli/bem-te-vi.js do.
+    # that is a bug in a call site, so refuse loudly, as install.sh and cli/qa-instinct.js do.
     $sep = [string][System.IO.Path]::DirectorySeparatorChar
     $fullBase = [System.IO.Path]::GetFullPath($BaseDir).TrimEnd('\', '/')
     $fullDest = [System.IO.Path]::GetFullPath($DestinationPath)
@@ -1158,7 +1158,7 @@ function Remove-IfMatches {
 }
 
 # What a kept file at one of the locations plan 047 moved away from means for the editor, the same
-# words as install.sh and cli/bem-te-vi.js. The package never deletes it for the user:
+# words as install.sh and cli/qa-instinct.js. The package never deletes it for the user:
 # .clinerules\default-rules.md is not a path it recorded.
 function Write-OldLocationNote {
     param([string]$BaseDir, [string]$Editor, [string]$Rel)
@@ -1191,7 +1191,7 @@ function Report-UninstallResult {
 # Every @(<package file>, <destination>) pair a non-claude editor's install writes for one scope
 # (plan 047): each generated rule file of adapters\<editor>\rules\ into the rules folder, when the
 # scope has one, and every file of adapters\skills\ below the skills folder, in byte order of
-# their forward-slash paths, as install.sh and cli/bem-te-vi.js list them. None when the scope has
+# their forward-slash paths, as install.sh and cli/qa-instinct.js list them. None when the scope has
 # no skills folder. Each editor has its own folders, so uninstalling one never removes another's.
 function Get-EditorFiles {
     param([string]$EditorName, [string]$BaseDir, [string]$Scope)
@@ -1293,7 +1293,7 @@ function Install-ForEditor {
             $rulesRel = if ($isGlobal) { $entry.GlobalRules } else { $entry.ProjectRules }
             $skillsRel = if ($isGlobal) { $entry.GlobalSkills } else { $entry.ProjectSkills }
             # An editor with no global skills folder is skipped on a global install, exactly as
-            # install.sh and cli/bem-te-vi.js do. Up to 2.7.x this fell back to the *project* path,
+            # install.sh and cli/qa-instinct.js do. Up to 2.7.x this fell back to the *project* path,
             # and a global install's base is the home directory, so it wrote e.g.
             # %USERPROFILE%\.clinerules. Uninstall-ForEditor cleans that debris up.
             if ($skillsRel -eq '-') {
@@ -1522,7 +1522,7 @@ function Invoke-GitIntegration {
 }
 
 # Lists what the package ships, read from its own .claude\ at run time, so a new command, skill or
-# agent shows up here with no edit. The same block in install.sh and cli/bem-te-vi.js (plan 033 item 8).
+# agent shows up here with no edit. The same block in install.sh and cli/qa-instinct.js (plan 033 item 8).
 # Rules are counted, not named. Names are sorted ordinally, as LC_ALL=C sort and JavaScript do.
 function Write-ClaudeHint {
     $claudeSrc = Join-Path $PSScriptRoot '.claude'
@@ -1598,8 +1598,8 @@ function Main {
         $global:OPERATION = 'install'
     }
     else {
-        Write-Host "Bem-te-vi - Lifecycle Manager" -ForegroundColor Yellow
-        Write-Host "  1. Install (Fresh deployment of Bem-te-vi)  [DEFAULT]"
+        Write-Host "QA Instinct - Lifecycle Manager" -ForegroundColor Yellow
+        Write-Host "  1. Install (Fresh deployment of QA Instinct)  [DEFAULT]"
         Write-Host "  2. Update (Pull latest versions of all rules and commands)"
         Write-Host "  3. Uninstall / Remove (Purge all copied files & clean up git hooks)"
         Write-Host ""
@@ -1776,11 +1776,11 @@ function Main {
         }
         elseif ($global:UninstallRemovedCount -eq 0) {
             Write-Host "[..] Nothing to uninstall." -ForegroundColor Cyan
-            Write-Host "No Bem-te-vi files were found installed."
+            Write-Host "No QA Instinct files were found installed."
         }
         else {
             Write-Success "Uninstallation successful!"
-            Write-Host "Bem-te-vi has been completely removed. Removed $($global:UninstallRemovedCount) file(s)."
+            Write-Host "QA Instinct has been completely removed. Removed $($global:UninstallRemovedCount) file(s)."
         }
     }
     elseif ($global:OPERATION -eq 'update') {
@@ -1804,7 +1804,7 @@ function Main {
             $copilotRulesHint = $rulesHint
         }
         else {
-            $rulesHint = 'bem-te-vi rules always on'
+            $rulesHint = 'qa-instinct rules always on'
             $copilotRulesHint = 'rules in .github\copilot-instructions.md'
         }
         foreach ($ed in $editors) {
@@ -1813,7 +1813,7 @@ function Main {
                 'cursor'      { Write-Host "  Cursor/Trae : $rulesHint; every command, skill and agent is a skill (/qa-cases)" }
                 'windsurf'    { Write-Host "  Windsurf    : $rulesHint; every command, skill and agent is a skill (@qa-cases)" }
                 'copilot'     { Write-Host "  Copilot     : $copilotRulesHint; every command, skill and agent is a skill (/qa-cases)" }
-                'cline'       { Write-Host "  Cline       : bem-te-vi rules always on; every command, skill and agent is a skill (/qa-cases)" }
+                'cline'       { Write-Host "  Cline       : qa-instinct rules always on; every command, skill and agent is a skill (/qa-cases)" }
                 'antigravity' {
                     Write-Host "  Antigravity : $rulesHint; every command, skill and agent is a skill (ask for qa-cases)"
                     # Antigravity's launcher in a plain WSL terminal opens a Windows window whose

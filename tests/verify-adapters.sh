@@ -48,10 +48,10 @@ universal/CLAUDE.md"
 for KEY in cursor windsurf cline antigravity; do
     case "$KEY" in cursor) EXT=mdc ;; *) EXT=md ;; esac
     EXPECTED="$EXPECTED
-$KEY/rules/bem-te-vi.$EXT"
+$KEY/rules/qa-instinct.$EXT"
     for RULE in "${RULES[@]}"; do
         EXPECTED="$EXPECTED
-$KEY/rules/bem-te-vi-$RULE.$EXT"
+$KEY/rules/qa-instinct-$RULE.$EXT"
     done
 done
 
@@ -104,17 +104,17 @@ for KEY in cursor windsurf cline antigravity; do
                 head -1 "$F" | grep -q '^---$' && fail "${F#"$OUT_DIR"/} must have no frontmatter (always active)" ;;
         esac
     done
-    grep -q 'ISTQB' "$OUT_DIR/$KEY/rules/bem-te-vi-testing-guidelines".* || fail "$KEY rules lack the testing guidelines"
+    grep -q 'ISTQB' "$OUT_DIR/$KEY/rules/qa-instinct-testing-guidelines".* || fail "$KEY rules lack the testing guidelines"
 done
 for F in "$OUT_DIR/copilot/rules/copilot-instructions.md" "$OUT_DIR/universal/AGENTS.md" "$OUT_DIR/universal/CLAUDE.md"; do
     [ -f "$F" ] || continue
     for RULE in "${RULES[@]}"; do
-        grep -qx -- "<!-- bem-te-vi-$RULE -->" "$F" || fail "${F#"$OUT_DIR"/} has no section for the $RULE rule"
+        grep -qx -- "<!-- qa-instinct-$RULE -->" "$F" || fail "${F#"$OUT_DIR"/} has no section for the $RULE rule"
     done
     head -1 "$F" | grep -q '^---$' && fail "${F#"$OUT_DIR"/} must not carry IDE frontmatter"
 done
 for U in AGENTS CLAUDE; do
-    head -1 "$OUT_DIR/universal/$U.md" | grep -q '^<!-- Bem-te-vi' || fail "universal/$U.md is missing its header comment"
+    head -1 "$OUT_DIR/universal/$U.md" | grep -q '^<!-- QA Instinct' || fail "universal/$U.md is missing its header comment"
 done
 
 # --- The skills tree ------------------------------------------------------------

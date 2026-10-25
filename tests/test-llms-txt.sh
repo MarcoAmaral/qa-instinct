@@ -19,8 +19,8 @@ set -u
 
 ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 INDEX="$ROOT/llms.txt"
-RAW="https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/"
-WEB="https://github.com/MarcoAmaral/bem-te-vi/"
+RAW="https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/"
+WEB="https://github.com/MarcoAmaral/qa-instinct/"
 FAILED=0
 
 if [ ! -f "$INDEX" ]; then

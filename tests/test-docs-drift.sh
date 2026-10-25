@@ -35,8 +35,10 @@ fail() { echo "  ✘ $*"; FAILED=1; }
 
 # 1. Every /qa-<name> resolves. A name inside a path or URL (".claude/qa-x", "github.com/a/qa-x",
 # "~/qa-x") is not a slash command, so the character before the slash must not be part of a path.
-refs="$(cd "$ROOT" && grep -rnoE '(^|[^A-Za-z0-9_./~-])/qa-[a-z0-9]+(-[a-z0-9]+)*' \
+# A name followed by ":" is the plugin's prefix (/qa-instinct:qa-cases), not a command.
+refs="$(cd "$ROOT" && grep -rnoE '(^|[^A-Za-z0-9_./~-])/qa-[a-z0-9]+(-[a-z0-9]+)*:?' \
   .claude/agents .claude/commands .claude/rules .claude/skills .claude/hooks README.md 2>/dev/null |
+  grep -v ':$' |
   sed -E 's#^([^:]+:[0-9]+:).*(/qa-[a-z0-9-]+)$#\1\2#')"
 count=0
 unresolved=0

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # tests/conformance/run.sh — run every conformance case against every installer
-# available on this platform: install.sh and cli/bem-te-vi.js. (install.ps1 is covered by
+# available on this platform: install.sh and cli/qa-instinct.js. (install.ps1 is covered by
 # run.ps1 on Windows.) Each guarantee the installers share is written once, as a
 # case under cases/, and is required of all of them. See plans/016.
 #
@@ -20,9 +20,10 @@ set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
 pkg="${CONFORMANCE_PKG:-$repo}"
-# The CLI moved from bin/cli.js to cli/bem-te-vi.js after 4.0.1 (plan 051); an older package tree
-# still has it at the old path.
-cli="$pkg/cli/bem-te-vi.js"
+# The CLI moved from bin/cli.js to cli/bem-te-vi.js after 4.0.1 (plan 051), and to
+# cli/qa-instinct.js with the rename (plan 065); an older package tree still has it at an old path.
+cli="$pkg/cli/qa-instinct.js"
+[ -f "$cli" ] || cli="$pkg/cli/bem-te-vi.js"
 [ -f "$cli" ] || cli="$pkg/bin/cli.js"
 cases="${CONFORMANCE_CASES:-$here/cases}"
 filter="${1:-}"

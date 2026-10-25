@@ -1,10 +1,10 @@
 # Requires -Version 5.1
-# Windows integration tests for Bem-te-vi Lifecycle Manager (install.ps1)
+# Windows integration tests for QA Instinct Lifecycle Manager (install.ps1)
 
 $ErrorActionPreference = 'Stop'
 
 Write-Host "==================================================" -ForegroundColor Cyan
-Write-Host "Starting Bem-te-vi Lifecycle Integration Tests (PowerShell)" -ForegroundColor Cyan
+Write-Host "Starting QA Instinct Lifecycle Integration Tests (PowerShell)" -ForegroundColor Cyan
 Write-Host "==================================================" -ForegroundColor Cyan
 
 # 1. Create a sandboxed workspace within the repository directory
@@ -62,14 +62,14 @@ if (-not (Test-Path ".claude\rules\accessibility-qa.md")) { throw "Missing acces
 if (-not (Test-Path ".claude\rules\security-qa.md")) { throw "Missing security-qa.md in project rules" }
 if (-not (Test-Path ".claude\hooks\validate-tc-format.sh")) { throw "Missing validator hook in project" }
 if (-not (Test-Path ".git\hooks\pre-commit")) { throw "Missing git pre-commit hook in project" }
-if (-not (Test-Path ".cursor\rules\bem-te-vi.mdc")) { throw "Missing cursor rule in project" }
+if (-not (Test-Path ".cursor\rules\qa-instinct.mdc")) { throw "Missing cursor rule in project" }
 if (-not (Test-Path ".cursor\skills\qa-cases\SKILL.md")) { throw "Missing cursor skill in project" }
-if (-not (Test-Path ".windsurf\rules\bem-te-vi-security-qa.md")) { throw "Missing windsurf rule in project" }
+if (-not (Test-Path ".windsurf\rules\qa-instinct-security-qa.md")) { throw "Missing windsurf rule in project" }
 if (-not (Test-Path ".windsurf\skills\qa\SKILL.md")) { throw "Missing windsurf skill in project" }
 if (-not (Test-Path ".github\copilot-instructions.md")) { throw "Missing copilot instructions in project" }
 if (-not (Test-Path ".github\skills\qa-plan\SKILL.md")) { throw "Missing copilot skill in project" }
-if (-not (Test-Path ".cline\rules\bem-te-vi.md")) { throw "Missing cline rules in project" }
-if (-not (Test-Path ".agents\rules\bem-te-vi.md")) { throw "Missing antigravity rule in project" }
+if (-not (Test-Path ".cline\rules\qa-instinct.md")) { throw "Missing cline rules in project" }
+if (-not (Test-Path ".agents\rules\qa-instinct.md")) { throw "Missing antigravity rule in project" }
 if (-not (Test-Path ".agents\skills\qa\SKILL.md")) { throw "Missing antigravity skill in project" }
 
 Write-Host "Verifying global-level installation..." -ForegroundColor Cyan
@@ -165,7 +165,7 @@ New-Item -ItemType Directory -Path $ownedProject | Out-Null
 Set-Location -Path $ownedProject
 git init -q -b main
 
-# Files a project may already have that are NOT part of the bem-te-vi package
+# Files a project may already have that are NOT part of the qa-instinct package
 $ownedFiles = @(
     '.claude\commands\team-deploy.md',
     '.claude\rules\team-conventions.md',
@@ -602,26 +602,26 @@ Write-Host "[OK] Test 19 passed successfully! The no-manifest upgrade path left 
 # Test 21 moved to conformance case 008 (plan 016 item 6).
 
 # -----------------------------------------------------------------------------
-# TEST 22: `bem-te-vi uninstall` removes only unmodified installed files,
+# TEST 22: `qa-instinct uninstall` removes only unmodified installed files,
 # keeps untracked and user-modified files, and cleans up the manifest
 # (plan 012, item 3)
 # -----------------------------------------------------------------------------
 Write-Host ""
-Write-Host "Running Test 22: bem-te-vi uninstall removes only unmodified installed files..." -ForegroundColor Yellow
+Write-Host "Running Test 22: qa-instinct uninstall removes only unmodified installed files..." -ForegroundColor Yellow
 
 $cliUninstallProject = Join-Path $sandboxDir "cli-uninstall-project"
 New-Item -ItemType Directory -Path $cliUninstallProject -Force | Out-Null
 Set-Location -Path $cliUninstallProject
 
-node "$repoDir\cli\bem-te-vi.js" init
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init (Test 22) failed with exit status $LASTEXITCODE" }
-if (-not (Test-Path ".claude\commands\qa.md")) { throw "Test setup error: cli/bem-te-vi.js init did not complete" }
+node "$repoDir\cli\qa-instinct.js" init
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init (Test 22) failed with exit status $LASTEXITCODE" }
+if (-not (Test-Path ".claude\commands\qa.md")) { throw "Test setup error: cli/qa-instinct.js init did not complete" }
 
 Add-Content -Path ".claude\rules\security-qa.md" -Value "user edit"
 Set-Content -Path ".claude\rules\my-own-notes.md" -Value "untracked" -Encoding utf8
 
-node "$repoDir\cli\bem-te-vi.js" uninstall
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js uninstall (Test 22) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" uninstall
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js uninstall (Test 22) failed with exit status $LASTEXITCODE" }
 
 Write-Host "Verifying unmodified installed files were removed..." -ForegroundColor Cyan
 if (Test-Path ".claude\commands\qa.md") { throw "uninstall left an unmodified installed file behind" }
@@ -633,36 +633,36 @@ if ((Get-Content -Raw ".claude\rules\security-qa.md") -notmatch "user edit") { t
 Write-Host "Verifying the untracked file was kept..." -ForegroundColor Cyan
 if ((Get-Content -Raw ".claude\rules\my-own-notes.md").Trim() -ne "untracked") { throw "uninstall touched an untracked file" }
 
-Write-Host "[OK] Test 22 passed successfully! bem-te-vi uninstall removed only unmodified installed files." -ForegroundColor Green
+Write-Host "[OK] Test 22 passed successfully! qa-instinct uninstall removed only unmodified installed files." -ForegroundColor Green
 
 # Test 23 moved to conformance case 003 (plan 016 item 6).
 
 # -----------------------------------------------------------------------------
-# TEST 24: The manifest cli/bem-te-vi.js writes is interchangeable with install.ps1's
+# TEST 24: The manifest cli/qa-instinct.js writes is interchangeable with install.ps1's
 # - install with one implementation, uninstall with the other, both directions
 # (plan 012, item 5 - cross-implementation round trip)
 # -----------------------------------------------------------------------------
 Write-Host ""
 Write-Host "Running Test 24: A cross-implementation install/uninstall round trip works both ways..." -ForegroundColor Yellow
 
-# --- 24a: install with cli/bem-te-vi.js, uninstall with install.ps1 ---
+# --- 24a: install with cli/qa-instinct.js, uninstall with install.ps1 ---
 $cliThenPs1Project = Join-Path $sandboxDir "cli-then-ps1-project"
 New-Item -ItemType Directory -Path $cliThenPs1Project -Force | Out-Null
 Set-Location -Path $cliThenPs1Project
 git init -q -b main
 
-node "$repoDir\cli\bem-te-vi.js" init
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init (Test 24a) failed with exit status $LASTEXITCODE" }
-if (-not (Test-Path ".claude\commands\qa.md")) { throw "Test setup error: cli/bem-te-vi.js init did not complete" }
+node "$repoDir\cli\qa-instinct.js" init
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init (Test 24a) failed with exit status $LASTEXITCODE" }
+if (-not (Test-Path ".claude\commands\qa.md")) { throw "Test setup error: cli/qa-instinct.js init did not complete" }
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -Uninstall
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 24a) failed with exit status $LASTEXITCODE" }
 
-Write-Host "Verifying install.ps1 fully uninstalled a cli/bem-te-vi.js install..." -ForegroundColor Cyan
-if (Test-Path ".claude") { throw "install.ps1 left .claude behind after uninstalling a cli/bem-te-vi.js install" }
+Write-Host "Verifying install.ps1 fully uninstalled a cli/qa-instinct.js install..." -ForegroundColor Cyan
+if (Test-Path ".claude") { throw "install.ps1 left .claude behind after uninstalling a cli/qa-instinct.js install" }
 if (Test-Path ".qa-skills-manifest") { throw "Manifest survived install.ps1's uninstall" }
 
-# --- 24b: install with install.ps1, uninstall with cli/bem-te-vi.js ---
+# --- 24b: install with install.ps1, uninstall with cli/qa-instinct.js ---
 $ps1ThenCliProject = Join-Path $sandboxDir "ps1-then-cli-project"
 New-Item -ItemType Directory -Path $ps1ThenCliProject -Force | Out-Null
 Set-Location -Path $ps1ThenCliProject
@@ -672,20 +672,20 @@ powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target proj
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 24b) failed with exit status $LASTEXITCODE" }
 if (-not (Test-Path ".claude\commands\qa.md")) { throw "Test setup error: install.ps1 did not complete" }
 
-node "$repoDir\cli\bem-te-vi.js" uninstall
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js uninstall (Test 24b) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" uninstall
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js uninstall (Test 24b) failed with exit status $LASTEXITCODE" }
 
-Write-Host "Verifying cli/bem-te-vi.js fully uninstalled an install.ps1 install..." -ForegroundColor Cyan
-if (Test-Path ".claude") { throw "cli/bem-te-vi.js left .claude behind after uninstalling an install.ps1 install" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest survived cli/bem-te-vi.js's uninstall" }
+Write-Host "Verifying cli/qa-instinct.js fully uninstalled an install.ps1 install..." -ForegroundColor Cyan
+if (Test-Path ".claude") { throw "cli/qa-instinct.js left .claude behind after uninstalling an install.ps1 install" }
+if (Test-Path ".qa-skills-manifest") { throw "Manifest survived cli/qa-instinct.js's uninstall" }
 
-Write-Host "[OK] Test 24 passed successfully! The manifest format round-trips between cli/bem-te-vi.js and install.ps1 in both directions." -ForegroundColor Green
+Write-Host "[OK] Test 24 passed successfully! The manifest format round-trips between cli/qa-instinct.js and install.ps1 in both directions." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 25: cli/bem-te-vi.js skips a read-only destination instead of crashing part-way
+# TEST 25: cli/qa-instinct.js skips a read-only destination instead of crashing part-way
 # -----------------------------------------------------------------------------
 Write-Host ""
-Write-Host "Running Test 25: cli/bem-te-vi.js init skips a read-only file and still completes..." -ForegroundColor Yellow
+Write-Host "Running Test 25: cli/qa-instinct.js init skips a read-only file and still completes..." -ForegroundColor Yellow
 
 $cliRoProject = Join-Path $sandboxDir "cli-readonly"
 New-Item -ItemType Directory -Path "$cliRoProject\.claude\rules" -Force | Out-Null
@@ -695,11 +695,11 @@ $cliRoContent = "PROTECTED BY READ-ONLY"
 Set-Content -Path ".claude\rules\code-style-qa.md" -Value $cliRoContent -Encoding utf8
 Set-ItemProperty -Path ".claude\rules\code-style-qa.md" -Name IsReadOnly -Value $true
 
-node "$repoDir\cli\bem-te-vi.js" init | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init aborted instead of skipping the read-only destination" }
+node "$repoDir\cli\qa-instinct.js" init | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init aborted instead of skipping the read-only destination" }
 
 Write-Host "Verifying the read-only file was left untouched and not backed up..." -ForegroundColor Cyan
-if ((Get-Content -Raw ".claude\rules\code-style-qa.md").Trim() -ne $cliRoContent) { throw "cli/bem-te-vi.js overwrote the read-only destination" }
+if ((Get-Content -Raw ".claude\rules\code-style-qa.md").Trim() -ne $cliRoContent) { throw "cli/qa-instinct.js overwrote the read-only destination" }
 if (Get-ChildItem -Path ".claude\rules" -Filter 'code-style-qa.md.qa-skills-backup-*') { throw "A skipped read-only file should leave no backup" }
 
 Write-Host "Verifying the rest of the tree still installed completely..." -ForegroundColor Cyan
@@ -712,48 +712,48 @@ if (Select-String -Path ".qa-skills-manifest" -Pattern 'code-style-qa.md' -Quiet
 Set-ItemProperty -Path ".claude\rules\code-style-qa.md" -Name IsReadOnly -Value $false
 
 Set-Location -Path $repoDir
-Write-Host "[OK] Test 25 passed successfully! cli/bem-te-vi.js skipped the read-only file and completed the install." -ForegroundColor Green
+Write-Host "[OK] Test 25 passed successfully! cli/qa-instinct.js skipped the read-only file and completed the install." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 26: cli/bem-te-vi.js `init --editor <name>` installs a non-claude editor's
+# TEST 26: cli/qa-instinct.js `init --editor <name>` installs a non-claude editor's
 # compiled adapter at install.ps1's own target path, byte-for-byte, recorded
 # under that editor's own name in the manifest (plan 008)
 # -----------------------------------------------------------------------------
 Write-Host ""
-Write-Host "Running Test 26: cli/bem-te-vi.js init --editor cursor installs the right file at the right path..." -ForegroundColor Yellow
+Write-Host "Running Test 26: cli/qa-instinct.js init --editor cursor installs the right file at the right path..." -ForegroundColor Yellow
 
 $cliEditorCursorProject = Join-Path $sandboxDir "cli-editor-cursor"
 New-Item -ItemType Directory -Path $cliEditorCursorProject -Force | Out-Null
 Set-Location -Path $cliEditorCursorProject
 
-node "$repoDir\cli\bem-te-vi.js" init --editor cursor
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init --editor cursor (Test 26) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" init --editor cursor
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init --editor cursor (Test 26) failed with exit status $LASTEXITCODE" }
 
 Write-Host "Verifying the rules and skills were installed byte-for-byte at install.ps1's own target paths..." -ForegroundColor Cyan
-$expectedCursorBytes = [System.IO.File]::ReadAllBytes("$repoDir\adapters\cursor\rules\bem-te-vi.mdc")
+$expectedCursorBytes = [System.IO.File]::ReadAllBytes("$repoDir\adapters\cursor\rules\qa-instinct.mdc")
 # .NET file APIs resolve relative paths against the process working directory, which
 # Set-Location does NOT change — pass an absolute path built from the sandbox project.
-$actualCursorBytes = [System.IO.File]::ReadAllBytes((Join-Path $cliEditorCursorProject '.cursor\rules\bem-te-vi.mdc'))
-if (Compare-Object $expectedCursorBytes $actualCursorBytes -SyncWindow 0) { throw ".cursor/rules/bem-te-vi.mdc does not match adapters/cursor/rules/bem-te-vi.mdc byte-for-byte" }
+$actualCursorBytes = [System.IO.File]::ReadAllBytes((Join-Path $cliEditorCursorProject '.cursor\rules\qa-instinct.mdc'))
+if (Compare-Object $expectedCursorBytes $actualCursorBytes -SyncWindow 0) { throw ".cursor/rules/qa-instinct.mdc does not match adapters/cursor/rules/qa-instinct.mdc byte-for-byte" }
 $expectedSkillBytes = [System.IO.File]::ReadAllBytes("$repoDir\adapters\skills\qa-cases\SKILL.md")
 $actualSkillBytes = [System.IO.File]::ReadAllBytes((Join-Path $cliEditorCursorProject '.cursor\skills\qa-cases\SKILL.md'))
 if (Compare-Object $expectedSkillBytes $actualSkillBytes -SyncWindow 0) { throw ".cursor/skills/qa-cases/SKILL.md does not match adapters/skills/qa-cases/SKILL.md byte-for-byte" }
 
 Write-Host "Verifying the manifest records them under 'cursor', not 'claude'..." -ForegroundColor Cyan
-if ((Get-Content -Raw ".qa-skills-manifest") -notmatch [regex]::Escape("  cursor  .cursor/rules/bem-te-vi.mdc")) { throw "Manifest did not record the cursor install under the 'cursor' editor" }
+if ((Get-Content -Raw ".qa-skills-manifest") -notmatch [regex]::Escape("  cursor  .cursor/rules/qa-instinct.mdc")) { throw "Manifest did not record the cursor install under the 'cursor' editor" }
 if ((Get-Content -Raw ".qa-skills-manifest") -notmatch [regex]::Escape("  cursor  .cursor/skills/qa/SKILL.md")) { throw "Manifest did not record the cursor skills under the 'cursor' editor" }
 
 Write-Host "Verifying no claude tree was installed alongside it..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw "--editor cursor unexpectedly installed the claude tree too" }
 
-Write-Host "[OK] Test 26 passed successfully! cli/bem-te-vi.js init --editor cursor installed the right file at the right path." -ForegroundColor Green
+Write-Host "[OK] Test 26 passed successfully! cli/qa-instinct.js init --editor cursor installed the right file at the right path." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
 # TEST 27: A file colliding with a non-claude editor's target path is backed
 # up, not destroyed, exactly like a claude-tree collision (plan 008)
 # -----------------------------------------------------------------------------
 Write-Host ""
-Write-Host "Running Test 27: cli/bem-te-vi.js init --editor copilot backs up a colliding file, not destroy it..." -ForegroundColor Yellow
+Write-Host "Running Test 27: cli/qa-instinct.js init --editor copilot backs up a colliding file, not destroy it..." -ForegroundColor Yellow
 
 $cliEditorCollisionProject = Join-Path $sandboxDir "cli-editor-collision"
 New-Item -ItemType Directory -Path "$cliEditorCollisionProject\.github" -Force | Out-Null
@@ -762,8 +762,8 @@ Set-Location -Path $cliEditorCollisionProject
 $cliEditorUserContent = "MY OWN COPILOT INSTRUCTIONS - IRREPLACEABLE"
 Set-Content -Path ".github\copilot-instructions.md" -Value $cliEditorUserContent -Encoding utf8
 
-node "$repoDir\cli\bem-te-vi.js" init --editor copilot
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init --editor copilot (Test 27) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" init --editor copilot
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init --editor copilot (Test 27) failed with exit status $LASTEXITCODE" }
 
 Write-Host "Verifying the package's file was installed..." -ForegroundColor Cyan
 $expectedCopilotBytes = [System.IO.File]::ReadAllBytes("$repoDir\adapters\copilot\rules\copilot-instructions.md")
@@ -772,15 +772,15 @@ if (Compare-Object $expectedCopilotBytes $actualCopilotBytes -SyncWindow 0) { th
 
 Write-Host "Verifying the user's original content is recoverable from a backup..." -ForegroundColor Cyan
 $cliEditorBackup = Get-ChildItem -Path ".github" -Filter 'copilot-instructions.md.qa-skills-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
-if (-not $cliEditorBackup) { throw "cli/bem-te-vi.js init --editor copilot did not back up the colliding file" }
+if (-not $cliEditorBackup) { throw "cli/qa-instinct.js init --editor copilot did not back up the colliding file" }
 if ((Get-Content -Raw -LiteralPath $cliEditorBackup.FullName).Trim() -ne $cliEditorUserContent) { throw "Backup does not contain the user's original content" }
 
-Write-Host "[OK] Test 27 passed successfully! cli/bem-te-vi.js backed up the colliding non-claude file instead of destroying it." -ForegroundColor Green
+Write-Host "[OK] Test 27 passed successfully! cli/qa-instinct.js backed up the colliding non-claude file instead of destroying it." -ForegroundColor Green
 
 # Test 28 moved to conformance case 010 (plan 016 item 6).
 
 # -----------------------------------------------------------------------------
-# TEST 29: `bem-te-vi init` with no --editor and no TTY (CI, piped) behaves
+# TEST 29: `qa-instinct init` with no --editor and no TTY (CI, piped) behaves
 # exactly like `--editor claude` - no prompt, no hang, no other editor
 # installed (plan 008 backward-compatibility requirement)
 # -----------------------------------------------------------------------------
@@ -793,16 +793,16 @@ New-Item -ItemType Directory -Path $cliNonTtyProject -Force | Out-Null
 New-Item -ItemType Directory -Path $cliExplicitClaudeProject -Force | Out-Null
 
 Set-Location -Path $cliNonTtyProject
-node "$repoDir\cli\bem-te-vi.js" init | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init (Test 29, non-TTY default) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" init | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init (Test 29, non-TTY default) failed with exit status $LASTEXITCODE" }
 if (-not (Test-Path ".claude\commands")) { throw "Non-TTY default did not install the claude tree" }
 foreach ($nonClaudeDest in @(".cursor", ".windsurfrules", ".windsurf", ".github", ".clinerules", ".cline", ".agents")) {
     if (Test-Path $nonClaudeDest) { throw "Non-TTY default with no --editor unexpectedly installed $nonClaudeDest" }
 }
 
 Set-Location -Path $cliExplicitClaudeProject
-node "$repoDir\cli\bem-te-vi.js" init --editor claude | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init --editor claude (Test 29) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" init --editor claude | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init --editor claude (Test 29) failed with exit status $LASTEXITCODE" }
 if (-not (Test-Path ".claude\commands")) { throw "Test setup error: --editor claude did not install" }
 
 Write-Host "Verifying both produced the same manifest content (modulo the recorded hash)..." -ForegroundColor Cyan
@@ -852,7 +852,7 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 30 passed successfully! A tampered manifest cannot reach outside the install tree." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 31: `bem-te-vi update` refreshes an unmodified installed file to the
+# TEST 31: `qa-instinct update` refreshes an unmodified installed file to the
 # current release (plan 013, item 1)
 # -----------------------------------------------------------------------------
 Write-Host ""
@@ -873,8 +873,8 @@ Set-Content -Path ".qa-skills-manifest" -Value "$oldHash31  claude  .claude/rule
 # that might already appear in the older release's content too.
 $currentHash31 = (Get-FileHash -Algorithm SHA256 -LiteralPath "$repoDir\.claude\rules\security-qa.md").Hash.ToLower()
 
-$updateOutput31 = & node "$repoDir\cli\bem-te-vi.js" update 2>&1
-if ($LASTEXITCODE -ne 0) { throw "bem-te-vi update (Test 31) failed with exit status $LASTEXITCODE" }
+$updateOutput31 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
+if ($LASTEXITCODE -ne 0) { throw "qa-instinct update (Test 31) failed with exit status $LASTEXITCODE" }
 $updateText31 = $updateOutput31 | Out-String
 
 Write-Host "Verifying the stale-but-unmodified file was refreshed to the current release..." -ForegroundColor Cyan
@@ -889,7 +889,7 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 31 passed successfully! An unmodified installed file was refreshed to the current version." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 32: `bem-te-vi update` backs up a user-modified file instead of
+# TEST 32: `qa-instinct update` backs up a user-modified file instead of
 # silently overwriting it (plan 013, item 1)
 # -----------------------------------------------------------------------------
 Write-Host ""
@@ -913,8 +913,8 @@ $knownHashes32 = Get-Content -LiteralPath "$repoDir\.qa-skills-known-hashes" -En
 if ($knownHashes32 -match "^$userHash32\s") { throw "Test setup error: the user-edit content collides with a known release hash" }
 $currentHash32 = (Get-FileHash -Algorithm SHA256 -LiteralPath "$repoDir\.claude\rules\security-qa.md").Hash.ToLower()
 
-$updateOutput32 = & node "$repoDir\cli\bem-te-vi.js" update 2>&1
-if ($LASTEXITCODE -ne 0) { throw "bem-te-vi update (Test 32) failed with exit status $LASTEXITCODE" }
+$updateOutput32 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
+if ($LASTEXITCODE -ne 0) { throw "qa-instinct update (Test 32) failed with exit status $LASTEXITCODE" }
 $updateText32 = $updateOutput32 | Out-String
 
 Write-Host "Verifying the user's edit was backed up, not silently discarded..." -ForegroundColor Cyan
@@ -929,7 +929,7 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 32 passed successfully! A user-modified file was backed up, not silently overwritten." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 33: `bem-te-vi update` removes a no-longer-shipped file when
+# TEST 33: `qa-instinct update` removes a no-longer-shipped file when
 # unmodified, and keeps it when the user changed it (plan 013, item 2)
 # -----------------------------------------------------------------------------
 Write-Host ""
@@ -953,8 +953,8 @@ Set-Content -Path ".qa-skills-manifest" -Value @(
     "$dep2InstallHash33  claude  .claude/rules/deprecated-rule-2.md"
 ) -Encoding utf8
 
-$updateOutput33 = & node "$repoDir\cli\bem-te-vi.js" update 2>&1
-if ($LASTEXITCODE -ne 0) { throw "bem-te-vi update (Test 33) failed with exit status $LASTEXITCODE" }
+$updateOutput33 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
+if ($LASTEXITCODE -ne 0) { throw "qa-instinct update (Test 33) failed with exit status $LASTEXITCODE" }
 $updateText33 = $updateOutput33 | Out-String
 
 Write-Host "Verifying the unmodified no-longer-shipped file was removed..." -ForegroundColor Cyan
@@ -973,7 +973,7 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 33 passed successfully! A dropped file was removed when unmodified and kept when modified." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 34: `bem-te-vi update` adopts a pre-manifest install, and never
+# TEST 34: `qa-instinct update` adopts a pre-manifest install, and never
 # touches the user's own files at another shipped path (plan 013, item 3)
 # -----------------------------------------------------------------------------
 Write-Host ""
@@ -998,8 +998,8 @@ Set-Content -Path ".claude\rules\accessibility-qa.md" -Value $userContent34 -Enc
 
 $currentHash34 = (Get-FileHash -Algorithm SHA256 -LiteralPath "$repoDir\.claude\rules\security-qa.md").Hash.ToLower()
 
-$updateOutput34 = & node "$repoDir\cli\bem-te-vi.js" update 2>&1
-if ($LASTEXITCODE -ne 0) { throw "bem-te-vi update (Test 34) failed with exit status $LASTEXITCODE" }
+$updateOutput34 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
+if ($LASTEXITCODE -ne 0) { throw "qa-instinct update (Test 34) failed with exit status $LASTEXITCODE" }
 $updateText34 = $updateOutput34 | Out-String
 
 Write-Host "Verifying the pre-manifest install was detected and adopted..." -ForegroundColor Cyan
@@ -1016,7 +1016,7 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 34 passed successfully! A pre-manifest install was adopted and the user's own files survived." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 35: `bem-te-vi update` installs nothing when nothing is installed
+# TEST 35: `qa-instinct update` installs nothing when nothing is installed
 # (plan 013, item 4/5)
 # -----------------------------------------------------------------------------
 Write-Host ""
@@ -1026,8 +1026,8 @@ $updateEmptyProject = Join-Path $sandboxDir "update-empty-project"
 New-Item -ItemType Directory -Path $updateEmptyProject -Force | Out-Null
 Set-Location -Path $updateEmptyProject
 
-$updateOutput35 = & node "$repoDir\cli\bem-te-vi.js" update 2>&1
-if ($LASTEXITCODE -ne 0) { throw "bem-te-vi update (Test 35) failed with exit status $LASTEXITCODE" }
+$updateOutput35 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
+if ($LASTEXITCODE -ne 0) { throw "qa-instinct update (Test 35) failed with exit status $LASTEXITCODE" }
 $updateText35 = $updateOutput35 | Out-String
 
 Write-Host "Verifying update did not install anything when nothing was there..." -ForegroundColor Cyan
@@ -1039,7 +1039,7 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 35 passed successfully! Update with nothing installed did not install anything." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 36: A tampered manifest cannot make `bem-te-vi update` delete files
+# TEST 36: A tampered manifest cannot make `qa-instinct update` delete files
 # outside the install tree (regression for the fix alongside plan 013 item 2)
 # -----------------------------------------------------------------------------
 Write-Host ""
@@ -1054,14 +1054,14 @@ Set-Content -Path $victimFile36 -Value $victimContent36 -Encoding utf8
 $victimHash36 = (Get-FileHash -LiteralPath $victimFile36 -Algorithm SHA256).Hash.ToLower()
 
 Set-Location -Path $updateTraversalProject
-node "$repoDir\cli\bem-te-vi.js" init | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "cli/bem-te-vi.js init (Test 36) failed with exit status $LASTEXITCODE" }
+node "$repoDir\cli\qa-instinct.js" init | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init (Test 36) failed with exit status $LASTEXITCODE" }
 
 # A manifest entry naming a file this package no longer ships, at a path that escapes the
 # project tree, must never reach update's removal branch (fs.rmSync) without a refusal.
 foreach ($evilRel in @("../update-traversal-outside/victim.txt", $victimFile36)) {
     Set-Content -Path ".qa-skills-manifest" -Value "$victimHash36  claude  $evilRel" -Encoding utf8
-    $updateOutput36 = & node "$repoDir\cli\bem-te-vi.js" update 2>&1
+    $updateOutput36 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
     $updateText36 = $updateOutput36 | Out-String
 
     if (-not (Test-Path -LiteralPath $victimFile36)) { throw "update deleted a file outside the install tree via '$evilRel'" }
@@ -1088,7 +1088,7 @@ foreach ($ed in @('copilot', 'cline', 'cursor')) {
     if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Target project -Editor $ed (Test 37) failed with exit status $LASTEXITCODE" }
 }
 if (-not (Test-Path '.github\copilot-instructions.md')) { throw "Project install of copilot no longer writes .github\copilot-instructions.md" }
-if (-not (Test-Path '.cline\rules\bem-te-vi.md')) { throw "Project install of cline no longer writes .cline\rules\bem-te-vi.md" }
+if (-not (Test-Path '.cline\rules\qa-instinct.md')) { throw "Project install of cline no longer writes .cline\rules\qa-instinct.md" }
 
 # The one uninstall message that said 'Cursor' where every other place says 'Cursor / Trae'.
 $cursorOut37 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor cursor -NonInteractive -Uninstall 2>&1 | Out-String
@@ -1379,11 +1379,11 @@ New-Item -ItemType Directory -Path $menuBin42c -Force | Out-Null
 [System.IO.File]::WriteAllText((Join-Path $menuBin42c 'claude.cmd'), "@exit /b 0`r`n")
 $editorFiles42c = [ordered]@{
     claude      = '.claude\commands\qa.md'
-    cursor      = '.cursor\rules\bem-te-vi.mdc'
-    windsurf    = '.windsurf\rules\bem-te-vi.md'
+    cursor      = '.cursor\rules\qa-instinct.mdc'
+    windsurf    = '.windsurf\rules\qa-instinct.md'
     copilot     = '.github\copilot-instructions.md'
-    cline       = '.cline\rules\bem-te-vi.md'
-    antigravity = '.agents\rules\bem-te-vi.md'
+    cline       = '.cline\rules\qa-instinct.md'
+    antigravity = '.agents\rules\qa-instinct.md'
 }
 
 # Runs install.ps1 in a fresh project and home with the answers piped in; returns the output.
@@ -1494,12 +1494,12 @@ Write-Host "[OK] Test 42c passed successfully! $menuCount42c menu runs matched t
 Set-Location -Path $repoDir
 
 # -----------------------------------------------------------------------------
-# TEST 42: After `bem-te-vi link`, install.ps1 install and uninstall must not write or delete
+# TEST 42: After `qa-instinct link`, install.ps1 install and uninstall must not write or delete
 # through the linked folders: they are the npm package's own files (plan 033 item 1; Test 44 in
 # test-lifecycle.sh)
 # -----------------------------------------------------------------------------
 Write-Host ""
-Write-Host "Running Test 42: install.ps1 never writes or deletes through folders bem-te-vi link created..." -ForegroundColor Yellow
+Write-Host "Running Test 42: install.ps1 never writes or deletes through folders qa-instinct link created..." -ForegroundColor Yellow
 
 $subs42 = @('agents', 'commands', 'rules', 'skills', 'hooks')
 $pkg42 = Join-Path $sandboxDir 'linked-pkg-42'
@@ -1521,11 +1521,11 @@ $before42 = Get-PackageHashes42
 
 Set-Location -Path $proj42
 git init -q -b main
-# `bem-te-vi link` needs symlink rights; without them, create the same links by hand, and
+# `qa-instinct link` needs symlink rights; without them, create the same links by hand, and
 # without those either, report the test as not run rather than pass it.
 $previous42 = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
-node (Join-Path $pkg42 'cli\bem-te-vi.js') link *> $null
+node (Join-Path $pkg42 'cli\qa-instinct.js') link *> $null
 $ErrorActionPreference = $previous42
 $linked42 = $true
 foreach ($sub in $subs42) {
@@ -1552,10 +1552,10 @@ else {
         throw "install.ps1 changed the linked package: $($before42.Count) files before, $($after42.Count) after. Output was: $out42"
     }
     if ($out42 -notmatch 'symbolic link') { throw "install.ps1 did not say it skipped a linked folder. Output was: $out42" }
-    if ($out42 -notmatch "bem-te-vi unlink") { throw "install.ps1 did not suggest 'bem-te-vi unlink' for a bem-te-vi link. Output was: $out42" }
+    if ($out42 -notmatch "qa-instinct unlink") { throw "install.ps1 did not suggest 'qa-instinct unlink' for a qa-instinct link. Output was: $out42" }
     foreach ($sub in $subs42) {
         $item = Get-Item -LiteralPath (Join-Path $proj42 ".claude\$sub") -Force -ErrorAction SilentlyContinue
-        if (-not ($item -and $item.LinkType)) { throw ".claude\$sub is no longer the link bem-te-vi link created" }
+        if (-not ($item -and $item.LinkType)) { throw ".claude\$sub is no longer the link qa-instinct link created" }
     }
     Write-Host "[OK] Test 42 passed successfully! install.ps1 left the linked package's $($before42.Count) files untouched." -ForegroundColor Green
 }
@@ -1569,7 +1569,7 @@ foreach ($sub in $subs42) {
 Set-Location -Path $repoDir
 
 # -----------------------------------------------------------------------------
-# TEST 42b: `bem-te-vi link` and `unlink` on Windows: the project round trip (Test 39 in
+# TEST 42b: `qa-instinct link` and `unlink` on Windows: the project round trip (Test 39 in
 # test-lifecycle.sh), then --global, a stale link and a real directory in the way (plan 037 step 2).
 # `link` makes a symlink where it may (Developer Mode or an elevated shell) and a directory
 # junction otherwise, which needs no privilege on NTFS (plan 046 item 4). Either way it must get
@@ -1596,7 +1596,7 @@ function Invoke-Cli42b {
     param([string]$Package, [string[]]$CliArguments)
     $previous = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
-    $out = & node (Join-Path $Package 'cli\bem-te-vi.js') @CliArguments 2>&1 | Out-String
+    $out = & node (Join-Path $Package 'cli\qa-instinct.js') @CliArguments 2>&1 | Out-String
     $script:cliExit42b = $LASTEXITCODE
     $ErrorActionPreference = $previous
     return $out
@@ -1668,7 +1668,7 @@ elseif (-not $canJunction42b) {
         if ($Output -match 'symlinkSync|node:internal') { throw "Test 42b ($Case): link printed a stack trace instead of a message. Output was: $Output" }
         if ($Output -notmatch 'cannot create symbolic links') { throw "Test 42b ($Case): link did not say why it stopped. Output was: $Output" }
         if ($Output -notmatch 'Developer Mode') { throw "Test 42b ($Case): link did not name Developer Mode. Output was: $Output" }
-        if ($Output -notmatch 'bem-te-vi init') { throw "Test 42b ($Case): link did not name 'bem-te-vi init' as the alternative. Output was: $Output" }
+        if ($Output -notmatch 'qa-instinct init') { throw "Test 42b ($Case): link did not name 'qa-instinct init' as the alternative. Output was: $Output" }
     }
 
     # A project with nothing in it stays empty.
@@ -1728,7 +1728,7 @@ else {
     Set-Location -Path $proj42b
     git init -q -b main
     $out = Invoke-Cli42b $pkg42b @('link')
-    if ($script:cliExit42b -ne 0) { throw "bem-te-vi link failed with exit status $script:cliExit42b on this machine, which can create a symlink or a junction. Output was: $out" }
+    if ($script:cliExit42b -ne 0) { throw "qa-instinct link failed with exit status $script:cliExit42b on this machine, which can create a symlink or a junction. Output was: $out" }
     Assert-LinkKind42b (Join-Path $proj42b '.claude') $out
     $out = Invoke-Cli42b $pkg42b @('init', '--editor', 'claude')
     if ($script:cliExit42b -ne 0) { throw "init over linked folders failed with exit status $script:cliExit42b. Output was: $out" }
@@ -1751,7 +1751,7 @@ else {
     if ($out -notmatch 'Kept rules/') { throw "unlink did not report the link it kept. Output was: $out" }
     $out = Invoke-Cli42b $pkg42b @('link')
     $kept42b = Get-Item -LiteralPath (Join-Path $proj42b '.claude\rules') -Force
-    if ("$($kept42b.Target)" -notlike '*link-foreign-42b*') { throw "link replaced a link that does not point to a bem-te-vi package. Output was: $out" }
+    if ("$($kept42b.Target)" -notlike '*link-foreign-42b*') { throw "link replaced a link that does not point to a qa-instinct package. Output was: $out" }
     Remove-Links42b (Join-Path $proj42b '.claude')
 
     # 2. link --global, then unlink --global, with a home directory of its own.
@@ -1760,7 +1760,7 @@ else {
     $savedProfile42b = $env:USERPROFILE
     $env:USERPROFILE = $home42b
     $out = Invoke-Cli42b $pkg42b @('link', '--global')
-    if ($script:cliExit42b -ne 0) { $env:USERPROFILE = $savedProfile42b; throw "bem-te-vi link --global failed with exit status $script:cliExit42b. Output was: $out" }
+    if ($script:cliExit42b -ne 0) { $env:USERPROFILE = $savedProfile42b; throw "qa-instinct link --global failed with exit status $script:cliExit42b. Output was: $out" }
     try { Assert-LinkKind42b (Join-Path $home42b '.claude') $out }
     catch { $env:USERPROFILE = $savedProfile42b; throw }
     $out = Invoke-Cli42b $pkg42b @('unlink', '--global')
@@ -1941,7 +1941,7 @@ $manifest45 = Join-Path $proj45 '.qa-skills-manifest'
 if (-not (Test-Path -LiteralPath $manifest45)) { throw "Test 45: the failed run saved no manifest, orphaning every file it installed. Output was: $out45" }
 $lines45 = [System.IO.File]::ReadAllLines($manifest45)
 # Antigravity's rule files come before its skills (plan 047), so they were installed and recorded.
-foreach ($entry in @('claude  .claude/commands/qa.md', 'cursor  .cursor/rules/bem-te-vi.mdc', 'cline  .cline/rules/bem-te-vi.md', 'antigravity  .agents/rules/bem-te-vi.md')) {
+foreach ($entry in @('claude  .claude/commands/qa.md', 'cursor  .cursor/rules/qa-instinct.mdc', 'cline  .cline/rules/qa-instinct.md', 'antigravity  .agents/rules/qa-instinct.md')) {
     if (-not ($lines45 | Where-Object { $_.EndsWith("  $entry") })) { throw "Test 45: the manifest lacks '$entry'. Manifest: $($lines45 -join ' | ')" }
 }
 if ($lines45 | Where-Object { $_ -match '  antigravity  \.agents/skills/' }) { throw "Test 45: the manifest records antigravity skills, which were not installed" }
@@ -2003,7 +2003,7 @@ try {
     $out47 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor all -NonInteractive -NoHooks 2>&1 | Out-String
     $exit47 = $LASTEXITCODE
     $present47 = @{}
-    foreach ($rel in '.cline\rules\bem-te-vi.md', '.windsurf\rules\bem-te-vi.md', '.github\copilot-instructions.md', '.cursor\rules\bem-te-vi.mdc', '.agents\skills\qa\SKILL.md', '.codeium\windsurf\skills\qa\SKILL.md', '.gemini\config\skills\qa\SKILL.md') {
+    foreach ($rel in '.cline\rules\qa-instinct.md', '.windsurf\rules\qa-instinct.md', '.github\copilot-instructions.md', '.cursor\rules\qa-instinct.mdc', '.agents\skills\qa\SKILL.md', '.codeium\windsurf\skills\qa\SKILL.md', '.gemini\config\skills\qa\SKILL.md') {
         $present47[$rel] = Test-Path -LiteralPath (Join-Path $home47 $rel)
     }
     $manifest47 = Join-Path $home47 '.qa-skills-manifest'
@@ -2015,13 +2015,13 @@ finally {
     $env:USERPROFILE = $savedProfile47; $env:HOME = $savedHome47
 }
 if ($exit47 -ne 0) { throw "Test 47: the install exited $exit47. Output was: $out47" }
-foreach ($rel in '.cline\rules\bem-te-vi.md', '.windsurf\rules\bem-te-vi.md', '.github\copilot-instructions.md', '.cursor\rules\bem-te-vi.mdc', '.agents\skills\qa\SKILL.md') {
+foreach ($rel in '.cline\rules\qa-instinct.md', '.windsurf\rules\qa-instinct.md', '.github\copilot-instructions.md', '.cursor\rules\qa-instinct.mdc', '.agents\skills\qa\SKILL.md') {
     if (-not $present47[$rel]) { throw "Test 47: a project install from the home folder did not write $rel. Output was: $out47" }
 }
 foreach ($rel in '.codeium\windsurf\skills\qa\SKILL.md', '.gemini\config\skills\qa\SKILL.md') {
     if ($present47[$rel]) { throw "Test 47: a project install from the home folder wrote the global path $rel" }
 }
-foreach ($entry in @('cline  .cline/rules/bem-te-vi.md', 'copilot  .github/copilot-instructions.md', 'windsurf  .windsurf/rules/bem-te-vi.md')) {
+foreach ($entry in @('cline  .cline/rules/qa-instinct.md', 'copilot  .github/copilot-instructions.md', 'windsurf  .windsurf/rules/qa-instinct.md')) {
     if (-not ($lines47 | Where-Object { $_.EndsWith("  $entry") })) { throw "Test 47: the manifest lacks '$entry'. Manifest: $($lines47 -join ' | ')" }
 }
 if ($exitUn47 -ne 0) { throw "Test 47: the uninstall exited $exitUn47. Output was: $outUn47" }
@@ -2055,7 +2055,7 @@ try {
 finally { $env:PATH = $savedPath48 }
 if ($exit48 -ne 0) { throw "Test 48: the install exited $exit48. Output was: $out48" }
 if ($out48 -match 'Editor Target') { throw "Test 48: the editor menu was shown although -Editor was given. Output was: $out48" }
-if (-not (Test-Path -LiteralPath (Join-Path $proj48 '.cursor\rules\bem-te-vi.mdc'))) { throw "Test 48: -Editor cursor did not install the Cursor rule. Output was: $out48" }
+if (-not (Test-Path -LiteralPath (Join-Path $proj48 '.cursor\rules\qa-instinct.mdc'))) { throw "Test 48: -Editor cursor did not install the Cursor rule. Output was: $out48" }
 if (Test-Path -LiteralPath (Join-Path $proj48 '.claude')) { throw "Test 48: -Editor cursor installed Claude Code. Output was: $out48" }
 Write-Host "[OK] Test 48 passed successfully! -Editor cursor installed Cursor only, with no editor menu." -ForegroundColor Green
 Set-Location -Path $repoDir
@@ -2108,7 +2108,7 @@ if ($exit49 -ne 0) { throw "Test 49: the install exited $exit49. Output was: $ou
 $subject49 = (git -C $proj49 log -1 --format=%s) | Out-String
 if ($subject49 -notmatch 'Add/update QA skill') { throw "Test 49: the installer made no commit. Output was: $out49" }
 $committed49 = @(git -C $proj49 -c core.quotepath=false show --name-only --format= HEAD | Where-Object { $_ })
-foreach ($rel in '.claude/commands/qa.md', '.cursor/rules/bem-te-vi.mdc', '.windsurf/rules/bem-te-vi.md', '.github/skills/qa/SKILL.md', '.cline/rules/bem-te-vi.md', '.agents/skills/qa/SKILL.md', '.qa-skills-manifest') {
+foreach ($rel in '.claude/commands/qa.md', '.cursor/rules/qa-instinct.mdc', '.windsurf/rules/qa-instinct.md', '.github/skills/qa/SKILL.md', '.cline/rules/qa-instinct.md', '.agents/skills/qa/SKILL.md', '.qa-skills-manifest') {
     if ($committed49 -notcontains $rel) { throw "Test 49: the commit lacks $rel. It holds: $($committed49 -join ', ')" }
 }
 foreach ($rel in '.github/copilot-instructions.md/01-mine.md', 'notes.md') {
@@ -2379,7 +2379,7 @@ $cliDest52 = Join-Path $cliDir52 '.claude\rules\security-qa.md'
 New-Plant52 "$cliDest52.qa-skills-backup-$stamp52" 'junction'
 Set-Location -Path $cliDir52
 $savedPreference52 = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
-try { $outCli52 = node --require $clock52 "$repoDir\cli\bem-te-vi.js" init --editor claude 2>&1 | Out-String; $exitCli52 = $LASTEXITCODE }
+try { $outCli52 = node --require $clock52 "$repoDir\cli\qa-instinct.js" init --editor claude 2>&1 | Out-String; $exitCli52 = $LASTEXITCODE }
 finally { $ErrorActionPreference = $savedPreference52; Set-Location -Path $repoDir }
 Assert-Plant52 "$cliDest52.qa-skills-backup-$stamp52" 'junction' "CLI's backup"
 if ($exitCli52 -ne 0) { throw "Test 52: the CLI exited $exitCli52 over a junction at its backup name. Output was: $outCli52" }
@@ -2454,7 +2454,7 @@ try {
     Set-Location -Path $cli53
     $outCli53 = ''
     foreach ($ed in 'claude', 'copilot') {
-        $outCli53 += node "$repoDir\cli\bem-te-vi.js" init --editor $ed 2>&1 | Out-String
+        $outCli53 += node "$repoDir\cli\qa-instinct.js" init --editor $ed 2>&1 | Out-String
         if ($LASTEXITCODE -ne 0) { throw "Test 53: the CLI's init --editor $ed exited $LASTEXITCODE. Output was: $outCli53" }
     }
     Set-Location -Path $repoDir

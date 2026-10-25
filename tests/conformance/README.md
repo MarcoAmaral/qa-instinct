@@ -1,14 +1,14 @@
 # Installer conformance suite
 
-`install.sh`, `install.ps1` and `cli/bem-te-vi.js` must behave identically. Each guarantee they
+`install.sh`, `install.ps1` and `cli/qa-instinct.js` must behave identically. Each guarantee they
 share is written **once** here, as a case, and every installer is run against every case:
 
 ```bash
-tests/conformance/run.sh            # install.sh and cli/bem-te-vi.js (Linux, macOS)
+tests/conformance/run.sh            # install.sh and cli/qa-instinct.js (Linux, macOS)
 ```
 
 ```powershell
-tests\conformance\run.ps1           # install.ps1 and cli/bem-te-vi.js (Windows)
+tests\conformance\run.ps1           # install.ps1 and cli/qa-instinct.js (Windows)
 ```
 
 Both accept a case-name filter. Both can run the installers from another package tree, so a new

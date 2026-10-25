@@ -180,10 +180,10 @@ foreach ($skill in @(Get-ChildItem -LiteralPath (Join-Path $ClaudeDir 'skills') 
 
 $qaRules = New-Object System.Text.StringBuilder
 [void]$qaRules.Append("---`nname: qa-rules`n")
-[void]$qaRules.Append("description: `"Bem-te-vi's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install.`"`n")
-[void]$qaRules.Append("metadata:`n  id: qa-rules`n  author: Marco Amaral`n---`n# Bem-te-vi rules`n`n")
+[void]$qaRules.Append("description: `"QA Instinct's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install.`"`n")
+[void]$qaRules.Append("metadata:`n  id: qa-rules`n  author: Marco Amaral`n---`n# QA Instinct rules`n`n")
 [void]$qaRules.Append("Each rule of the package is a file in this skill's ${Bt}references${Bt} folder. A project install`n")
-[void]$qaRules.Append("also puts every rule in the editor's own rules folder, always on, as ${Bt}bem-te-vi-<rule>${Bt}; a`n")
+[void]$qaRules.Append("also puts every rule in the editor's own rules folder, always on, as ${Bt}qa-instinct-<rule>${Bt}; a`n")
 [void]$qaRules.Append("global install has no rules folder, so read the rule a pointer names from here.`n`n")
 [void]$qaRules.Append("| Rule | File |`n| --- | --- |`n")
 foreach ($rule in $Rules) { [void]$qaRules.Append("| ${Bt}$rule${Bt} | ${Bt}references/$rule.md${Bt} |`n") }
@@ -196,7 +196,7 @@ foreach ($rule in $Rules) {
 $SkillNames = Get-Ordinal @(Get-ChildItem -LiteralPath $SkillsOut -Directory | ForEach-Object { $_.Name })
 
 # --- The index and the rule files --------------------------------------------
-# The index (bem-te-vi) is the one rule the package adds: it says the package is installed, how
+# The index (qa-instinct) is the one rule the package adds: it says the package is installed, how
 # this editor invokes a skill, and how a pointer in the package's text resolves. $Key is the editor
 # key; copilot and universal hold the rules in the same file, under a marker line each.
 function Get-IndexBody {
@@ -210,18 +210,18 @@ function Get-IndexBody {
         default       { "ask for it by name; an editor that lists skills as slash commands also takes ${Bt}/qa-cases${Bt}" }
     }
     if ($Key -eq 'copilot' -or $Key -eq 'universal') {
-        $rulesAre = "Its rules follow in this file, each under a ${Bt}<!-- bem-te-vi-<rule> -->${Bt} line, and are always on."
-        $rulePointer = "the section under ${Bt}<!-- bem-te-vi-<rule> -->${Bt} in this file"
+        $rulesAre = "Its rules follow in this file, each under a ${Bt}<!-- qa-instinct-<rule> -->${Bt} line, and are always on."
+        $rulePointer = "the section under ${Bt}<!-- qa-instinct-<rule> -->${Bt} in this file"
     }
     else {
-        $rulesAre = "Its rules are the rule files named ${Bt}bem-te-vi-<rule>${Bt}, always on."
-        $rulePointer = "the rule file ${Bt}bem-te-vi-<rule>${Bt}"
+        $rulesAre = "Its rules are the rule files named ${Bt}qa-instinct-<rule>${Bt}, always on."
+        $rulePointer = "the rule file ${Bt}qa-instinct-<rule>${Bt}"
     }
     $list = ($SkillNames | ForEach-Object { "$Bt$_$Bt" }) -join ', '
     $lines = @(
-        '# Bem-te-vi',
+        '# QA Instinct',
         '',
-        'Bem-te-vi, QA Analyst and QA Engineer guidance based on ISTQB CTFL v4.0, is installed here.',
+        'QA Instinct, QA Analyst and QA Engineer guidance based on ISTQB CTFL v4.0, is installed here.',
         $rulesAre,
         'Everything else is an Agent Skill of the same name, loaded when its description matches the',
         "task, or when you $invoke.",
@@ -248,8 +248,8 @@ function Get-RuleFront {
     param([string]$Key, [string]$Name)
     switch ($Key) {
         'cursor' {
-            $description = if ($Name -eq 'bem-te-vi') { 'Bem-te-vi: how its rules and skills are installed in this editor' }
-                           else { 'Bem-te-vi rule: ' + $Name.Substring('bem-te-vi-'.Length) }
+            $description = if ($Name -eq 'qa-instinct') { 'QA Instinct: how its rules and skills are installed in this editor' }
+                           else { 'QA Instinct rule: ' + $Name.Substring('qa-instinct-'.Length) }
             return "---`ndescription: `"$description`"`nalwaysApply: true`n---`n"
         }
         { $_ -in 'windsurf', 'antigravity' } { return "---`ntrigger: always_on`n---`n" }
@@ -262,16 +262,16 @@ function Get-RulesInOneFile {
     param([string]$Key)
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.Append((Get-IndexBody $Key))
-    foreach ($rule in $Rules) { [void]$sb.Append("`n<!-- bem-te-vi-$rule -->`n").Append((Get-RuleBody $rule)) }
+    foreach ($rule in $Rules) { [void]$sb.Append("`n<!-- qa-instinct-$rule -->`n").Append((Get-RuleBody $rule)) }
     return $sb.ToString()
 }
 
 foreach ($key in @('cursor', 'windsurf', 'cline', 'antigravity')) {
     $ext = if ($key -eq 'cursor') { 'mdc' } else { 'md' }
     $rulesOut = Join-Path (Join-Path $OutDir $key) 'rules'
-    Write-Utf8 (Join-Path $rulesOut "bem-te-vi.$ext") ((Get-RuleFront $key 'bem-te-vi') + (Get-IndexBody $key))
+    Write-Utf8 (Join-Path $rulesOut "qa-instinct.$ext") ((Get-RuleFront $key 'qa-instinct') + (Get-IndexBody $key))
     foreach ($rule in $Rules) {
-        Write-Utf8 (Join-Path $rulesOut "bem-te-vi-$rule.$ext") ((Get-RuleFront $key "bem-te-vi-$rule") + (Get-RuleBody $rule))
+        Write-Utf8 (Join-Path $rulesOut "qa-instinct-$rule.$ext") ((Get-RuleFront $key "qa-instinct-$rule") + (Get-RuleBody $rule))
     }
 }
 
@@ -281,7 +281,7 @@ Write-Utf8 (Join-Path $OutDir 'copilot\rules\copilot-instructions.md') (Get-Rule
 # AGENTS.md and CLAUDE.md, copied by hand: the header, the index and the rules, no IDE
 # frontmatter. The skills are adapters/skills/, copied by hand beside them.
 $UniversalHeader = (@(
-    "<!-- Bem-te-vi $EmDash Senior QA Analyst + QA Engineer (ISTQB CTFL v4.0)",
+    "<!-- QA Instinct $EmDash Senior QA Analyst + QA Engineer (ISTQB CTFL v4.0)",
     '     Universal adapter: no IDE-specific frontmatter. The rules are below; every command, skill',
     "     and agent is an Agent Skill in the package's adapters/skills/ folder.",
     '     Compatible with: Claude Code (CLAUDE.md / --agents-file), Codex, Devin,',

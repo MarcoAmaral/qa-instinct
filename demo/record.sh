@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# demo/record.sh: renders the README demo (demo/bem-te-vi.gif, .mp4, .webm) from
-# demo/bem-te-vi.tape (plan 049). Run it from anywhere; it works from the repository root.
+# demo/record.sh: renders the README demo (demo/qa-instinct.gif, .mp4, .webm) from
+# demo/qa-instinct.tape (plan 049). Run it from anywhere; it works from the repository root.
 #
 # Needs on PATH: vhs, ttyd, ffmpeg, node, npm and a signed-in `claude`; VHS also needs a Chrome or
 # Chromium. Costs one live Claude Code run on Claude Sonnet, capped at US$0.50 by demo/shell.sh.
@@ -36,7 +36,7 @@ export PATH="$TOOLS/node_modules/.bin:$PATH"
 export DEMO_WORK="$WORK" DEMO_SHELL="$ROOT/demo/shell.sh" DEMO_LOG="$TOOLS/claude-run.json"
 
 cd "$ROOT"
-vhs demo/bem-te-vi.tape
+vhs demo/qa-instinct.tape
 
 # What the recorded run was: the numbers demo/README.md records.
 node -e '

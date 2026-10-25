@@ -413,7 +413,7 @@ function main() {
   if (unknown.length) die(`unknown option ${unknown[0]}`);
 
   const outDir = check
-    ? fs.mkdtempSync(path.join(os.tmpdir(), "bem-te-vi-benchmark-"))
+    ? fs.mkdtempSync(path.join(os.tmpdir(), "qa-instinct-benchmark-"))
     : path.join(ROOT, "cases");
   const { prompts, digest, count } = build(outDir);
   console.log(

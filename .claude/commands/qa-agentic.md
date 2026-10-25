@@ -18,7 +18,7 @@ The stages follow the CTFL v4.0 test activities (§1.4.1): the groomer does test
 
 ## 🔗 Pipeline Stages
 
-Dispatch each stage to its agent. In a plugin install the agents are named `bem-te-vi:qa-groomer`, `bem-te-vi:qa-designer` and `bem-te-vi:qa-writer`; in a copied install they are `qa-groomer`, `qa-designer` and `qa-writer`. Use the namespaced name when it is in your list of agents, otherwise the plain one. If your environment has no subagents, run the three stages yourself one after another, and before each stage set aside everything except the file that stage reads.
+Dispatch each stage to its agent. In a plugin install the agents are named `qa-instinct:qa-groomer`, `qa-instinct:qa-designer` and `qa-instinct:qa-writer`; in a copied install they are `qa-groomer`, `qa-designer` and `qa-writer`. Use the namespaced name when it is in your list of agents, otherwise the plain one. If your environment has no subagents, run the three stages yourself one after another, and before each stage set aside everything except the file that stage reads.
 
 The stages name files of the `qa-reference` skill (its `references/` folder) but cannot load a skill themselves: load the `qa-reference` skill first and give each stage that folder's path, which is the skill's base directory, alongside the file it reads.
 
