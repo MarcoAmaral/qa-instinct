@@ -16,10 +16,9 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ## [4.2.1](https://github.com/MarcoAmaral/qa-instinct/compare/v4.2.0...v4.2.1) (2026-10-25)
 
-
 ### Miscellaneous Chores
 
-* release 4.2.1 ([148b37e](https://github.com/MarcoAmaral/qa-instinct/commit/148b37ea699f805eb716f1aea06ec88c1b60982b))
+- release 4.2.1 ([148b37e](https://github.com/MarcoAmaral/qa-instinct/commit/148b37ea699f805eb716f1aea06ec88c1b60982b))
 
 ## [4.2.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.1.1...v4.2.0) (2026-10-25)
 
