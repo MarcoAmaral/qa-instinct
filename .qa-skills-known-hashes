@@ -26,8 +26,10 @@
 1ccaa4ecd66212e202fe647c013c62d09abd3e2ded6368f583111569c9800781  .claude/commands/qa-agentic.md
 1e7bb54735aafda5840dc30e6dbc1a81ff790cc48c3394b22bc8d378bc98d6db  .claude/commands/qa-cases.md
 1fcb62c406f5ab17a2cf42935ae7bbd8af273d58b887a54b58bbfbe81f596f84  .claude/skills/qa-explore/SKILL.md
+21ce90e9fec46dc0f10b9e57f6957c28bc363123152e64bc0c1303e8537e8280  .claude/commands/qa-agentic.md
 222e815b44d74245194df1907c561d4366edcf87375995ca3ea2b01fddac31fb  .claude/commands/qa.md
 228b2542f3368a363d2759e993050d06c862f0611cedef0c3c549cdc500a9652  .claude/rules/security-qa.md
+23209bc72a81d43a771f8cfc56bf0eab9aef2f4ad2b4dd9b5240b48a6864df94  .claude/commands/qa.md
 240e33d6ee6ed4c8c64b8533ca2a89e61c1a5805ab5f9a74ceb7c8f90694bd7f  .claude/skills/qa-plan/SKILL.md
 2443626d4dd708f31424fb7364b46bc67261377d9ea84ba56043b005723a229a  .claude/skills/qa-plan/SKILL.md
 245c3187d916aa99b670ee9a17e394623ceb3bdb86cb3ef7f5be4e44bddaaadb  .claude/rules/code-style-qa.md
@@ -37,6 +39,7 @@
 26830e63e891edf80f292a6686a79cbaccc0bdb0db43fe49a9b4947af5e1a8ab  .claude/rules/accessibility-qa.md
 269fc6a4b6cd0fa692ead51f402b5259a8e4b189de83adde6075df228be5eafe  .claude/agents/qa-engineer.md
 2a4fd600f4a26a37a77dc66f73bb5cbf4f671e08204f0e87bde8b88157d7e3a4  .claude/rules/testing-guidelines.md
+2c262842c5dc842a9566fb879b6279bba87a1e2db9f980af994376147c61f76d  .claude/skills/qa-reference/references/repo-conventions.md
 2cb6a9a6499112c65b6927dc64be6401ac871c12791a70e717bbe44bceddbd78  .claude/commands/qa-cases.md
 2ee0a0870a427dcf2c43264a32bebc9052a4a91d52d843c1008eb8f6f43672e8  .claude/commands/qa-review.md
 2fcf4e3498afe1d25273330e9d69270b0e78c8081800b7f84d52439a680a32d7  .claude/hooks/validate-tc-format.sh
@@ -119,6 +122,7 @@
 881789cfc6f6b260bc862fc6a1d7ba991d4db5e4b8274ddc252a37619aa3b9d5  .claude/agents/qa-writer.md
 89a79267c6e748e82688dca2c0aa1a0c045ee4732cda0c650ea17ec6a5658322  .claude/commands/qa-automate.md
 8b3ceaafc9fab22a3f375ab2a51fca1dbd21214e2d84a04e2bcc3813a281263c  .claude/rules/conventional-commits.md
+8d4cbcc5fb48296d18a000726191a0ea54f730c1c5c9c6c15ad2ec7c9f66c4b5  .claude/skills/qa-reference/SKILL.md
 90e9ccdc732d0105efe9198ef3e5b613d43acf720d8ae8d4f6019bda63429720  .claude/rules/context-discovery.md
 94ff2674379c036f3b35990d6059ef9d022193625fe7642cc94289eb9388604b  .claude/skills/qa-reference/references/repo-conventions.md
 9595ec7806f9538c1af8e5f004df4ebd6d32b896f1e7bcf79f03db215456c963  .claude/commands/qa-automate.md
