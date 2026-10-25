@@ -19,13 +19,11 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ### Features
 
-* rename the package to QA Instinct ([390de80](https://github.com/MarcoAmaral/qa-instinct/commit/390de801f4b1accb6e7f3ebbbf2d328677e99a4b))
 * rename the package to QA Instinct ([f86fd61](https://github.com/MarcoAmaral/qa-instinct/commit/f86fd61cbe4c002bfcdd764026a307515df7c746))
 
 
 ### Bug Fixes
 
-* make both installers write the same git hook ([6fcf56e](https://github.com/MarcoAmaral/qa-instinct/commit/6fcf56e0b0c782d01a0ff71b3faaaafbbbe6107d))
 * write install.ps1's project git hook with its final newline ([1186445](https://github.com/MarcoAmaral/qa-instinct/commit/11864451331e707cd55d2a8bbd473765fabadb81))
 
 ## [4.1.1](https://github.com/MarcoAmaral/bem-te-vi/compare/v4.1.0...v4.1.1) (2026-10-23)
