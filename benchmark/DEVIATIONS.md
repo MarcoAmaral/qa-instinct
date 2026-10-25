@@ -7,6 +7,22 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-25: the Extension arm's cap is raised to US$230
+
+- **What was recorded.** The entry of 2026-10-23 capped the Extension arm on `claude-fable-5-1`
+  at US$161, 1.25 times an estimate of US$128.8 drawn from the pilot's token mix, and the
+  collection starts no task when what is left would not cover the largest task so far.
+- **What happened.** Five tasks cost US$122.07: US$20.36, US$18.92, US$21.58, US$18.11 and
+  US$43.12. `plan-split-payment` cost about twice the others because its replies are full test
+  plans. After it, US$38.93 was left, less than US$43.12, so the collection stopped before
+  `api-orders-contract`, as designed.
+- **What was done.** Marco raised the cap to US$230 on 2026-10-25, enough for the four remaining
+  tasks at about US$20 each with the largest-task margin still in force for the last one. No
+  task was cut; the five collected tasks are unchanged.
+- **Why it matters.** The cap bounds usage, not results, and every task is still collected whole.
+  As in the entry of 2026-10-23, the figures are list prices as the tool reports them; the run
+  counts against a subscription's usage limits, with extra usage off.
+
 ## 2026-10-23: an Extension arm on `claude-fable-5-1`, collected before Arm 1
 
 - **What the methodology says.** "Arms": the Extension arm is "the same protocol with another
