@@ -1,6 +1,6 @@
 {
   "name": "bem-te-vi",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Senior QA Analyst + QA Engineer commands, skills and agents grounded in software testing standards. This plugin does not include the rules under .claude/rules/; use `npx @marcoamaral/bem-te-vi init` for the complete install.",
   "author": {
     "name": "Marco Amaral",
