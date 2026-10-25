@@ -7,189 +7,191 @@ risk_level: MEDIUM
 runbook: N/A — no runbook requested for this feature
 implementation_pack: N/A — no implementation pack
 spec: N/A — not automated yet
-last_updated: 2026-10-20
+last_updated: 2026-10-25
 ---
 
 # Test Cases — Cart: no duplicate product
 
-| Field            | Value                                                          |
-| ---------------- | -------------------------------------------------------------- |
-| **Project**      | ServeRest API (https://serverest.dev)                          |
-| **Author**       | Claude — Senior QA Analyst                                     |
-| **Date Created** | 2026-10-20                                                     |
-| **Last Updated** | 2026-10-20                                                     |
-| **Methodology**  | ISTQB CTFL v4.0 — EP, Decision Table, State Transition, Error Guessing |
+| Field            | Value                                                        |
+| ---------------- | ------------------------------------------------------------ |
+| **Project**      | ServeRest API (https://serverest.dev)                        |
+| **Author**       | Claude — Senior QA Analyst                                   |
+| **Date Created** | 2026-10-25                                                   |
+| **Last Updated** | 2026-10-25                                                   |
+| **Methodology**  | ISTQB CTFL v4.0 — EP, BVA, State Transition, Error Guessing  |
 
-**Context discovery.** The working directory holds only `story.md`: no tests, schemas, config or docs were found (Tiers 1–4 empty), and no tracker ID was given (`[ISSUE-ID]` is a placeholder). Everything about the API's request shape and messages below is therefore an **assumption from general knowledge of ServeRest, not verified against the running system**: `POST /carrinhos` takes `Authorization: <token>` and a body `{"produtos":[{"idProduto":"<id>","quantidade":N}]}`; success is 201 with "Cadastro realizado com sucesso"; duplicate product is 400 with "Não é permitido possuir produto duplicado"; a second cart is 400 with "Não é permitido ter mais de 1 carrinho". Confirm each against `GET /` Swagger on the target environment before running. The story's criteria are numbered AC-1..AC-3 as given. `@gate` marks the release-gate cases (TC-CART-001, 002, 003).
+## Introduction and context discovery
 
-**Decision table (condition → action)**
-
-| Condition                           | R1  | R2  | R3  | R4  |
-| ----------------------------------- | --- | --- | --- | --- |
-| Same idProduto listed twice         | F   | T   | F   | T   |
-| User already has a cart             | F   | F   | T   | T   |
-| **Actions**                         |     |     |     |     |
-| 201, cart created                   | X   |     |     |     |
-| 400 (duplicate or second cart)      |     | X   | X   | X   |
+- **Story:** `story.md`. Its acceptance criteria are already numbered AC-1 to AC-3, so the numbers are kept.
+- **Context found:** the repository holds only the story and the QA tooling. There is no test suite, OpenAPI schema, fixture or application code to ground the cases in (Tier 1 and 2 sources are absent). Nothing here was confirmed against the running API.
+- **Assumptions (not verified), used in several cases:**
+  - A-1: `POST /carrinhos` needs a logged-in user; the token comes from `POST /login` and is sent in the `Authorization` header.
+  - A-2: Products are created through `POST /produtos`, which may need an administrator token, with enough stock for the quantities used.
+  - A-3: A cart body has the shape `{"produtos": [{"idProduto": "<id>", "quantidade": <n>}]}`.
+  - A-4: Error responses carry a `message` field. The exact text is not stated in the story, so no case quotes it.
+  - A-5: A cart can be removed with `DELETE /carrinhos/cancelar-compra` or `DELETE /carrinhos/concluir-compra`.
+- **Isolation:** every case creates its own user (and its own products where needed) in its setup, so no case depends on another.
+- **Gate:** `@gate` marks TC-CART-001 to TC-CART-003, the three acceptance criteria. The gate is defined and sized in the `qa-plan` skill; this marking is a proposal to be confirmed there.
+- **Tracker:** none was named, so `[ISSUE-ID]` is a placeholder.
 
 ---
 
 ## TC-CART-001: Create a cart with distinct products
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@smoke @p0 @api @cart @candidate @gate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (58/67.5) |
-| **ISTQB Technique**    | Decision Table — R1 (no duplicate, no existing cart); EP — valid partition |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user with no cart; two existing products, A and B, with enough stock (assumption: stock is enforced) |
-| **Steps**              | 1. `POST /carrinhos` with `produtos` = [A qty 1, B qty 1] and the user's token |
-| **Expected**           | Status 201; body `message` is "Cadastro realizado com sucesso" and `_id` is returned. `GET /carrinhos/{_id}` lists A and B once each. |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | AC-2 |
-| **Note**               | Message text is an unverified assumption (see introduction). |
+| Field                  | Value                                                                                                                                                                                  |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@smoke @p0 @api @cart @candidate @gate`                                                                                                                                               |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                                             |
+| **Automation Score**   | HIGH (62.5/67.5)                                                                                                                                                                       |
+| **ISTQB Technique**    | EP — valid partition (every `idProduto` distinct)                                                                                                                                      |
+| **Manual Env**         | Local, Staging                                                                                                                                                                         |
+| **Precondition**       | A registered, logged-in user with no cart. Two existing products, A and B, each with stock of at least 1 (assumptions A-1, A-2).                                                       |
+| **Steps**              | 1. Send `POST /carrinhos` with the user's token and body `produtos: [{idProduto: A, quantidade: 1}, {idProduto: B, quantidade: 1}]` <br> 2. Send `GET /carrinhos` and look for the cart |
+| **Expected**           | Step 1 returns status 201. Step 2 returns the new cart, which lists product A once and product B once.                                                                                  |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                              |
+| **Source**             | AC-2                                                                                                                                                                                   |
+| **Note**               | Assumptions A-1 to A-3 apply. Step 2 goes beyond the story: AC-2 only names the status code, and the cart content check guards against a 201 that stores something else.              |
 
 ---
 
-## TC-CART-002: Reject a cart listing the same product twice
+## TC-CART-002: Reject a cart that lists the same product twice
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@smoke @p0 @api @cart @candidate @gate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (57/67.5) |
-| **ISTQB Technique**    | Decision Table — R2 (duplicate, no existing cart); EP — invalid partition |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user with no cart; existing product A |
-| **Steps**              | 1. `POST /carrinhos` with `produtos` = [A qty 1, A qty 1] and the user's token |
-| **Expected**           | Status 400; `message` is "Não é permitido possuir produto duplicado" (assumed text). No `_id` returned. |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | AC-1 |
-| **Note**               | Message text is an unverified assumption. |
+| Field                  | Value                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Tags**               | `@smoke @p0 @api @cart @candidate @gate`                                                                                                                                 |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                               |
+| **Automation Score**   | HIGH (62.5/67.5)                                                                                                                                                         |
+| **ISTQB Technique**    | EP — invalid partition (the same `idProduto` appears twice)                                                                                                              |
+| **Manual Env**         | Local, Staging                                                                                                                                                           |
+| **Precondition**       | A registered, logged-in user with no cart. One existing product A with stock of at least 2 (assumptions A-1, A-2).                                                        |
+| **Steps**              | 1. Send `POST /carrinhos` with the user's token and body `produtos: [{idProduto: A, quantidade: 1}, {idProduto: A, quantidade: 1}]`                                        |
+| **Expected**           | Status 400. No cart is created for the user.                                                                                                                             |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                |
+| **Source**             | AC-1                                                                                                                                                                     |
+| **Note**               | "No cart is created" is checked with `GET /carrinhos` filtered on the user; the story does not state it, but a 400 that still stores a cart would defeat the rule. A-4 applies: the message text is not asserted. |
 
 ---
 
 ## TC-CART-003: Reject a second cart for a user who already has one
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@smoke @p0 @api @cart @candidate @gate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (56/67.5) |
-| **ISTQB Technique**    | Decision Table — R3 (no duplicate, existing cart); State Transition — invalid transition (HasCart → create) |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user who already has a cart created via TC-CART-001 steps (seeded in this test's own setup, not by running TC-CART-001); existing product C not in that cart |
-| **Steps**              | 1. `POST /carrinhos` with `produtos` = [C qty 1] and the user's token |
-| **Expected**           | Status 400; `message` is "Não é permitido ter mais de 1 carrinho" (assumed text). |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | AC-3 |
-| **Note**               | Message text is an unverified assumption. |
+| Field                  | Value                                                                                                                                                                              |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@smoke @p0 @api @cart @candidate @gate`                                                                                                                                           |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                                         |
+| **Automation Score**   | HIGH (61/67.5)                                                                                                                                                                     |
+| **ISTQB Technique**    | State Transition — invalid transition: HasCart state, event "create cart"                                                                                                          |
+| **Manual Env**         | Local, Staging                                                                                                                                                                     |
+| **Precondition**       | A registered, logged-in user who already has a cart created by a 201 response. Product A in that cart; a second existing product B with stock (assumptions A-1, A-2).              |
+| **Steps**              | 1. Send `POST /carrinhos` with the user's token and body `produtos: [{idProduto: B, quantidade: 1}]` <br> 2. Send `GET /carrinhos` for the user                                      |
+| **Expected**           | Step 1 returns status 400. Step 2 shows the original cart unchanged: product A only, no product B.                                                                                 |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                          |
+| **Source**             | AC-3                                                                                                                                                                               |
+| **Note**               | The second request uses a different, valid product on purpose, so the 400 can only come from the one-cart rule and not from the duplicate-product rule of AC-1. A-4 applies.      |
 
 ---
 
-## TC-CART-004: Reject a duplicate that is not adjacent in the list
+## TC-CART-004: Reject a duplicate product that is not adjacent in the list
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@regression @p1 @api @cart @candidate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (53/67.5) |
-| **ISTQB Technique**    | Error Guessing — duplicate detection that only compares neighbours |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user with no cart; existing products A and B |
-| **Steps**              | 1. `POST /carrinhos` with `produtos` = [A qty 1, B qty 1, A qty 1] |
-| **Expected**           | Status 400 with the duplicate-product message; no cart is created. |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | Added by QA (AC-1 says "twice" but does not say the two entries must be adjacent) |
-| **Note**               | N/A — no caveats |
-
----
-
-## TC-CART-005: Reject the same product with different quantities
-
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@regression @p1 @api @cart @candidate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (52.5/67.5) |
-| **ISTQB Technique**    | EP — invalid partition (same idProduto, differing quantidade) |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user with no cart; existing product A with stock ≥ 3 |
-| **Steps**              | 1. `POST /carrinhos` with `produtos` = [A qty 1, A qty 2] |
-| **Expected**           | Status 400 with the duplicate-product message; quantities are not merged into one line (no cart created). |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | Added by QA (the story is silent on whether duplicates with different quantities are merged or rejected; story intent "can't add the same product twice" implies reject) |
-| **Note**               | Interpretation to confirm with the PO; if merging is intended, the Expected result changes. |
+| Field                  | Value                                                                                                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@regression @p1 @api @cart @candidate`                                                                                                                    |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                 |
+| **Automation Score**   | HIGH (54.5/67.5)                                                                                                                                           |
+| **ISTQB Technique**    | Error Guessing — duplicate detection that compares only neighbouring items; EP — invalid partition (duplicate among three items)                           |
+| **Manual Env**         | Local, Staging                                                                                                                                             |
+| **Precondition**       | A registered, logged-in user with no cart. Three existing products A, B, C with stock of at least 2 each (assumptions A-1, A-2).                            |
+| **Steps**              | 1. Send `POST /carrinhos` with body `produtos: [{idProduto: A, quantidade: 1}, {idProduto: B, quantidade: 1}, {idProduto: A, quantidade: 1}]`              |
+| **Expected**           | Status 400. No cart is created for the user.                                                                                                               |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                  |
+| **Source**             | Added by QA (AC-1 gives a two-item example; a list of three with the repeat in first and last place is a likely gap)                                       |
+| **Note**               | A-4 applies. Not covered by the story's examples.                                                                                                          |
 
 ---
 
-## TC-CART-006: A rejected duplicate request leaves no cart behind
+## TC-CART-005: Reject a duplicate product when the quantities differ
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@regression @p1 @api @cart @candidate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (50/67.5) |
-| **ISTQB Technique**    | State Transition — NoCart → (rejected create) → NoCart, then NoCart → HasCart |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user with no cart; existing products A and B |
-| **Steps**              | 1. `POST /carrinhos` with [A, A] <br> 2. `POST /carrinhos` with [A, B] |
-| **Expected**           | Step 1: 400. Step 2: 201 (the failed attempt did not consume the user's one-cart allowance). |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | Added by QA (the ticket is silent on state after a rejected request) |
-| **Note**               | Steps are one flow because the assertion is about the state between them. |
-
----
-
-## TC-CART-007: Duplicate in a second request for a user who has a cart
-
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@regression @p2 @api @cart @candidate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | MEDIUM (47/67.5) |
-| **ISTQB Technique**    | Decision Table — R4 (duplicate and existing cart) |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Authenticated user who already has a cart (seeded in setup); existing product A |
-| **Steps**              | 1. `POST /carrinhos` with `produtos` = [A qty 1, A qty 1] |
-| **Expected**           | Status 400, and the existing cart is unchanged (`GET /carrinhos/{id}` returns the same products as before). Which of the two messages is returned is not specified by the story; record the observed one. |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | Added by QA (the ticket does not say which rule wins when AC-1 and AC-3 both apply) |
-| **Note**               | Assumption: either message is acceptable; status 400 and unchanged cart are the verified outcomes. |
+| Field                  | Value                                                                                                                                                            |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@regression @p2 @api @cart @candidate`                                                                                                                          |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                       |
+| **Automation Score**   | MEDIUM (50.5/67.5)                                                                                                                                               |
+| **ISTQB Technique**    | Error Guessing — duplicate defined by `idProduto` alone, not by the whole line item                                                                              |
+| **Manual Env**         | Local, Staging                                                                                                                                                   |
+| **Precondition**       | A registered, logged-in user with no cart. One existing product A with stock of at least 3 (assumptions A-1, A-2).                                               |
+| **Steps**              | 1. Send `POST /carrinhos` with body `produtos: [{idProduto: A, quantidade: 1}, {idProduto: A, quantidade: 2}]`                                                   |
+| **Expected**           | Status 400. No cart is created for the user.                                                                                                                     |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                        |
+| **Source**             | Added by QA (the story says "same product", and does not say whether two lines with different quantities count as a duplicate)                                    |
+| **Note**               | The expected 400 is QA's reading of "can't add the same product twice". If the product owner intends such lines to be merged, this case needs a ruling before it runs. A-4 applies. |
 
 ---
 
-## TC-CART-008: A different user can create a cart with the same products
+## TC-CART-006: A rejected duplicate request does not block a valid cart
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@regression @p2 @api @cart @candidate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | MEDIUM (44/67.5) |
-| **ISTQB Technique**    | Error Guessing — over-broad uniqueness check (duplicate detection or one-cart rule applied across users) |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | Users U1 (has a cart containing product A) and U2 (no cart), both authenticated |
-| **Steps**              | 1. As U2, `POST /carrinhos` with `produtos` = [A qty 1] |
-| **Expected**           | Status 201; U1's cart is unchanged. |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | Added by QA (the story says "a user who has a cart"; scope per user is implied, not stated) |
-| **Note**               | N/A — no caveats |
+| Field                  | Value                                                                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@regression @p1 @api @cart @candidate`                                                                                                                                   |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                                |
+| **Automation Score**   | HIGH (53/67.5)                                                                                                                                                            |
+| **ISTQB Technique**    | State Transition — NoCart state stays NoCart after the rejected event, then the valid transition to HasCart                                                              |
+| **Manual Env**         | Local, Staging                                                                                                                                                            |
+| **Precondition**       | A registered, logged-in user with no cart. Two existing products A and B with stock of at least 2 (assumptions A-1, A-2).                                                  |
+| **Steps**              | 1. Send `POST /carrinhos` with body `produtos: [{idProduto: A, quantidade: 1}, {idProduto: A, quantidade: 1}]` <br> 2. Send `POST /carrinhos` with body `produtos: [{idProduto: A, quantidade: 1}, {idProduto: B, quantidade: 1}]` |
+| **Expected**           | Step 1 returns status 400. Step 2 returns status 201: the failed request left no cart behind, so the one-cart rule of AC-3 does not fire.                                 |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                 |
+| **Source**             | Added by QA (the story is silent on what state a rejected request leaves; the business purpose is that the customer can still shop)                                       |
+| **Note**               | Guards the interaction of AC-1 and AC-3. A-4 applies.                                                                                                                     |
 
 ---
 
-## TC-CART-009: Reject cart creation without a valid token
+## TC-CART-007: The one-cart rule applies per user, not across users
 
-| Field                  | Value |
-| ---------------------- | ----- |
-| **Tags**               | `@regression @p1 @api @cart @candidate` |
-| **Issue**              | [ISSUE-ID] |
-| **Automation Score**   | HIGH (52/67.5) |
-| **ISTQB Technique**    | EP — invalid partition (missing / malformed token) |
-| **Manual Env**         | Local (ServeRest), https://serverest.dev |
-| **Precondition**       | No token available |
-| **Steps**              | 1. `POST /carrinhos` with valid distinct products and no `Authorization` header <br> 2. Repeat with `Authorization: invalid` |
-| **Expected**           | Both requests: status 401 (assumed); no cart is created. |
-| **data-testid needed** | N/A — API test, no UI element |
-| **Source**             | Added by QA (the ticket is silent on unauthenticated requests; security baseline for a state-changing endpoint) |
-| **Note**               | Status code is an unverified assumption. |
+| Field                  | Value                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Tags**               | `@regression @p1 @api @cart @candidate`                                                                                                                                  |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                               |
+| **Automation Score**   | MEDIUM (49.5/67.5)                                                                                                                                                       |
+| **ISTQB Technique**    | EP — valid partition (user without a cart, while another user holds a cart with the same product)                                                                        |
+| **Manual Env**         | Local, Staging                                                                                                                                                           |
+| **Precondition**       | Two registered, logged-in users, U1 and U2. U1 already has a cart containing product A. U2 has no cart (assumptions A-1, A-2).                                             |
+| **Steps**              | 1. As U2, send `POST /carrinhos` with body `produtos: [{idProduto: A, quantidade: 1}]` <br> 2. As U1, send `GET /carrinhos` for U1's cart                                 |
+| **Expected**           | Step 1 returns status 201: U2 may hold product A while U1's cart contains it. Step 2 shows U1's cart unchanged.                                                          |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                |
+| **Source**             | Added by QA (AC-1 and AC-3 are phrased per user; the story does not say the rule is not global)                                                                          |
+| **Note**               | Stock handling is not in the story. Product A needs stock for both carts; if the API reserves stock in the cart, give it a stock of at least 2.                           |
+
+---
+
+## TC-CART-008: Reject cart creation without authentication
+
+| Field                  | Value                                                                                                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@regression @p1 @api @cart @candidate`                                                                                                                                      |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                                   |
+| **Automation Score**   | HIGH (59.5/67.5)                                                                                                                                                             |
+| **ISTQB Technique**    | EP — invalid partition (no token)                                                                                                                                            |
+| **Manual Env**         | Local, Staging                                                                                                                                                               |
+| **Precondition**       | One existing product A. No token is sent (assumption A-1).                                                                                                                   |
+| **Steps**              | 1. Send `POST /carrinhos` with no `Authorization` header and body `produtos: [{idProduto: A, quantidade: 1}]`                                                                |
+| **Expected**           | The request is rejected as unauthenticated (status 401) and no cart is created.                                                                                              |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                    |
+| **Source**             | Added by QA (the story says "as a customer" but gives no criterion for requests without a login)                                                                             |
+| **Note**               | The status 401 is an assumption: the story does not state it. If the API answers with another 4xx code, record it as a documentation gap, not a failure, until the owner decides. |
+
+---
+
+## TC-CART-009: A user can create a new cart after finishing the previous one
+
+| Field                  | Value                                                                                                                                                                              |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tags**               | `@regression @p2 @api @cart @candidate`                                                                                                                                            |
+| **Issue**              | [ISSUE-ID]                                                                                                                                                                         |
+| **Automation Score**   | MEDIUM (39.5/67.5)                                                                                                                                                                 |
+| **ISTQB Technique**    | State Transition — HasCart to NoCart (cart removed), then NoCart to HasCart                                                                                                        |
+| **Manual Env**         | Local, Staging                                                                                                                                                                     |
+| **Precondition**       | A registered, logged-in user who has a cart created by a 201 response. One existing product A (assumptions A-1, A-2, A-5).                                                         |
+| **Steps**              | 1. Remove the cart with `DELETE /carrinhos/cancelar-compra` <br> 2. Send `POST /carrinhos` with body `produtos: [{idProduto: A, quantidade: 1}]`                                    |
+| **Expected**           | Step 1 succeeds. Step 2 returns status 201: AC-3 limits the user to one cart at a time, so a removed cart must not block a new one.                                                 |
+| **data-testid needed** | N/A — API test, no UI element is asserted                                                                                                                                          |
+| **Source**             | Added by QA (AC-3 says "a user who has a cart" but does not say when a cart stops existing)                                                                                        |
+| **Note**               | Rests on A-5, which is unverified: the delete endpoint, its success status and any stock effect are not in the story. Confirm against the API documentation before running.        |
