@@ -27,7 +27,7 @@ QA Instinct is a plug-and-play skill package that gives AI coding assistants (Cl
 
 ## See It in Action
 
-![A terminal, recorded before the rename to QA Instinct: bem-te-vi init installs the package, /qa-cases turns a three-criteria ServeRest cart story into nine test cases, and the package's format hook passes on them](demo/bem-te-vi.gif)
+![A terminal: qa-instinct init installs the package, /qa-cases turns a three-criteria ServeRest cart story into nine test cases, and the package's format hook passes on them](demo/qa-instinct.gif)
 
 *Real, unedited output of one live `/qa-cases` run in Claude Code's print mode on Claude Sonnet 5.5 (2026-10-20); only the model's wait is cut. How it was made and how to re-record it: [`demo/`](demo/README.md).*
 
