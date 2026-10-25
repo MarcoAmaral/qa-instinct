@@ -77,6 +77,7 @@ chained-prompt command).
 | 062 | Antigravity on WSL, and the CLI's install wording for every editor | P1 | S | 008, 047, 058 | DONE (branch `fix/antigravity-wsl-note`, into `next`; README note on opening a WSL window; the installers print the WSL window command under WSL; CLI header and "Done!" line no longer Claude-only; lifecycle Tests 69-70, PowerShell Test 55) |
 | 063 | `install.sh --update` on macOS leaves a tail of one editor's skills wrong (issue #3) | P1 | M | 016, 033, 047 | DONE (PR #5, branch `fix/macos-update-tail`; cause: `prune_unshipped` read a cut `editor_files` list on macOS bash 3.2; lists now read whole and checked by an end line; lifecycle Test 71; 0 of 300 macOS runs failed) |
 | 064 | Keep the two installers' git hook texts identical, and pin every hook a release wrote | P3 | M | 016, 026 | DONE (branch `refactor/hook-template`, PR to be opened; parity test and every release's hooks pinned; `install.ps1` project hook now ends in a newline) |
+| 065 | Rename to QA Instinct, publish it, and remove the old npm package | P1 | M | 020 | IN PROGRESS (branch `feat/qa-instinct-rename`, into `main`; decided by Marco 2026-10-25) |
 
 ¹ These SHAs changed on 2026-09-14, when an AI co-author trailer was removed
 from two commit messages before opening PR #11. File contents are unchanged.
