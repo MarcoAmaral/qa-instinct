@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration Test for Bem-te-vi Lifecycle Manager (Install, Update, Uninstall)
+# Integration Test for QA Instinct Lifecycle Manager (Install, Update, Uninstall)
 # Works in a completely sandboxed environment to prevent polluting user directories.
 
 set -e
@@ -26,7 +26,7 @@ else
 fi
 
 echo "=================================================="
-echo "Starting Bem-te-vi Lifecycle Integration Tests (Unix)"
+echo "Starting QA Instinct Lifecycle Integration Tests (Unix)"
 echo "=================================================="
 
 # 1. Create a sandboxed workspace within the repo for compliance
@@ -81,14 +81,14 @@ echo "Verifying project-level installation..."
 [ -f ".claude/rules/security-qa.md" ] || { printf '%b\n' "${RED}✘ Missing security-qa.md in project rules${NC}"; exit 1; }
 [ -f ".claude/hooks/validate-tc-format.sh" ] || { printf '%b\n' "${RED}✘ Missing validator hook in project${NC}"; exit 1; }
 [ -f ".git/hooks/pre-commit" ] || { printf '%b\n' "${RED}✘ Missing git pre-commit hook in project${NC}"; exit 1; }
-[ -f ".cursor/rules/bem-te-vi.mdc" ] || { printf '%b\n' "${RED}✘ Missing cursor rule in project${NC}"; exit 1; }
+[ -f ".cursor/rules/qa-instinct.mdc" ] || { printf '%b\n' "${RED}✘ Missing cursor rule in project${NC}"; exit 1; }
 [ -f ".cursor/skills/qa-cases/SKILL.md" ] || { printf '%b\n' "${RED}✘ Missing cursor skill in project${NC}"; exit 1; }
-[ -f ".windsurf/rules/bem-te-vi-security-qa.md" ] || { printf '%b\n' "${RED}✘ Missing windsurf rule in project${NC}"; exit 1; }
+[ -f ".windsurf/rules/qa-instinct-security-qa.md" ] || { printf '%b\n' "${RED}✘ Missing windsurf rule in project${NC}"; exit 1; }
 [ -f ".windsurf/skills/qa/SKILL.md" ] || { printf '%b\n' "${RED}✘ Missing windsurf skill in project${NC}"; exit 1; }
 [ -f ".github/copilot-instructions.md" ] || { printf '%b\n' "${RED}✘ Missing copilot instructions in project${NC}"; exit 1; }
 [ -f ".github/skills/qa-plan/SKILL.md" ] || { printf '%b\n' "${RED}✘ Missing copilot skill in project${NC}"; exit 1; }
-[ -f ".cline/rules/bem-te-vi.md" ] || { printf '%b\n' "${RED}✘ Missing cline rules in project${NC}"; exit 1; }
-[ -f ".agents/rules/bem-te-vi.md" ] || { printf '%b\n' "${RED}✘ Missing antigravity rule in project${NC}"; exit 1; }
+[ -f ".cline/rules/qa-instinct.md" ] || { printf '%b\n' "${RED}✘ Missing cline rules in project${NC}"; exit 1; }
+[ -f ".agents/rules/qa-instinct.md" ] || { printf '%b\n' "${RED}✘ Missing antigravity rule in project${NC}"; exit 1; }
 [ -f ".agents/skills/qa/SKILL.md" ] || { printf '%b\n' "${RED}✘ Missing antigravity skill in project${NC}"; exit 1; }
 
 echo "Verifying global-level installation..."
@@ -182,7 +182,7 @@ mkdir -p "$SANDBOX_DIR/owned-project"
 cd "$SANDBOX_DIR/owned-project"
 git init -q -b main
 
-# Files a project may already have that are NOT part of the bem-te-vi package
+# Files a project may already have that are NOT part of the qa-instinct package
 OWNED_FILES=(
   ".claude/commands/team-deploy.md"
   ".claude/rules/team-conventions.md"
@@ -623,23 +623,23 @@ printf '%b\n' "${GREEN}✔ Test 20 passed successfully! The no-manifest upgrade 
 # Test 22 moved to conformance case 008 (plan 016 item 6).
 
 # -----------------------------------------------------------------------------
-# TEST 23: `bem-te-vi uninstall` removes only unmodified installed files,
+# TEST 23: `qa-instinct uninstall` removes only unmodified installed files,
 # keeps untracked and user-modified files, and cleans up the manifest
 # (plan 012, item 3)
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 23: bem-te-vi uninstall removes only unmodified installed files..."
+echo "Running Test 23: qa-instinct uninstall removes only unmodified installed files..."
 
 mkdir -p "$SANDBOX_DIR/cli-uninstall-project"
 cd "$SANDBOX_DIR/cli-uninstall-project"
 
-node "$REPO_DIR/cli/bem-te-vi.js" init
-[ -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ Test setup error: cli/bem-te-vi.js init did not complete${NC}"; exit 1; }
+node "$REPO_DIR/cli/qa-instinct.js" init
+[ -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ Test setup error: cli/qa-instinct.js init did not complete${NC}"; exit 1; }
 
 echo "user edit" >> ".claude/rules/security-qa.md"
 echo "untracked" > ".claude/rules/my-own-notes.md"
 
-node "$REPO_DIR/cli/bem-te-vi.js" uninstall
+node "$REPO_DIR/cli/qa-instinct.js" uninstall
 
 echo "Verifying unmodified installed files were removed..."
 [ ! -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ uninstall left an unmodified installed file behind${NC}"; exit 1; }
@@ -652,35 +652,35 @@ echo "Verifying the untracked file was kept..."
 [ "$(cat ".claude/rules/my-own-notes.md")" = "untracked" ] || { printf '%b\n' "${RED}✘ uninstall touched an untracked file${NC}"; exit 1; }
 
 cd "$REPO_DIR"
-printf '%b\n' "${GREEN}✔ Test 23 passed successfully! bem-te-vi uninstall removed only unmodified installed files.${NC}"
+printf '%b\n' "${GREEN}✔ Test 23 passed successfully! qa-instinct uninstall removed only unmodified installed files.${NC}"
 
 # Test 24 moved to conformance case 003 (plan 016 item 6).
 
 # -----------------------------------------------------------------------------
-# TEST 25: The manifest cli/bem-te-vi.js writes is interchangeable with install.sh's
+# TEST 25: The manifest cli/qa-instinct.js writes is interchangeable with install.sh's
 # — install with one implementation, uninstall with the other, both directions
 # (plan 012, item 5 — cross-implementation round trip)
 # -----------------------------------------------------------------------------
 echo ""
 echo "Running Test 25: A cross-implementation install/uninstall round trip works both ways..."
 
-# --- 25a: install with cli/bem-te-vi.js, uninstall with install.sh ---
+# --- 25a: install with cli/qa-instinct.js, uninstall with install.sh ---
 mkdir -p "$SANDBOX_DIR/cli-then-sh-project"
 cd "$SANDBOX_DIR/cli-then-sh-project"
 git init -q -b main
 
-node "$REPO_DIR/cli/bem-te-vi.js" init
-[ -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ Test setup error: cli/bem-te-vi.js init did not complete${NC}"; exit 1; }
+node "$REPO_DIR/cli/qa-instinct.js" init
+[ -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ Test setup error: cli/qa-instinct.js init did not complete${NC}"; exit 1; }
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --uninstall
 
-echo "Verifying install.sh fully uninstalled a cli/bem-te-vi.js install..."
-[ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ install.sh left .claude behind after uninstalling a cli/bem-te-vi.js install${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
+echo "Verifying install.sh fully uninstalled a cli/qa-instinct.js install..."
+[ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ install.sh left .claude behind after uninstalling a cli/qa-instinct.js install${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
 [ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived install.sh's uninstall${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 
-# --- 25b: install with install.sh, uninstall with cli/bem-te-vi.js ---
+# --- 25b: install with install.sh, uninstall with cli/qa-instinct.js ---
 mkdir -p "$SANDBOX_DIR/sh-then-cli-project"
 cd "$SANDBOX_DIR/sh-then-cli-project"
 git init -q -b main
@@ -688,20 +688,20 @@ git init -q -b main
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
 [ -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ Test setup error: install.sh did not complete${NC}"; exit 1; }
 
-node "$REPO_DIR/cli/bem-te-vi.js" uninstall
+node "$REPO_DIR/cli/qa-instinct.js" uninstall
 
-echo "Verifying cli/bem-te-vi.js fully uninstalled an install.sh install..."
-[ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ cli/bem-te-vi.js left .claude behind after uninstalling an install.sh install${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived cli/bem-te-vi.js's uninstall${NC}"; exit 1; }
+echo "Verifying cli/qa-instinct.js fully uninstalled an install.sh install..."
+[ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ cli/qa-instinct.js left .claude behind after uninstalling an install.sh install${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
+[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived cli/qa-instinct.js's uninstall${NC}"; exit 1; }
 
 cd "$REPO_DIR"
-printf '%b\n' "${GREEN}✔ Test 25 passed successfully! The manifest format round-trips between cli/bem-te-vi.js and install.sh in both directions.${NC}"
+printf '%b\n' "${GREEN}✔ Test 25 passed successfully! The manifest format round-trips between cli/qa-instinct.js and install.sh in both directions.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 26: cli/bem-te-vi.js skips a read-only destination instead of crashing part-way
+# TEST 26: cli/qa-instinct.js skips a read-only destination instead of crashing part-way
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 26: cli/bem-te-vi.js init skips a read-only file and still completes..."
+echo "Running Test 26: cli/qa-instinct.js init skips a read-only file and still completes..."
 
 if [ "$(id -u)" = "0" ]; then
     echo "Skipping Test 26: running as root, where mode 444 does not prevent writes."
@@ -714,14 +714,14 @@ else
     chmod 444 ".claude/rules/code-style-qa.md"
 
     CLI_RO_LOG="$SANDBOX_DIR/test26-cli.log"
-    if ! node "$REPO_DIR/cli/bem-te-vi.js" init > "$CLI_RO_LOG" 2>&1; then
-        printf '%b\n' "${RED}✘ cli/bem-te-vi.js init aborted instead of skipping the read-only destination${NC}"
+    if ! node "$REPO_DIR/cli/qa-instinct.js" init > "$CLI_RO_LOG" 2>&1; then
+        printf '%b\n' "${RED}✘ cli/qa-instinct.js init aborted instead of skipping the read-only destination${NC}"
         cat "$CLI_RO_LOG"
         exit 1
     fi
 
     echo "Verifying the read-only file was left untouched and not backed up..."
-    grep -qx "$CLI_RO_CONTENT" ".claude/rules/code-style-qa.md" || { printf '%b\n' "${RED}✘ cli/bem-te-vi.js overwrote the read-only destination${NC}"; exit 1; }
+    grep -qx "$CLI_RO_CONTENT" ".claude/rules/code-style-qa.md" || { printf '%b\n' "${RED}✘ cli/qa-instinct.js overwrote the read-only destination${NC}"; exit 1; }
     [ -z "$(find .claude/rules -name 'code-style-qa.md.qa-skills-backup-*')" ] || { printf '%b\n' "${RED}✘ A skipped read-only file should leave no backup${NC}"; exit 1; }
 
     echo "Verifying the rest of the tree still installed completely..."
@@ -731,65 +731,65 @@ else
     grep -q "code-style-qa.md" ".qa-skills-manifest" && { printf '%b\n' "${RED}✘ A skipped file must not be recorded in the manifest${NC}"; exit 1; }
 
     cd "$REPO_DIR"
-    printf '%b\n' "${GREEN}✔ Test 26 passed successfully! cli/bem-te-vi.js skipped the read-only file and completed the install.${NC}"
+    printf '%b\n' "${GREEN}✔ Test 26 passed successfully! cli/qa-instinct.js skipped the read-only file and completed the install.${NC}"
 fi
 
 # -----------------------------------------------------------------------------
-# TEST 27: cli/bem-te-vi.js `init --editor <name>` installs a non-claude editor's
+# TEST 27: cli/qa-instinct.js `init --editor <name>` installs a non-claude editor's
 # compiled adapter at install.sh's own target path, byte-for-byte, recorded
 # under that editor's own name in the manifest (plan 008)
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 27: cli/bem-te-vi.js init --editor cursor installs the right file at the right path..."
+echo "Running Test 27: cli/qa-instinct.js init --editor cursor installs the right file at the right path..."
 
 mkdir -p "$SANDBOX_DIR/cli-editor-cursor"
 cd "$SANDBOX_DIR/cli-editor-cursor"
 
-node "$REPO_DIR/cli/bem-te-vi.js" init --editor cursor
+node "$REPO_DIR/cli/qa-instinct.js" init --editor cursor
 
 echo "Verifying the rules and skills were installed byte-for-byte at install.sh's own target paths..."
-diff "$REPO_DIR/adapters/cursor/rules/bem-te-vi.mdc" ".cursor/rules/bem-te-vi.mdc" || { printf '%b\n' "${RED}✘ .cursor/rules/bem-te-vi.mdc does not match adapters/cursor/rules/bem-te-vi.mdc byte-for-byte${NC}"; exit 1; }
+diff "$REPO_DIR/adapters/cursor/rules/qa-instinct.mdc" ".cursor/rules/qa-instinct.mdc" || { printf '%b\n' "${RED}✘ .cursor/rules/qa-instinct.mdc does not match adapters/cursor/rules/qa-instinct.mdc byte-for-byte${NC}"; exit 1; }
 diff -r "$REPO_DIR/adapters/skills" ".cursor/skills" || { printf '%b\n' "${RED}✘ .cursor/skills does not match adapters/skills byte-for-byte${NC}"; exit 1; }
 
 echo "Verifying the manifest records them under 'cursor', not 'claude'..."
-grep -q "  cursor  .cursor/rules/bem-te-vi.mdc$" ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor install under the 'cursor' editor${NC}"; exit 1; }
+grep -q "  cursor  .cursor/rules/qa-instinct.mdc$" ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor install under the 'cursor' editor${NC}"; exit 1; }
 grep -q "  cursor  .cursor/skills/qa/SKILL.md$" ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor skills under the 'cursor' editor${NC}"; exit 1; }
 
 echo "Verifying no claude tree was installed alongside it..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ --editor cursor unexpectedly installed the claude tree too${NC}"; exit 1; }
 
 cd "$REPO_DIR"
-printf '%b\n' "${GREEN}✔ Test 27 passed successfully! cli/bem-te-vi.js init --editor cursor installed the right file at the right path.${NC}"
+printf '%b\n' "${GREEN}✔ Test 27 passed successfully! cli/qa-instinct.js init --editor cursor installed the right file at the right path.${NC}"
 
 # -----------------------------------------------------------------------------
 # TEST 28: A file colliding with a non-claude editor's target path is backed
 # up, not destroyed, exactly like a claude-tree collision (plan 008)
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 28: cli/bem-te-vi.js init --editor copilot backs up a colliding file, not destroy it..."
+echo "Running Test 28: cli/qa-instinct.js init --editor copilot backs up a colliding file, not destroy it..."
 
 mkdir -p "$SANDBOX_DIR/cli-editor-collision/.github"
 cd "$SANDBOX_DIR/cli-editor-collision"
 CLI_EDITOR_USER_CONTENT="MY OWN COPILOT INSTRUCTIONS - IRREPLACEABLE"
 echo "$CLI_EDITOR_USER_CONTENT" > ".github/copilot-instructions.md"
 
-node "$REPO_DIR/cli/bem-te-vi.js" init --editor copilot
+node "$REPO_DIR/cli/qa-instinct.js" init --editor copilot
 
 echo "Verifying the package's file was installed..."
 diff "$REPO_DIR/adapters/copilot/rules/copilot-instructions.md" ".github/copilot-instructions.md" || { printf '%b\n' "${RED}✘ The package's copilot-instructions.md was not installed${NC}"; exit 1; }
 
 echo "Verifying the user's original content is recoverable from a backup..."
 CLI_EDITOR_BACKUP=$(find ".github" -name 'copilot-instructions.md.qa-skills-backup-*')
-[ -n "$CLI_EDITOR_BACKUP" ] || { printf '%b\n' "${RED}✘ cli/bem-te-vi.js init --editor copilot did not back up the colliding file${NC}"; exit 1; }
+[ -n "$CLI_EDITOR_BACKUP" ] || { printf '%b\n' "${RED}✘ cli/qa-instinct.js init --editor copilot did not back up the colliding file${NC}"; exit 1; }
 [ "$(cat "$CLI_EDITOR_BACKUP")" = "$CLI_EDITOR_USER_CONTENT" ] || { printf '%b\n' "${RED}✘ Backup does not contain the user's original content${NC}"; exit 1; }
 
 cd "$REPO_DIR"
-printf '%b\n' "${GREEN}✔ Test 28 passed successfully! cli/bem-te-vi.js backed up the colliding non-claude file instead of destroying it.${NC}"
+printf '%b\n' "${GREEN}✔ Test 28 passed successfully! cli/qa-instinct.js backed up the colliding non-claude file instead of destroying it.${NC}"
 
 # Test 29 moved to conformance case 010 (plan 016 item 6).
 
 # -----------------------------------------------------------------------------
-# TEST 30: `bem-te-vi init` with no --editor and no TTY (CI, piped) behaves
+# TEST 30: `qa-instinct init` with no --editor and no TTY (CI, piped) behaves
 # exactly like `--editor claude` -- no prompt, no hang, no other editor
 # installed (plan 008 backward-compatibility requirement)
 # -----------------------------------------------------------------------------
@@ -799,14 +799,14 @@ echo "Running Test 30: Non-TTY default behaves exactly like --editor claude..."
 mkdir -p "$SANDBOX_DIR/cli-nontty-default" "$SANDBOX_DIR/cli-explicit-claude"
 
 cd "$SANDBOX_DIR/cli-nontty-default"
-node "$REPO_DIR/cli/bem-te-vi.js" init | cat
+node "$REPO_DIR/cli/qa-instinct.js" init | cat
 [ -d ".claude/commands" ] || { printf '%b\n' "${RED}✘ Non-TTY default did not install the claude tree${NC}"; exit 1; }
 for NON_CLAUDE_DEST in ".cursor" ".windsurfrules" ".windsurf" ".github" ".clinerules" ".cline" ".agents"; do
     [ ! -e "$NON_CLAUDE_DEST" ] || { printf '%b\n' "${RED}✘ Non-TTY default with no --editor unexpectedly installed $NON_CLAUDE_DEST${NC}"; exit 1; }
 done
 
 cd "$SANDBOX_DIR/cli-explicit-claude"
-node "$REPO_DIR/cli/bem-te-vi.js" init --editor claude | cat
+node "$REPO_DIR/cli/qa-instinct.js" init --editor claude | cat
 [ -d ".claude/commands" ] || { printf '%b\n' "${RED}✘ Test setup error: --editor claude did not install${NC}"; exit 1; }
 
 echo "Verifying both produced the same manifest content (modulo the recorded path prefix)..."
@@ -853,7 +853,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 31 passed successfully! A tampered manifest cannot reach outside the install tree.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 32: `bem-te-vi update` refreshes an unmodified installed file to the
+# TEST 32: `qa-instinct update` refreshes an unmodified installed file to the
 # current release (plan 013, item 1)
 # -----------------------------------------------------------------------------
 echo ""
@@ -872,7 +872,7 @@ printf '%s  claude  %s\n' "$OLD_HASH" ".claude/rules/security-qa.md" > ".qa-skil
 # that might already appear in the older release's content too.
 CURRENT_HASH_32=$(sha256sum "$REPO_DIR/.claude/rules/security-qa.md" | awk '{print $1}')
 
-node "$REPO_DIR/cli/bem-te-vi.js" update > "$SANDBOX_DIR/test32.log" 2>&1
+node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test32.log" 2>&1
 
 echo "Verifying the stale-but-unmodified file was refreshed to the current release..."
 NEW_HASH=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
@@ -886,7 +886,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 32 passed successfully! An unmodified installed file was refreshed to the current version.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 33: `bem-te-vi update` backs up a user-modified file instead of
+# TEST 33: `qa-instinct update` backs up a user-modified file instead of
 # silently overwriting it (plan 013, item 1)
 # -----------------------------------------------------------------------------
 echo ""
@@ -904,7 +904,7 @@ grep -q "^$USER_HASH_33  " "$REPO_DIR/.qa-skills-known-hashes" && { printf '%b\n
 INSTALL_HASH_33=$(sha256sum < "$V220_DIR/security-qa.md" | awk '{print $1}')
 printf '%s  claude  %s\n' "$INSTALL_HASH_33" ".claude/rules/security-qa.md" > ".qa-skills-manifest"
 
-node "$REPO_DIR/cli/bem-te-vi.js" update > "$SANDBOX_DIR/test33.log" 2>&1
+node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test33.log" 2>&1
 
 echo "Verifying the user's edit was backed up, not silently discarded..."
 BACKUP_33=$(find .claude/rules -name 'security-qa.md.qa-skills-backup-*' | head -1)
@@ -918,7 +918,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 33 passed successfully! A user-modified file was backed up, not silently overwritten.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 34: `bem-te-vi update` removes a no-longer-shipped file when
+# TEST 34: `qa-instinct update` removes a no-longer-shipped file when
 # unmodified, and keeps it when the user changed it (plan 013, item 2)
 # -----------------------------------------------------------------------------
 echo ""
@@ -941,7 +941,7 @@ echo "the user's own addition" >> ".claude/rules/deprecated-rule-2.md"
     printf '%s  claude  %s\n' "$DEP2_INSTALL_HASH_34" ".claude/rules/deprecated-rule-2.md"
 } > ".qa-skills-manifest"
 
-node "$REPO_DIR/cli/bem-te-vi.js" update > "$SANDBOX_DIR/test34.log" 2>&1
+node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test34.log" 2>&1
 
 echo "Verifying the unmodified no-longer-shipped file was removed..."
 [ ! -f ".claude/rules/deprecated-rule.md" ] || { printf '%b\n' "${RED}✘ update left an unmodified, no-longer-shipped file in place${NC}"; exit 1; }
@@ -957,7 +957,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 34 passed successfully! A dropped file was removed when unmodified and kept when modified.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 35: `bem-te-vi update` adopts a pre-manifest install, and never
+# TEST 35: `qa-instinct update` adopts a pre-manifest install, and never
 # touches the user's own files at another shipped path (plan 013, item 3)
 # -----------------------------------------------------------------------------
 echo ""
@@ -980,7 +980,7 @@ echo "$USER_CONTENT_35" > ".claude/rules/accessibility-qa.md"
 
 CURRENT_HASH_35=$(sha256sum "$REPO_DIR/.claude/rules/security-qa.md" | awk '{print $1}')
 
-node "$REPO_DIR/cli/bem-te-vi.js" update > "$SANDBOX_DIR/test35.log" 2>&1
+node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test35.log" 2>&1
 
 echo "Verifying the pre-manifest install was detected and adopted..."
 [ "$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')" = "$CURRENT_HASH_35" ] || { printf '%b\n' "${RED}✘ update did not adopt a pre-manifest install matching a known release${NC}"; exit 1; }
@@ -995,7 +995,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 35 passed successfully! A pre-manifest install was adopted and the user's own files survived.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 36: `bem-te-vi update` installs nothing when nothing is installed
+# TEST 36: `qa-instinct update` installs nothing when nothing is installed
 # (plan 013, item 4/5)
 # -----------------------------------------------------------------------------
 echo ""
@@ -1004,7 +1004,7 @@ echo "Running Test 36: Update with nothing installed does not install anything..
 mkdir -p "$SANDBOX_DIR/update-empty-project"
 cd "$SANDBOX_DIR/update-empty-project"
 
-node "$REPO_DIR/cli/bem-te-vi.js" update > "$SANDBOX_DIR/test36.log" 2>&1
+node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test36.log" 2>&1
 
 echo "Verifying update did not install anything when nothing was there..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ update created .claude/ out of nothing${NC}"; exit 1; }
@@ -1015,7 +1015,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 36 passed successfully! Update with nothing installed did not install anything.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 37: A tampered manifest cannot make `bem-te-vi update` delete files
+# TEST 37: A tampered manifest cannot make `qa-instinct update` delete files
 # outside the install tree (regression for the fix alongside plan 013 item 2)
 # -----------------------------------------------------------------------------
 echo ""
@@ -1032,13 +1032,13 @@ else
 fi
 
 cd "$SANDBOX_DIR/update-traversal-project"
-node "$REPO_DIR/cli/bem-te-vi.js" init > /dev/null
+node "$REPO_DIR/cli/qa-instinct.js" init > /dev/null
 
 # A manifest entry naming a file this package no longer ships, at a path that escapes the
 # project tree, must never reach update's removal branch (fs.rmSync) without a refusal.
 for EVIL_REL in "../update-traversal-outside/victim.txt" "$VICTIM_37"; do
     printf '%s  claude  %s\n' "$VICTIM_37_HASH" "$EVIL_REL" > ".qa-skills-manifest"
-    node "$REPO_DIR/cli/bem-te-vi.js" update > "$SANDBOX_DIR/test37.log" 2>&1 || true
+    node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test37.log" 2>&1 || true
 
     [ -f "$VICTIM_37" ] || { printf '%b\n' "${RED}✘ update deleted a file outside the install tree via '$EVIL_REL'${NC}"; exit 1; }
     grep -qx "$VICTIM_37_CONTENT" "$VICTIM_37" || { printf '%b\n' "${RED}✘ The outside file's content changed via '$EVIL_REL'${NC}"; exit 1; }
@@ -1069,7 +1069,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 38 passed successfully! A clean global uninstall of cline says there is nothing to remove.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 39: `bem-te-vi link` then `uninstall` must not delete the package's own files, and
+# TEST 39: `qa-instinct link` then `uninstall` must not delete the package's own files, and
 # `unlink` must keep a link that does not point to this package (plan 026 item 1)
 # -----------------------------------------------------------------------------
 echo ""
@@ -1089,8 +1089,8 @@ BEFORE_39=$(find "$PKG_39/.claude" -type f | wc -l)
 
 cd "$PROJ_39"
 git init -q -b main
-node "$PKG_39/cli/bem-te-vi.js" link > /dev/null
-UNINSTALL_OUT_39=$(node "$PKG_39/cli/bem-te-vi.js" uninstall 2>&1)
+node "$PKG_39/cli/qa-instinct.js" link > /dev/null
+UNINSTALL_OUT_39=$(node "$PKG_39/cli/qa-instinct.js" uninstall 2>&1)
 AFTER_39=$(find "$PKG_39/.claude" -type f | wc -l)
 # Every byte, not only the number of files: a file edited in place is a changed package too.
 if [ "$BEFORE_39" != "$AFTER_39" ] || [ "$BEFORE_39" -eq 0 ] || ! diff -r "$SNAPSHOT_39" "$PKG_39/.claude" > /dev/null; then
@@ -1100,7 +1100,7 @@ if [ "$BEFORE_39" != "$AFTER_39" ] || [ "$BEFORE_39" -eq 0 ] || ! diff -r "$SNAP
 fi
 printf '%s\n' "$UNINSTALL_OUT_39" | grep -q "link to the package" || { printf '%b\n' "${RED}✘ uninstall did not say it skipped a linked folder${NC}"; printf '%s\n' "$UNINSTALL_OUT_39"; exit 1; }
 
-node "$PKG_39/cli/bem-te-vi.js" unlink > /dev/null
+node "$PKG_39/cli/qa-instinct.js" unlink > /dev/null
 for SUB in agents commands rules skills hooks; do
     [ ! -e ".claude/$SUB" ] || { printf '%b\n' "${RED}✘ unlink left .claude/$SUB behind${NC}"; exit 1; }
 done
@@ -1108,11 +1108,11 @@ done
 # A link that points somewhere else is not ours to remove.
 mkdir -p "$SANDBOX_DIR/link-foreign"
 ln -s "$SANDBOX_DIR/link-foreign" ".claude/rules"
-UNLINK_OUT_39=$(node "$PKG_39/cli/bem-te-vi.js" unlink 2>&1)
+UNLINK_OUT_39=$(node "$PKG_39/cli/qa-instinct.js" unlink 2>&1)
 [ -L ".claude/rules" ] || { printf '%b\n' "${RED}✘ unlink removed a link that does not point to the package${NC}"; printf '%s\n' "$UNLINK_OUT_39"; exit 1; }
 printf '%s\n' "$UNLINK_OUT_39" | grep -q "Kept rules/" || { printf '%b\n' "${RED}✘ unlink did not report the link it kept${NC}"; printf '%s\n' "$UNLINK_OUT_39"; exit 1; }
-node "$PKG_39/cli/bem-te-vi.js" link > /dev/null
-[ "$(readlink .claude/rules)" = "$SANDBOX_DIR/link-foreign" ] || { printf '%b\n' "${RED}✘ link replaced a link that does not point to a bem-te-vi package${NC}"; exit 1; }
+node "$PKG_39/cli/qa-instinct.js" link > /dev/null
+[ "$(readlink .claude/rules)" = "$SANDBOX_DIR/link-foreign" ] || { printf '%b\n' "${RED}✘ link replaced a link that does not point to a qa-instinct package${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 39 passed successfully! link then uninstall left the package intact and a foreign link survived unlink and link.${NC}"
@@ -1124,7 +1124,7 @@ printf '%b\n' "${GREEN}✔ Test 39 passed successfully! link then uninstall left
 echo ""
 echo "Running Test 39b: link --global, a stale link, and a real directory in the way..."
 
-make_package_39b() {   # destination folder: a package copy that cli/bem-te-vi.js treats as its own
+make_package_39b() {   # destination folder: a package copy that cli/qa-instinct.js treats as its own
     mkdir -p "$1/.claude"
     cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-skills-known-hashes" "$REPO_DIR/.qa-skills-editor-map" "$1/"
     ln -s "$REPO_DIR/node_modules" "$1/node_modules"
@@ -1139,11 +1139,11 @@ HOME_39B="$SANDBOX_DIR/link-home-39b"
 make_package_39b "$PKG_39B"
 mkdir -p "$HOME_39B"
 BEFORE_39B=$(find "$PKG_39B/.claude" -type f | wc -l)
-(cd "$SANDBOX_DIR" && HOME="$HOME_39B" node "$PKG_39B/cli/bem-te-vi.js" link --global > /dev/null)
+(cd "$SANDBOX_DIR" && HOME="$HOME_39B" node "$PKG_39B/cli/qa-instinct.js" link --global > /dev/null)
 for SUB in agents commands rules skills hooks; do
     [ "$(readlink "$HOME_39B/.claude/$SUB")" = "$PKG_39B/.claude/$SUB" ] || { printf '%b\n' "${RED}✘ link --global did not link $SUB into the home directory${NC}"; exit 1; }
 done
-(cd "$SANDBOX_DIR" && HOME="$HOME_39B" node "$PKG_39B/cli/bem-te-vi.js" unlink --global > /dev/null)
+(cd "$SANDBOX_DIR" && HOME="$HOME_39B" node "$PKG_39B/cli/qa-instinct.js" unlink --global > /dev/null)
 for SUB in agents commands rules skills hooks; do
     if [ -e "$HOME_39B/.claude/$SUB" ] || [ -L "$HOME_39B/.claude/$SUB" ]; then
         printf '%b\n' "${RED}✘ unlink --global left $SUB behind in the home directory${NC}"; exit 1
@@ -1159,9 +1159,9 @@ make_package_39b "$PKG_A_39B"
 make_package_39b "$PKG_B_39B"
 mkdir -p "$PROJ_39B"
 cd "$PROJ_39B"
-node "$PKG_A_39B/cli/bem-te-vi.js" link > /dev/null
+node "$PKG_A_39B/cli/qa-instinct.js" link > /dev/null
 rm -rf "$PKG_A_39B"
-node "$PKG_B_39B/cli/bem-te-vi.js" link > /dev/null
+node "$PKG_B_39B/cli/qa-instinct.js" link > /dev/null
 for SUB in agents commands rules skills hooks; do
     [ "$(readlink ".claude/$SUB")" = "$PKG_B_39B/.claude/$SUB" ] || { printf '%b\n' "${RED}✘ .claude/$SUB still points at the removed package after link from another copy${NC}"; readlink ".claude/$SUB"; exit 1; }
 done
@@ -1172,7 +1172,7 @@ PROJ_REAL_39B="$SANDBOX_DIR/link-project-39b-real"
 mkdir -p "$PROJ_REAL_39B/.claude/rules"
 printf 'MY OWN RULE 39B\n' > "$PROJ_REAL_39B/.claude/rules/mine.md"
 cd "$PROJ_REAL_39B"
-LINK_OUT_39B=$(node "$PKG_B_39B/cli/bem-te-vi.js" link 2>&1)
+LINK_OUT_39B=$(node "$PKG_B_39B/cli/qa-instinct.js" link 2>&1)
 { [ -d .claude/rules ] && [ ! -L .claude/rules ] && [ "$(cat .claude/rules/mine.md)" = "MY OWN RULE 39B" ]; } || { printf '%b\n' "${RED}✘ link replaced or changed a real directory${NC}"; exit 1; }
 if printf '%s\n' "$LINK_OUT_39B" | grep -q "run 'unlink' first"; then
     printf '%b\n' "${RED}✘ link told the user to run 'unlink', which does not remove a real directory${NC}"
@@ -1184,7 +1184,7 @@ cd "$REPO_DIR"
 
 # 39b-4: a system that refuses to create symlinks. Windows without Developer Mode or an elevated
 # shell answers EPERM; Linux never does on its own file systems, so a preload makes
-# fs.symlinkSync throw the error Windows throws, and cli/bem-te-vi.js runs unchanged. link must stop
+# fs.symlinkSync throw the error Windows throws, and cli/qa-instinct.js runs unchanged. link must stop
 # with one clear line, exit non-zero and leave the tree as it was: no new .claude folder, and a
 # stale link it would have refreshed still in place (plan 037, decided 2026-10-18). Test 42b runs
 # the same check for real on a Windows machine without that right.
@@ -1200,7 +1200,7 @@ fs.symlinkSync = (target, dest) => {
 JS
 eperm_link_39b() {   # project folder: runs link there with symlinks refused
     EPERM_STATUS_39B=0
-    EPERM_OUT_39B=$(cd "$1" && node --require "$EPERM_39B" "$PKG_B_39B/cli/bem-te-vi.js" link 2>&1) || EPERM_STATUS_39B=$?
+    EPERM_OUT_39B=$(cd "$1" && node --require "$EPERM_39B" "$PKG_B_39B/cli/qa-instinct.js" link 2>&1) || EPERM_STATUS_39B=$?
     if [ "$EPERM_STATUS_39B" -eq 0 ]; then
         printf '%b\n' "${RED}✘ link exited 0 although no symlink could be created${NC}"; printf '%s\n' "$EPERM_OUT_39B"; exit 1
     fi
@@ -1208,7 +1208,7 @@ eperm_link_39b() {   # project folder: runs link there with symlinks refused
         printf '%b\n' "${RED}✘ link printed a stack trace instead of a message${NC}"; printf '%s\n' "$EPERM_OUT_39B"; exit 1
     fi
     printf '%s\n' "$EPERM_OUT_39B" | grep -q "cannot create symbolic links" || { printf '%b\n' "${RED}✘ link did not say why it stopped${NC}"; printf '%s\n' "$EPERM_OUT_39B"; exit 1; }
-    printf '%s\n' "$EPERM_OUT_39B" | grep -q "bem-te-vi init" || { printf '%b\n' "${RED}✘ link did not name what to do instead${NC}"; printf '%s\n' "$EPERM_OUT_39B"; exit 1; }
+    printf '%s\n' "$EPERM_OUT_39B" | grep -q "qa-instinct init" || { printf '%b\n' "${RED}✘ link did not name what to do instead${NC}"; printf '%s\n' "$EPERM_OUT_39B"; exit 1; }
 }
 PROJ_EPERM_39B="$SANDBOX_DIR/link-project-39b-eperm"
 mkdir -p "$PROJ_EPERM_39B"
@@ -1304,11 +1304,11 @@ chmod +x "$MENU_BIN_39C/claude"
 # Rows: editor, a file the install writes, in the order of the editor menu (2-6 after Claude Code).
 EDITOR_FILES_39C=(
     "claude:.claude/commands/qa.md"
-    "cursor:.cursor/rules/bem-te-vi.mdc"
-    "windsurf:.windsurf/rules/bem-te-vi.md"
+    "cursor:.cursor/rules/qa-instinct.mdc"
+    "windsurf:.windsurf/rules/qa-instinct.md"
     "copilot:.github/copilot-instructions.md"
-    "cline:.cline/rules/bem-te-vi.md"
-    "antigravity:.agents/rules/bem-te-vi.md"
+    "cline:.cline/rules/qa-instinct.md"
+    "antigravity:.agents/rules/qa-instinct.md"
 )
 
 menu_fail_39c() {   # message
@@ -1477,7 +1477,7 @@ else
                 printf '%b' "$KEY"
                 sleep 0.3
             done
-        ) | (cd "$CLI_PROJ_39D" && HOME="$CLI_HOME_39D" timeout 60 script -qec "node '$REPO_DIR/cli/bem-te-vi.js' init" /dev/null > "$CLI_LOG_39D" 2>&1) || STATUS=$?
+        ) | (cd "$CLI_PROJ_39D" && HOME="$CLI_HOME_39D" timeout 60 script -qec "node '$REPO_DIR/cli/qa-instinct.js' init" /dev/null > "$CLI_LOG_39D" 2>&1) || STATUS=$?
         if [ "$STATUS" -ne 0 ]; then
             printf '%b\n' "${RED}✘ init on a pseudo-terminal exited $STATUS (case $NAME)${NC}"; tail -15 "$CLI_LOG_39D"; exit 1
         fi
@@ -1491,7 +1491,7 @@ else
     # Down, space, enter adds Cursor / Trae to Claude Code.
     cli_checkbox_39d cursor '\033[B' ' ' '\r'
     [ -f "$CLI_PROJ_39D/.claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ the checkbox dropped Claude Code when Cursor was added${NC}"; tail -15 "$CLI_LOG_39D"; exit 1; }
-    [ -f "$CLI_PROJ_39D/.cursor/rules/bem-te-vi.mdc" ] || { printf '%b\n' "${RED}✘ the checkbox did not install Cursor / Trae${NC}"; tail -15 "$CLI_LOG_39D"; exit 1; }
+    [ -f "$CLI_PROJ_39D/.cursor/rules/qa-instinct.mdc" ] || { printf '%b\n' "${RED}✘ the checkbox did not install Cursor / Trae${NC}"; tail -15 "$CLI_LOG_39D"; exit 1; }
 
     # Nothing selected is the checkbox's only invalid answer: it asks again, as both shell
     # installers' menus do (plan 037, decided 2026-10-18). Space clears Claude Code, enter is
@@ -1710,11 +1710,11 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 43 passed successfully! The commit offer committed only installer-written files and left the user's work alone.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 44: After `bem-te-vi link`, install.sh install and uninstall must not write or delete
+# TEST 44: After `qa-instinct link`, install.sh install and uninstall must not write or delete
 # through the linked folders: they are the npm package's own files (plan 033 item 1)
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 44: install.sh never writes or deletes through folders bem-te-vi link created..."
+echo "Running Test 44: install.sh never writes or deletes through folders qa-instinct link created..."
 
 PKG_44="$SANDBOX_DIR/linked-pkg-44"
 PROJ_44="$SANDBOX_DIR/linked-project-44"
@@ -1729,7 +1729,7 @@ BEFORE_44=$(find "$PKG_44/.claude" -type f | wc -l)
 
 cd "$PROJ_44"
 git init -q -b main
-node "$PKG_44/cli/bem-te-vi.js" link > /dev/null
+node "$PKG_44/cli/qa-instinct.js" link > /dev/null
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks --no-color > "$SANDBOX_DIR/linked-44.log" 2>&1
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks --no-color --uninstall >> "$SANDBOX_DIR/linked-44.log" 2>&1
 AFTER_44=$(find "$PKG_44/.claude" -type f | wc -l)
@@ -1739,9 +1739,9 @@ if [ "$BEFORE_44" != "$AFTER_44" ] || [ "$BEFORE_44" -eq 0 ] || ! diff -r "$SNAP
     exit 1
 fi
 grep -q "symbolic link" "$SANDBOX_DIR/linked-44.log" || { printf '%b\n' "${RED}✘ install.sh did not say it skipped a linked folder${NC}"; tail -20 "$SANDBOX_DIR/linked-44.log"; exit 1; }
-grep -q "bem-te-vi unlink" "$SANDBOX_DIR/linked-44.log" || { printf '%b\n' "${RED}✘ install.sh did not suggest 'bem-te-vi unlink' for a bem-te-vi link${NC}"; tail -20 "$SANDBOX_DIR/linked-44.log"; exit 1; }
+grep -q "qa-instinct unlink" "$SANDBOX_DIR/linked-44.log" || { printf '%b\n' "${RED}✘ install.sh did not suggest 'qa-instinct unlink' for a qa-instinct link${NC}"; tail -20 "$SANDBOX_DIR/linked-44.log"; exit 1; }
 for SUB in agents commands rules skills hooks; do
-    [ -L ".claude/$SUB" ] || { printf '%b\n' "${RED}✘ .claude/$SUB is no longer the link bem-te-vi link created${NC}"; exit 1; }
+    [ -L ".claude/$SUB" ] || { printf '%b\n' "${RED}✘ .claude/$SUB is no longer the link qa-instinct link created${NC}"; exit 1; }
 done
 
 cd "$REPO_DIR"
@@ -1777,7 +1777,7 @@ for INSTALLER_45 in install.sh cli; do
         if [ "$INSTALLER_45" = install.sh ]; then
             "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks --no-color > "$SANDBOX_DIR/hook-mode.log" 2>&1
         else
-            node "$REPO_DIR/cli/bem-te-vi.js" init --editor claude > "$SANDBOX_DIR/hook-mode.log" 2>&1
+            node "$REPO_DIR/cli/qa-instinct.js" init --editor claude > "$SANDBOX_DIR/hook-mode.log" 2>&1
         fi
         if [ -x "$TARGET_45" ]; then
             printf '%b\n' "${RED}✘ $INSTALLER_45 made a file outside the install tree executable through a linked hook $LAYOUT_45${NC}"
@@ -1810,7 +1810,7 @@ for INSTALLER_46 in install.sh cli; do
     if [ "$INSTALLER_46" = install.sh ]; then
         (umask 002 && "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks --no-color > /dev/null 2>&1)
     else
-        (umask 002 && node "$REPO_DIR/cli/bem-te-vi.js" init --editor claude > /dev/null 2>&1)
+        (umask 002 && node "$REPO_DIR/cli/qa-instinct.js" init --editor claude > /dev/null 2>&1)
     fi
     [ -n "$(find .qa-skills-manifest -perm 664)" ] || { printf '%b\n' "${RED}✘ $INSTALLER_46 did not give the manifest the umask's mode (664)${NC}"; exit 1; }
     cd "$REPO_DIR"
@@ -1880,14 +1880,14 @@ cd "$PROJ_47"
 for ARGS_47 in "instal" "init --globl --editor claude" "uninstall --editr claude" "link --editor claude"; do
     STATUS_47=0
     # shellcheck disable=SC2086 # the words are meant to split into separate arguments
-    node "$REPO_DIR/cli/bem-te-vi.js" $ARGS_47 > "$SANDBOX_DIR/cli-unknown-input.log" 2>&1 || STATUS_47=$?
-    [ "$STATUS_47" -eq 1 ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARGS_47' exited $STATUS_47, expected 1${NC}"; tail -5 "$SANDBOX_DIR/cli-unknown-input.log"; exit 1; }
-    grep -q "Error: unknown" "$SANDBOX_DIR/cli-unknown-input.log" || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARGS_47' did not name what it refused${NC}"; tail -5 "$SANDBOX_DIR/cli-unknown-input.log"; exit 1; }
-    [ -z "$(ls -A)" ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARGS_47' wrote into the project:${NC}"; ls -A; exit 1; }
+    node "$REPO_DIR/cli/qa-instinct.js" $ARGS_47 > "$SANDBOX_DIR/cli-unknown-input.log" 2>&1 || STATUS_47=$?
+    [ "$STATUS_47" -eq 1 ] || { printf '%b\n' "${RED}✘ 'qa-instinct $ARGS_47' exited $STATUS_47, expected 1${NC}"; tail -5 "$SANDBOX_DIR/cli-unknown-input.log"; exit 1; }
+    grep -q "Error: unknown" "$SANDBOX_DIR/cli-unknown-input.log" || { printf '%b\n' "${RED}✘ 'qa-instinct $ARGS_47' did not name what it refused${NC}"; tail -5 "$SANDBOX_DIR/cli-unknown-input.log"; exit 1; }
+    [ -z "$(ls -A)" ] || { printf '%b\n' "${RED}✘ 'qa-instinct $ARGS_47' wrote into the project:${NC}"; ls -A; exit 1; }
 done
 for ARGS_47 in "help" "--help" "-h" ""; do
     # shellcheck disable=SC2086 # the words are meant to split into separate arguments
-    node "$REPO_DIR/cli/bem-te-vi.js" $ARGS_47 > /dev/null 2>&1 || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARGS_47' did not print help with exit 0${NC}"; exit 1; }
+    node "$REPO_DIR/cli/qa-instinct.js" $ARGS_47 > /dev/null 2>&1 || { printf '%b\n' "${RED}✘ 'qa-instinct $ARGS_47' did not print help with exit 0${NC}"; exit 1; }
 done
 
 cd "$REPO_DIR"
@@ -1973,7 +1973,7 @@ for INSTALLER_49 in install.sh cli; do
         if [ "$INSTALLER_49" = install.sh ]; then
             PATH="$PIN_49/bin:$PATH" "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks --no-color > "$SANDBOX_DIR/planted-49.log" 2>&1 || STATUS_49=$?
         else
-            NODE_OPTIONS="--require $PIN_49/date.js" node "$REPO_DIR/cli/bem-te-vi.js" init --editor claude > "$SANDBOX_DIR/planted-49.log" 2>&1 || STATUS_49=$?
+            NODE_OPTIONS="--require $PIN_49/date.js" node "$REPO_DIR/cli/qa-instinct.js" init --editor claude > "$SANDBOX_DIR/planted-49.log" 2>&1 || STATUS_49=$?
         fi
         if [ -e "$VICTIM_49" ]; then
             printf '%b\n' "${RED}✘ $INSTALLER_49 wrote through a link planted at the $LAYOUT_49 name${NC}"; head -3 "$VICTIM_49"; exit 1
@@ -2209,23 +2209,23 @@ cd "$PROJ_60"
 for OP_60 in "init --editor all" "update --editor all" "uninstall --editor all"; do
     STATUS_60=0
     # shellcheck disable=SC2086 # the words are meant to split into separate arguments
-    node "$REPO_DIR/cli/bem-te-vi.js" $OP_60 > "$SANDBOX_DIR/cli-folder-destination.log" 2>&1 || STATUS_60=$?
-    [ "$STATUS_60" -eq 0 ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $OP_60' exited $STATUS_60 over a folder at $DIR_60${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
+    node "$REPO_DIR/cli/qa-instinct.js" $OP_60 > "$SANDBOX_DIR/cli-folder-destination.log" 2>&1 || STATUS_60=$?
+    [ "$STATUS_60" -eq 0 ] || { printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' exited $STATUS_60 over a folder at $DIR_60${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
     if grep -q "EISDIR\|node:internal\|    at " "$SANDBOX_DIR/cli-folder-destination.log"; then
-        printf '%b\n' "${RED}✘ 'bem-te-vi $OP_60' printed a stack trace over a folder at $DIR_60${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1
+        printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' printed a stack trace over a folder at $DIR_60${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1
     fi
     if [ "$(find "$DIR_60" -mindepth 1 | tr '\n' ' ')" != "$DIR_60/01-mine.md " ] || [ "$(cat "$DIR_60/01-mine.md")" != "MY COPILOT NOTES 60" ]; then
-        printf '%b\n' "${RED}✘ 'bem-te-vi $OP_60' changed the folder at $DIR_60:${NC}"; find "$DIR_60"; exit 1
+        printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' changed the folder at $DIR_60:${NC}"; find "$DIR_60"; exit 1
     fi
     if grep -q "  copilot  $DIR_60$" .qa-skills-manifest 2>/dev/null; then
-        printf '%b\n' "${RED}✘ 'bem-te-vi $OP_60' recorded the folder at $DIR_60 in the manifest${NC}"; exit 1
+        printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' recorded the folder at $DIR_60 in the manifest${NC}"; exit 1
     fi
     case "$OP_60" in
         init*)
             grep -q "Skipped $DIR_60" "$SANDBOX_DIR/cli-folder-destination.log" || { printf '%b\n' "${RED}✘ init did not say it skipped the folder at $DIR_60${NC}"; cat "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
             # Copilot's other files (its skills) are written, so its line is printed now; the one
             # it skipped is reported above (plan 047).
-            for F_60 in .claude/commands/qa.md .cursor/rules/bem-te-vi.mdc .github/skills/qa/SKILL.md .cline/rules/bem-te-vi.md .agents/skills/qa/SKILL.md; do
+            for F_60 in .claude/commands/qa.md .cursor/rules/qa-instinct.mdc .github/skills/qa/SKILL.md .cline/rules/qa-instinct.md .agents/skills/qa/SKILL.md; do
                 [ -f "$F_60" ] || { printf '%b\n' "${RED}✘ init --editor all stopped before installing $F_60${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
             done ;;
         uninstall*)
@@ -2238,14 +2238,14 @@ done
 PROJ_60B="$SANDBOX_DIR/cli-folder-destination-recorded"
 mkdir -p "$PROJ_60B"
 cd "$PROJ_60B"
-node "$REPO_DIR/cli/bem-te-vi.js" init --editor cursor > /dev/null
-rm .cursor/rules/bem-te-vi.mdc
-mkdir .cursor/rules/bem-te-vi.mdc
+node "$REPO_DIR/cli/qa-instinct.js" init --editor cursor > /dev/null
+rm .cursor/rules/qa-instinct.mdc
+mkdir .cursor/rules/qa-instinct.mdc
 for OP_60 in update uninstall; do
     STATUS_60=0
-    node "$REPO_DIR/cli/bem-te-vi.js" "$OP_60" --editor cursor > "$SANDBOX_DIR/cli-folder-destination.log" 2>&1 || STATUS_60=$?
-    [ "$STATUS_60" -eq 0 ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $OP_60' exited $STATUS_60 over a recorded file that is now a folder${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
-    { [ -d .cursor/rules/bem-te-vi.mdc ] && [ -z "$(ls -A .cursor/rules/bem-te-vi.mdc)" ]; } || { printf '%b\n' "${RED}✘ 'bem-te-vi $OP_60' changed a recorded file that is now a folder${NC}"; ls -la .cursor/rules; exit 1; }
+    node "$REPO_DIR/cli/qa-instinct.js" "$OP_60" --editor cursor > "$SANDBOX_DIR/cli-folder-destination.log" 2>&1 || STATUS_60=$?
+    [ "$STATUS_60" -eq 0 ] || { printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' exited $STATUS_60 over a recorded file that is now a folder${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
+    { [ -d .cursor/rules/qa-instinct.mdc ] && [ -z "$(ls -A .cursor/rules/qa-instinct.mdc)" ]; } || { printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' changed a recorded file that is now a folder${NC}"; ls -la .cursor/rules; exit 1; }
 done
 # An install from before manifests existed, with a folder where a package file goes: uninstall
 # keeps the folder, says so, and does not stop on it.
@@ -2255,7 +2255,7 @@ printf 'MY NOTES 60\n' > "$PROJ_60C/.claude/rules/security-qa.md/notes.md"
 cp "$REPO_DIR/.claude/rules/test-tools.md" "$PROJ_60C/.claude/rules/test-tools.md"
 cd "$PROJ_60C"
 STATUS_60=0
-node "$REPO_DIR/cli/bem-te-vi.js" uninstall > "$SANDBOX_DIR/cli-folder-destination.log" 2>&1 || STATUS_60=$?
+node "$REPO_DIR/cli/qa-instinct.js" uninstall > "$SANDBOX_DIR/cli-folder-destination.log" 2>&1 || STATUS_60=$?
 [ "$STATUS_60" -eq 0 ] || { printf '%b\n' "${RED}✘ uninstall exited $STATUS_60 over a folder at a package path, with no manifest${NC}"; tail -8 "$SANDBOX_DIR/cli-folder-destination.log"; exit 1; }
 [ "$(cat .claude/rules/security-qa.md/notes.md)" = "MY NOTES 60" ] || { printf '%b\n' "${RED}✘ uninstall changed a folder at a package path${NC}"; exit 1; }
 [ ! -e .claude/rules/test-tools.md ] || { printf '%b\n' "${RED}✘ uninstall stopped before removing the package's own file${NC}"; exit 1; }
@@ -2264,7 +2264,7 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 60 passed successfully! A destination that is a folder was skipped and every other editor installed.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 61: bem-te-vi --version and -v print the version and exit 0; anything else that is not a
+# TEST 61: qa-instinct --version and -v print the version and exit 0; anything else that is not a
 # command is still refused (plan 046 item 3; plan 033 item 4).
 # -----------------------------------------------------------------------------
 echo ""
@@ -2276,16 +2276,16 @@ mkdir -p "$PROJ_61"
 cd "$PROJ_61"
 for ARG_61 in --version -v; do
     STATUS_61=0
-    OUT_61="$(node "$REPO_DIR/cli/bem-te-vi.js" "$ARG_61" 2>&1)" || STATUS_61=$?
-    [ "$STATUS_61" -eq 0 ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARG_61' exited $STATUS_61${NC}"; printf '%s\n' "$OUT_61"; exit 1; }
-    [ "$OUT_61" = "bem-te-vi $VERSION_61" ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARG_61' printed '$OUT_61', expected 'bem-te-vi $VERSION_61'${NC}"; exit 1; }
+    OUT_61="$(node "$REPO_DIR/cli/qa-instinct.js" "$ARG_61" 2>&1)" || STATUS_61=$?
+    [ "$STATUS_61" -eq 0 ] || { printf '%b\n' "${RED}✘ 'qa-instinct $ARG_61' exited $STATUS_61${NC}"; printf '%s\n' "$OUT_61"; exit 1; }
+    [ "$OUT_61" = "qa-instinct $VERSION_61" ] || { printf '%b\n' "${RED}✘ 'qa-instinct $ARG_61' printed '$OUT_61', expected 'qa-instinct $VERSION_61'${NC}"; exit 1; }
 done
-node "$REPO_DIR/cli/bem-te-vi.js" --help | grep -q -- "--version" || { printf '%b\n' "${RED}✘ help does not list --version${NC}"; exit 1; }
+node "$REPO_DIR/cli/qa-instinct.js" --help | grep -q -- "--version" || { printf '%b\n' "${RED}✘ help does not list --version${NC}"; exit 1; }
 for ARGS_61 in "--versio" "-V" "init --version"; do
     STATUS_61=0
     # shellcheck disable=SC2086 # the words are meant to split into separate arguments
-    node "$REPO_DIR/cli/bem-te-vi.js" $ARGS_61 > /dev/null 2>&1 || STATUS_61=$?
-    [ "$STATUS_61" -eq 1 ] || { printf '%b\n' "${RED}✘ 'bem-te-vi $ARGS_61' exited $STATUS_61, expected 1${NC}"; exit 1; }
+    node "$REPO_DIR/cli/qa-instinct.js" $ARGS_61 > /dev/null 2>&1 || STATUS_61=$?
+    [ "$STATUS_61" -eq 1 ] || { printf '%b\n' "${RED}✘ 'qa-instinct $ARGS_61' exited $STATUS_61, expected 1${NC}"; exit 1; }
 done
 [ -z "$(ls -A)" ] || { printf '%b\n' "${RED}✘ the version checks wrote into the project:${NC}"; ls -A; exit 1; }
 cd "$REPO_DIR"
@@ -2325,13 +2325,13 @@ PROJ_62="$SANDBOX_DIR/link-project-62"
 mkdir -p "$PROJ_62"
 cd "$PROJ_62"
 STATUS_62=0
-OUT_62=$(JUNCTION_62=ok node --require "$WIN_62" "$PKG_62/cli/bem-te-vi.js" link 2>&1) || STATUS_62=$?
+OUT_62=$(JUNCTION_62=ok node --require "$WIN_62" "$PKG_62/cli/qa-instinct.js" link 2>&1) || STATUS_62=$?
 [ "$STATUS_62" -eq 0 ] || { printf '%b\n' "${RED}✘ link exited $STATUS_62 where a junction could be made${NC}"; printf '%s\n' "$OUT_62"; exit 1; }
 printf '%s\n' "$OUT_62" | grep -q "directory junctions" || { printf '%b\n' "${RED}✘ link did not say it used directory junctions${NC}"; printf '%s\n' "$OUT_62"; exit 1; }
 for SUB in agents commands rules skills hooks; do
     [ "$(readlink ".claude/$SUB")" = "$PKG_62/.claude/$SUB" ] || { printf '%b\n' "${RED}✘ link did not link $SUB with the fallback${NC}"; printf '%s\n' "$OUT_62"; exit 1; }
 done
-JUNCTION_62=ok node --require "$WIN_62" "$PKG_62/cli/bem-te-vi.js" unlink > /dev/null
+JUNCTION_62=ok node --require "$WIN_62" "$PKG_62/cli/qa-instinct.js" unlink > /dev/null
 [ -z "$(ls -A .claude)" ] || { printf '%b\n' "${RED}✘ unlink left links made by the fallback${NC}"; ls -A .claude; exit 1; }
 [ "$(find "$PKG_62/.claude" -type f | wc -l)" = "$BEFORE_62" ] || { printf '%b\n' "${RED}✘ link then unlink changed the package${NC}"; exit 1; }
 
@@ -2340,12 +2340,12 @@ PROJ_62B="$SANDBOX_DIR/link-project-62-refused"
 mkdir -p "$PROJ_62B"
 cd "$PROJ_62B"
 STATUS_62=0
-OUT_62=$(node --require "$WIN_62" "$PKG_62/cli/bem-te-vi.js" link 2>&1) || STATUS_62=$?
+OUT_62=$(node --require "$WIN_62" "$PKG_62/cli/qa-instinct.js" link 2>&1) || STATUS_62=$?
 [ "$STATUS_62" -ne 0 ] || { printf '%b\n' "${RED}✘ link exited 0 although neither a symlink nor a junction could be made${NC}"; printf '%s\n' "$OUT_62"; exit 1; }
 if printf '%s\n' "$OUT_62" | grep -q "symlinkSync\|node:internal"; then
     printf '%b\n' "${RED}✘ link printed a stack trace instead of a message${NC}"; printf '%s\n' "$OUT_62"; exit 1
 fi
-for WANT_62 in "cannot create symbolic links" "Developer Mode" "junction could not be made" "EISDIR" "bem-te-vi init"; do
+for WANT_62 in "cannot create symbolic links" "Developer Mode" "junction could not be made" "EISDIR" "qa-instinct init"; do
     printf '%s\n' "$OUT_62" | grep -q "$WANT_62" || { printf '%b\n' "${RED}✘ the refusal does not say '$WANT_62'${NC}"; printf '%s\n' "$OUT_62"; exit 1; }
 done
 [ -z "$(ls -A)" ] || { printf '%b\n' "${RED}✘ link left something in the project after it could not link${NC}"; ls -A; exit 1; }
@@ -2380,8 +2380,8 @@ run_current_63() {   # installer update|uninstall editor root
     if [ "$INST" = install.sh ]; then
         (cd "$ROOT/project" && HOME="$ROOT/home" "$REPO_DIR/install.sh" --target both --editor "$ED" --non-interactive --no-hooks --no-color "--$OP" > "$ROOT/$OP.log" 2>&1) || STATUS=$?
     else
-        { (cd "$ROOT/project" && HOME="$ROOT/home" node "$REPO_DIR/cli/bem-te-vi.js" "$OP" --editor "$ED") \
-            && (cd "$ROOT/project" && HOME="$ROOT/home" node "$REPO_DIR/cli/bem-te-vi.js" "$OP" --global --editor "$ED"); } > "$ROOT/$OP.log" 2>&1 || STATUS=$?
+        { (cd "$ROOT/project" && HOME="$ROOT/home" node "$REPO_DIR/cli/qa-instinct.js" "$OP" --editor "$ED") \
+            && (cd "$ROOT/project" && HOME="$ROOT/home" node "$REPO_DIR/cli/qa-instinct.js" "$OP" --global --editor "$ED"); } > "$ROOT/$OP.log" 2>&1 || STATUS=$?
     fi
     [ "$STATUS" -eq 0 ] || { printf '%b\n' "${RED}✘ $INST $OP over 4.0.1's $ED install exited $STATUS${NC}"; tail -8 "$ROOT/$OP.log"; exit 1; }
 }
@@ -2437,7 +2437,7 @@ echo ""
 echo "Running Test 64: The CLI help lists, for each command, only the options it accepts..."
 
 ROOT_64="$SANDBOX_DIR/cli-help-64"
-HELP_64="$(NO_COLOR=1 node "$REPO_DIR/cli/bem-te-vi.js" help)"
+HELP_64="$(NO_COLOR=1 node "$REPO_DIR/cli/qa-instinct.js" help)"
 
 # Succeeds unless the command refuses the option as unknown. Each run gets its own project and
 # home, so an accepted option that installs or links something touches nothing else.
@@ -2446,9 +2446,9 @@ accepts_64() {
     rm -rf "$dir"
     mkdir -p "$dir/project" "$dir/home"
     if [ "$2" = "--editor" ]; then
-        out="$(cd "$dir/project" && HOME="$dir/home" node "$REPO_DIR/cli/bem-te-vi.js" "$1" "$2" claude 2>&1 < /dev/null)" || true
+        out="$(cd "$dir/project" && HOME="$dir/home" node "$REPO_DIR/cli/qa-instinct.js" "$1" "$2" claude 2>&1 < /dev/null)" || true
     else
-        out="$(cd "$dir/project" && HOME="$dir/home" node "$REPO_DIR/cli/bem-te-vi.js" "$1" "$2" 2>&1 < /dev/null)" || true
+        out="$(cd "$dir/project" && HOME="$dir/home" node "$REPO_DIR/cli/qa-instinct.js" "$1" "$2" 2>&1 < /dev/null)" || true
     fi
     case "$out" in *"unknown option '$2'"*) return 1 ;; esac
     return 0
@@ -2472,7 +2472,7 @@ done
 USAGE_64="$(printf '%s\n' "$HELP_64" | awk '/^Usage:/ { on = 1; next } /^Commands:/ { on = 0 } on')"
 ALL_OPTS_64="$(printf '%s\n' "$USAGE_64" | grep -o -- '\[--[a-z][a-z-]*' | tr -d '[' | sort -u)"
 for CMD_64 in $COMMANDS_64; do
-    LINE_64="$(printf '%s\n' "$USAGE_64" | grep -E "^  bem-te-vi $CMD_64( |$)" || true)"
+    LINE_64="$(printf '%s\n' "$USAGE_64" | grep -E "^  qa-instinct $CMD_64( |$)" || true)"
     [ -n "$LINE_64" ] || { printf '%b\n' "${RED}✘ the help has no usage line for '$CMD_64':${NC}"; printf '%s\n' "$USAGE_64"; exit 1; }
     for OPT_64 in $ALL_OPTS_64; do
         if printf '%s\n' "$LINE_64" | grep -q -- "\[${OPT_64}[] ]"; then
@@ -2482,7 +2482,7 @@ for CMD_64 in $COMMANDS_64; do
         fi
     done
     # Every example of the command uses only options its usage line lists.
-    for OPT_64 in $(printf '%s\n' "$HELP_64" | awk '/^Examples:/ { on = 1; next } on' | grep -E "^  bem-te-vi $CMD_64( |$)" | sed 's/#.*//' | grep -o -- '--[a-z][a-z-]*' | sort -u); do
+    for OPT_64 in $(printf '%s\n' "$HELP_64" | awk '/^Examples:/ { on = 1; next } on' | grep -E "^  qa-instinct $CMD_64( |$)" | sed 's/#.*//' | grep -o -- '--[a-z][a-z-]*' | sort -u); do
         printf '%s\n' "$LINE_64" | grep -q -- "\[${OPT_64}[] ]" || { printf '%b\n' "${RED}✘ an example uses '$CMD_64 $OPT_64', which its usage line does not list${NC}"; exit 1; }
     done
 done
@@ -2580,7 +2580,7 @@ chmod 600 "$VICTIM_66"
 mkdir -p "$PROJ_66"
 cd "$PROJ_66"
 STATUS_66=0
-VICTIM_66="$VICTIM_66" TRIED_66="$TRIED_66" node --require "$PRELOAD_66" "$REPO_DIR/cli/bem-te-vi.js" init --editor cursor > "$PROJ_66.log" 2>&1 || STATUS_66=$?
+VICTIM_66="$VICTIM_66" TRIED_66="$TRIED_66" node --require "$PRELOAD_66" "$REPO_DIR/cli/qa-instinct.js" init --editor cursor > "$PROJ_66.log" 2>&1 || STATUS_66=$?
 cd "$REPO_DIR"
 [ -s "$TRIED_66" ] || { printf '%b\n' "${RED}✘ the CLI never opened the name Test 66 planted its link at; the plant missed${NC}"; tail -5 "$PROJ_66.log"; exit 1; }
 [ "$(cat "$VICTIM_66")" = "VICTIM CONTENT" ] || { printf '%b\n' "${RED}✘ the CLI wrote its manifest through a link planted at its temp file's name${NC}"; head -3 "$VICTIM_66"; exit 1; }
@@ -2614,9 +2614,9 @@ mkdir -p "$UP_67/project" "$UP_67/home" "$FRESH_67/project" "$FRESH_67/home"
 # Runs the current CLI for Claude Code in one scope: the project, or the home with --global.
 cli_67() {   # command root project|home
     if [ "$3" = home ]; then
-        (cd "$2/project" && HOME="$2/home" node "$REPO_DIR/cli/bem-te-vi.js" "$1" --global --editor claude)
+        (cd "$2/project" && HOME="$2/home" node "$REPO_DIR/cli/qa-instinct.js" "$1" --global --editor claude)
     else
-        (cd "$2/project" && HOME="$2/home" node "$REPO_DIR/cli/bem-te-vi.js" "$1" --editor claude)
+        (cd "$2/project" && HOME="$2/home" node "$REPO_DIR/cli/qa-instinct.js" "$1" --editor claude)
     fi
 }
 
@@ -2701,7 +2701,7 @@ fi
 # editor, and stay as they were for Claude Code alone (plan 062)
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 69: cli/bem-te-vi.js init prints each editor's own wording..."
+echo "Running Test 69: cli/qa-instinct.js init prints each editor's own wording..."
 
 mkdir -p "$SANDBOX_DIR/cli-wording/project" "$SANDBOX_DIR/cli-wording/home" "$SANDBOX_DIR/cli-wording/claude"
 LOG_69="$SANDBOX_DIR/cli-wording/out.log"
@@ -2710,7 +2710,7 @@ for FLAG_69 in "" "--global"; do
     # Outside WSL: under WSL the extra line names this folder, whose path may hold ".claude/"
     # (a worktree), and Test 70 covers that line.
     # shellcheck disable=SC2086  # FLAG_69 is empty or one word
-    env -u WSL_DISTRO_NAME HOME="$SANDBOX_DIR/cli-wording/home" node "$REPO_DIR/cli/bem-te-vi.js" init --editor antigravity $FLAG_69 > "$LOG_69" 2>&1
+    env -u WSL_DISTRO_NAME HOME="$SANDBOX_DIR/cli-wording/home" node "$REPO_DIR/cli/qa-instinct.js" init --editor antigravity $FLAG_69 > "$LOG_69" 2>&1
     if grep -q '\.claude/' "$LOG_69"; then
         printf '%b\n' "${RED}✘ init --editor antigravity $FLAG_69 names a .claude/ folder it did not write${NC}"; cat "$LOG_69"; exit 1
     fi
@@ -2721,7 +2721,7 @@ for FLAG_69 in "" "--global"; do
     grep -q 'ask for qa-cases' "$LOG_69" || { printf '%b\n' "${RED}✘ init --editor antigravity $FLAG_69 lost its Antigravity line${NC}"; cat "$LOG_69"; exit 1; }
 done
 cd "$SANDBOX_DIR/cli-wording/claude"
-node "$REPO_DIR/cli/bem-te-vi.js" init > "$LOG_69" 2>&1
+node "$REPO_DIR/cli/qa-instinct.js" init > "$LOG_69" 2>&1
 grep -q 'installing to project (\./\.claude/)' "$LOG_69" || { printf '%b\n' "${RED}✘ init with no editor no longer names ./.claude/${NC}"; cat "$LOG_69"; exit 1; }
 grep -q 'Claude Code : type /qa to start' "$LOG_69" || { printf '%b\n' "${RED}✘ init with no editor no longer says to type /qa${NC}"; cat "$LOG_69"; exit 1; }
 cd "$REPO_DIR"
@@ -2745,7 +2745,7 @@ for INSTALLER_70 in install.sh cli; do
         if [ "$INSTALLER_70" = cli ]; then
             if [ "$SCOPE_70" = global ]; then FLAGS_70="--global"; else FLAGS_70=""; fi
             # shellcheck disable=SC2086  # FLAGS_70 is empty or one word
-            HOME="$HOME_70" WSL_DISTRO_NAME=TestDistro node "$REPO_DIR/cli/bem-te-vi.js" init --editor antigravity $FLAGS_70 > "$LOG_70" 2>&1
+            HOME="$HOME_70" WSL_DISTRO_NAME=TestDistro node "$REPO_DIR/cli/qa-instinct.js" init --editor antigravity $FLAGS_70 > "$LOG_70" 2>&1
         else
             HOME="$HOME_70" WSL_DISTRO_NAME=TestDistro "$REPO_DIR/install.sh" --target "$SCOPE_70" --editor antigravity --non-interactive --no-hooks > "$LOG_70" 2>&1
         fi
@@ -2754,7 +2754,7 @@ for INSTALLER_70 in install.sh cli; do
     done
 done
 cd "$SANDBOX_DIR/wsl-tip-cli-project"
-env -u WSL_DISTRO_NAME HOME="$HOME_70" node "$REPO_DIR/cli/bem-te-vi.js" init --editor antigravity > "$LOG_70" 2>&1
+env -u WSL_DISTRO_NAME HOME="$HOME_70" node "$REPO_DIR/cli/qa-instinct.js" init --editor antigravity > "$LOG_70" 2>&1
 if grep -q 'in WSL, open the folder' "$LOG_70"; then
     printf '%b\n' "${RED}✘ the CLI printed the WSL tip outside WSL${NC}"; cat "$LOG_70"; exit 1
 fi
@@ -2770,7 +2770,7 @@ printf '%b\n' "${GREEN}✔ Test 70 passed successfully! Under WSL, install.sh an
 # TEST 71: An update that reads only the start of an editor's file list removes nothing and fails
 # (plan 063, issue #3). On macOS, bash 3.2 once handed the update 13 of Windsurf's 61 lines and it
 # removed the other 48 skill files as no longer shipped. That cut cannot be caused on demand, so
-# BEM_TE_VI_TEST_CUT_LIST makes install.sh read only that many lines of the list.
+# QA_INSTINCT_TEST_CUT_LIST makes install.sh read only that many lines of the list.
 # -----------------------------------------------------------------------------
 echo ""
 echo "Running Test 71: an update given a cut file list removes nothing..."
@@ -2782,7 +2782,7 @@ cd "$DIR_71"
 "$REPO_DIR/install.sh" --target project --editor windsurf --non-interactive --no-hooks > "$LOG_71" 2>&1
 RECORDED_71="$(grep -c '  windsurf  ' .qa-skills-manifest)"
 EXIT_71=0
-BEM_TE_VI_TEST_CUT_LIST=13 "$REPO_DIR/install.sh" --target project --editor windsurf --update --non-interactive --no-hooks > "$LOG_71" 2>&1 || EXIT_71=$?
+QA_INSTINCT_TEST_CUT_LIST=13 "$REPO_DIR/install.sh" --target project --editor windsurf --update --non-interactive --no-hooks > "$LOG_71" 2>&1 || EXIT_71=$?
 while IFS= read -r FILE_71; do
     REL_71="${FILE_71#"$REPO_DIR/adapters/skills/"}"
     cmp -s "$FILE_71" ".windsurf/skills/$REL_71" || { printf '%b\n' "${RED}✘ .windsurf/skills/$REL_71 is missing or changed after an update given a cut list${NC}"; cat "$LOG_71"; exit 1; }

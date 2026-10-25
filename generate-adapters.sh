@@ -186,15 +186,15 @@ mkdir -p "$SKILLS_OUT/qa-rules/references"
 {
     echo "---"
     echo "name: qa-rules"
-    echo "description: \"Bem-te-vi's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install.\""
+    echo "description: \"QA Instinct's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install.\""
     echo "metadata:"
     echo "  id: qa-rules"
     echo "  author: Marco Amaral"
     echo "---"
-    echo "# Bem-te-vi rules"
+    echo "# QA Instinct rules"
     echo ""
     echo "Each rule of the package is a file in this skill's \`references\` folder. A project install"
-    echo "also puts every rule in the editor's own rules folder, always on, as \`bem-te-vi-<rule>\`; a"
+    echo "also puts every rule in the editor's own rules folder, always on, as \`qa-instinct-<rule>\`; a"
     echo "global install has no rules folder, so read the rule a pointer names from here."
     echo ""
     echo "| Rule | File |"
@@ -214,7 +214,7 @@ for SKILL_DIR in "$SKILLS_OUT"/*; do
 done
 
 # --- The index and the rule files --------------------------------------------
-# The index (bem-te-vi) is the one rule the package adds: it says the package is installed, how
+# The index (qa-instinct) is the one rule the package adds: it says the package is installed, how
 # this editor invokes a skill, and how a pointer in the package's text resolves. $1 is the editor
 # key; copilot and universal hold the rules in the same file, under a marker line each.
 index_body() {   # key
@@ -229,18 +229,18 @@ index_body() {   # key
     esac
     case "$1" in
         copilot|universal)
-            RULES_ARE="Its rules follow in this file, each under a \`<!-- bem-te-vi-<rule> -->\` line, and are always on."
-            RULE_POINTER="the section under \`<!-- bem-te-vi-<rule> -->\` in this file" ;;
+            RULES_ARE="Its rules follow in this file, each under a \`<!-- qa-instinct-<rule> -->\` line, and are always on."
+            RULE_POINTER="the section under \`<!-- qa-instinct-<rule> -->\` in this file" ;;
         *)
-            RULES_ARE="Its rules are the rule files named \`bem-te-vi-<rule>\`, always on."
-            RULE_POINTER="the rule file \`bem-te-vi-<rule>\`" ;;
+            RULES_ARE="Its rules are the rule files named \`qa-instinct-<rule>\`, always on."
+            RULE_POINTER="the rule file \`qa-instinct-<rule>\`" ;;
     esac
     for NAME in "${SKILL_NAMES[@]}"; do
         LIST="$LIST${LIST:+, }\`$NAME\`"
     done
-    echo "# Bem-te-vi"
+    echo "# QA Instinct"
     echo ""
-    echo "Bem-te-vi, QA Analyst and QA Engineer guidance based on ISTQB CTFL v4.0, is installed here."
+    echo "QA Instinct, QA Analyst and QA Engineer guidance based on ISTQB CTFL v4.0, is installed here."
     echo "$RULES_ARE"
     echo "Everything else is an Agent Skill of the same name, loaded when its description matches the"
     echo "task, or when you $INVOKE."
@@ -264,10 +264,10 @@ rule_front() {   # key name: the editor's frontmatter for one rule file
     case "$1" in
         cursor)
             echo "---"
-            if [ "$2" = bem-te-vi ]; then
-                echo "description: \"Bem-te-vi: how its rules and skills are installed in this editor\""
+            if [ "$2" = qa-instinct ]; then
+                echo "description: \"QA Instinct: how its rules and skills are installed in this editor\""
             else
-                echo "description: \"Bem-te-vi rule: ${2#bem-te-vi-}\""
+                echo "description: \"QA Instinct rule: ${2#qa-instinct-}\""
             fi
             echo "alwaysApply: true"
             echo "---" ;;
@@ -283,7 +283,7 @@ rules_in_one_file() {   # key: the index, then every rule under its marker line
     index_body "$1"
     for RULE in "${RULES[@]}"; do
         echo ""
-        echo "<!-- bem-te-vi-$RULE -->"
+        echo "<!-- qa-instinct-$RULE -->"
         strip_frontmatter "$CLAUDE_DIR/rules/$RULE.md"
     done
 }
@@ -291,10 +291,10 @@ rules_in_one_file() {   # key: the index, then every rule under its marker line
 for KEY in cursor windsurf cline antigravity; do
     case "$KEY" in cursor) EXT=mdc ;; *) EXT=md ;; esac
     mkdir -p "$OUT_DIR/$KEY/rules"
-    { rule_front "$KEY" bem-te-vi; index_body "$KEY"; } > "$OUT_DIR/$KEY/rules/bem-te-vi.$EXT"
+    { rule_front "$KEY" qa-instinct; index_body "$KEY"; } > "$OUT_DIR/$KEY/rules/qa-instinct.$EXT"
     for RULE in "${RULES[@]}"; do
-        { rule_front "$KEY" "bem-te-vi-$RULE"; strip_frontmatter "$CLAUDE_DIR/rules/$RULE.md"; } \
-            > "$OUT_DIR/$KEY/rules/bem-te-vi-$RULE.$EXT"
+        { rule_front "$KEY" "qa-instinct-$RULE"; strip_frontmatter "$CLAUDE_DIR/rules/$RULE.md"; } \
+            > "$OUT_DIR/$KEY/rules/qa-instinct-$RULE.$EXT"
     done
 done
 
@@ -308,7 +308,7 @@ mkdir -p "$OUT_DIR/universal"
 for U in AGENTS CLAUDE; do
     {
         cat << 'UNIVERSAL_HEADER'
-<!-- Bem-te-vi — Senior QA Analyst + QA Engineer (ISTQB CTFL v4.0)
+<!-- QA Instinct — Senior QA Analyst + QA Engineer (ISTQB CTFL v4.0)
      Universal adapter: no IDE-specific frontmatter. The rules are below; every command, skill
      and agent is an Agent Skill in the package's adapters/skills/ folder.
      Compatible with: Claude Code (CLAUDE.md / --agents-file), Codex, Devin,

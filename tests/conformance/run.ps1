@@ -1,7 +1,7 @@
 # Requires -Version 5.1
 #
 # tests/conformance/run.ps1 - run every conformance case against every installer
-# available on Windows: install.ps1 and cli/bem-te-vi.js. (install.sh is covered by run.sh.)
+# available on Windows: install.ps1 and cli/qa-instinct.js. (install.sh is covered by run.sh.)
 # Each guarantee the installers share is written once, as a case under cases\, and is
 # required of all of them. See plans/016.
 #
@@ -26,9 +26,10 @@ $ErrorActionPreference = 'Stop'
 $here = $PSScriptRoot
 $repo = (Resolve-Path (Join-Path $here '..\..')).Path
 $pkg = if ($Package) { (Resolve-Path $Package).Path } else { $repo }
-# The CLI moved from bin\cli.js to cli\bem-te-vi.js after 4.0.1 (plan 051); an older package tree
-# still has it at the old path.
-$cli = Join-Path $pkg 'cli\bem-te-vi.js'
+# The CLI moved from bin\cli.js to cli\bem-te-vi.js after 4.0.1 (plan 051), and to
+# cli\qa-instinct.js with the rename (plan 065); an older package tree still has it at an old path.
+$cli = Join-Path $pkg 'cli\qa-instinct.js'
+if (-not (Test-Path -LiteralPath $cli)) { $cli = Join-Path $pkg 'cli\bem-te-vi.js' }
 if (-not (Test-Path -LiteralPath $cli)) { $cli = Join-Path $pkg 'bin\cli.js' }
 $casesDir = if ($Cases) { (Resolve-Path -LiteralPath $Cases).Path } else { "$here\cases" }
 $utf8 = New-Object System.Text.UTF8Encoding($false)

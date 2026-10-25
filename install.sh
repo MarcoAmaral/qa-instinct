@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bem-te-vi - Installation Script
+# QA Instinct - Installation Script
 # Version: 2.0.0
 
 set -e  # Exit on error
@@ -116,7 +116,7 @@ fi
 
 if [ "$SHOW_HELP" = true ]; then
     cat << 'HELPTEXT'
-Bem-te-vi - Installation Script v2.0.0
+QA Instinct - Installation Script v2.0.0
 
 Usage: ./install.sh [OPTIONS]
 
@@ -188,7 +188,7 @@ if [ -z "$SHA256_TOOL" ]; then
 fi
 
 echo "╔════════════════════════════════════════════════╗"
-echo "║   Bem-te-vi - Installation Script               ║"
+echo "║   QA Instinct - Installation Script               ║"
 echo "║   QA skills for AI editors                      ║"
 echo "╚════════════════════════════════════════════════╝"
 echo ""
@@ -431,7 +431,7 @@ register_git_hook() {
         # .git/hooks entirely, so writing there would only pretend to register something.
         HOOKS_PATH_CFG="$(git -C "$BASE_DIR" config core.hooksPath 2>/dev/null || true)"
         if [ -n "$HOOKS_PATH_CFG" ]; then
-            printf '%b\n' "${YELLOW}  ⚠ core.hooksPath is set ($HOOKS_PATH_CFG); add the bem-te-vi check to your hook manager yourself:${NC}"
+            printf '%b\n' "${YELLOW}  ⚠ core.hooksPath is set ($HOOKS_PATH_CFG); add the qa-instinct check to your hook manager yourself:${NC}"
             printf '%b\n' "${CYAN}      bash .claude/hooks/validate-tc-format.sh <file>${NC}"
             return 0
         fi
@@ -528,7 +528,7 @@ PRECOMMIT
 
 # ─── Shared editor → install-folder mapping ──────────────────────────────────
 # Single source of truth for every non-claude editor's install folders and display label, shared
-# with install.ps1 and cli/bem-te-vi.js. See .qa-skills-editor-map. Format: tab-separated
+# with install.ps1 and cli/qa-instinct.js. See .qa-skills-editor-map. Format: tab-separated
 # "<editor>\t<project rules>\t<global rules>\t<project skills>\t<global skills>\t<label>",
 # "-" where the editor has none (plan 047). The generated rule files of adapters/<editor>/rules/
 # go into the rules folder, and the one Agent Skills tree adapters/skills/ into the skills folder.
@@ -595,7 +595,7 @@ hash_file() {
 # The package's own file with CRLF line endings (a Windows checkout with core.autocrlf, a
 # Windows editor) is still the package's file. A file on disk therefore *matches* a hash if
 # its bytes hash to it, or its bytes with every carriage return removed do — the same rule in
-# install.ps1 and cli/bem-te-vi.js (plans/017). Hashes are still recorded as the raw bytes.
+# install.ps1 and cli/qa-instinct.js (plans/017). Hashes are still recorded as the raw bytes.
 hash_file_without_cr() {
     local HASH
     HASH="$(set -o pipefail; { tr -d '\r' < "$1" | sha256_stdin; } 2>/dev/null)" || HASH=""
@@ -767,7 +767,7 @@ write_exclusive() {   # file command...
 }
 
 # A symlinked folder below the editor's top-level folder (.claude/rules, .agents/skills, ...) is
-# never written or deleted through: after `bem-te-vi link` those folders are the npm package's own
+# never written or deleted through: after `qa-instinct link` those folders are the npm package's own
 # files, and any other link leads outside the install tree. The top-level folder itself (.claude
 # as a link into a dotfiles repository) is followed, as the editor follows it (plan 033 item 1).
 linked_ancestor() {   # base rel -> prints the first symlinked folder (relative to base), if any
@@ -791,9 +791,9 @@ report_linked_dir() {   # base dir action verb — once per link and run
     local BASE="$1" DIR="$2" ACTION="$3" VERB="$4" HINT=""
     case "$REPORTED_LINKS" in *"|$DIR|"*) return 0 ;; esac
     REPORTED_LINKS="$REPORTED_LINKS|$DIR|"
-    # A link `bem-te-vi link` made points at some package's .claude/<same name>.
+    # A link `qa-instinct link` made points at some package's .claude/<same name>.
     case "/$(readlink "$BASE/$DIR")" in
-        */.claude/"${DIR##*/}") HINT="; run 'bem-te-vi unlink' first" ;;
+        */.claude/"${DIR##*/}") HINT="; run 'qa-instinct unlink' first" ;;
     esac
     printf '%b\n' "${YELLOW}  ! $ACTION $DIR/ — it is a symbolic link; nothing was $VERB through it$HINT${NC}"
 }
@@ -1094,8 +1094,8 @@ read_editor_files() {   # editor scope base — sets EDITOR_FILES_LIST; fails wh
     local LIST
     LIST="$(editor_files "$1" "$2" "$3"; printf '%s\n' "$EDITOR_FILES_END")"
     # Test seam: keep only this many lines, as the cut on macOS did (lifecycle Test 71).
-    if [ -n "${BEM_TE_VI_TEST_CUT_LIST:-}" ]; then
-        LIST="$(printf '%s\n' "$LIST" | head -n "$BEM_TE_VI_TEST_CUT_LIST")"
+    if [ -n "${QA_INSTINCT_TEST_CUT_LIST:-}" ]; then
+        LIST="$(printf '%s\n' "$LIST" | head -n "$QA_INSTINCT_TEST_CUT_LIST")"
     fi
     case "$LIST" in
         "$EDITOR_FILES_END"|*$'\n'"$EDITOR_FILES_END") ;;
@@ -1518,7 +1518,7 @@ git_commit_and_push() {
 # ─── Post-install hint ───────────────────────────────────────────────────────
 
 # Lists what the package ships, read from its own .claude/ at run time, so a new command, skill
-# or agent shows up here with no edit. The same block in install.ps1 and cli/bem-te-vi.js (plan 033
+# or agent shows up here with no edit. The same block in install.ps1 and cli/qa-instinct.js (plan 033
 # item 8). Rules are counted, not named.
 print_claude_hint() {
     local CLAUDE_SRC="$SCRIPT_DIR/.claude" COMMANDS SKILLS AGENTS RULES
@@ -1567,8 +1567,8 @@ elif [ "$UNINSTALL_FLAG" = true ]; then
 elif [ "$NON_INTERACTIVE" = true ]; then
     OPERATION="install"
 else
-    echo "Bem-te-vi - Lifecycle Manager"
-    echo "1. Install (Fresh deployment of Bem-te-vi)"
+    echo "QA Instinct - Lifecycle Manager"
+    echo "1. Install (Fresh deployment of QA Instinct)"
     echo "2. Update (Pull latest versions of all rules and commands)"
     echo "3. Uninstall / Remove (Purge all copied files & clean up git hooks)"
     echo ""
@@ -1778,10 +1778,10 @@ if [ "$OPERATION" = "uninstall" ]; then
         echo "Removed $UNINSTALL_REMOVED_COUNT file(s); kept $UNINSTALL_KEPT_COUNT (see warnings above)."
     elif [ "$UNINSTALL_REMOVED_COUNT" -eq 0 ]; then
         printf '%b\n' "${CYAN}Nothing to uninstall.${NC}"
-        echo "No Bem-te-vi files were found installed."
+        echo "No QA Instinct files were found installed."
     else
         printf '%b\n' "${GREEN}Uninstallation successful!${NC}"
-        echo "Bem-te-vi has been completely removed. Removed $UNINSTALL_REMOVED_COUNT file(s)."
+        echo "QA Instinct has been completely removed. Removed $UNINSTALL_REMOVED_COUNT file(s)."
     fi
 elif [ "$OPERATION" = "update" ]; then
     UPDATE_TOTAL=$((UPDATE_CHANGED_COUNT + UPDATE_UPTODATE_COUNT + UPDATE_KEPT_COUNT))
@@ -1808,7 +1808,7 @@ else
         RULES_HINT="skills only (a global install writes no rules)"
         COPILOT_RULES_HINT="$RULES_HINT"
     else
-        RULES_HINT="bem-te-vi rules always on"
+        RULES_HINT="qa-instinct rules always on"
         COPILOT_RULES_HINT="rules in .github/copilot-instructions.md"
     fi
     for EDITOR in "${EDITORS[@]}"; do
@@ -1826,7 +1826,7 @@ else
                 echo "  Copilot     : $COPILOT_RULES_HINT; every command, skill and agent is a skill (/qa-cases)"
                 ;;
             cline)
-                echo "  Cline       : bem-te-vi rules always on; every command, skill and agent is a skill (/qa-cases)"
+                echo "  Cline       : qa-instinct rules always on; every command, skill and agent is a skill (/qa-cases)"
                 ;;
             antigravity)
                 echo "  Antigravity : $RULES_HINT; every command, skill and agent is a skill (ask for qa-cases)"

@@ -5,7 +5,7 @@ argument-hint: "<QA question or task>"
 ---
 # Senior QA Analyst + QA Engineer
 
-> **Bem-te-vi** | Marco Amaral | ISTQB CTFL v4.0 | Respond in the language of the user's prompt (default: English)
+> **QA Instinct** | Marco Amaral | ISTQB CTFL v4.0 | Respond in the language of the user's prompt (default: English)
 
 **If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
 
@@ -77,7 +77,7 @@ its slash name (`/qa-cases`); a script by its file name (`check-test-evidence.sh
 Code install puts in `.claude/hooks/`. Where a script is not installed, apply its checks by reading
 the files and say that it was not run. Outside Claude Code (Cursor, Windsurf, Copilot, Cline,
 Antigravity, `AGENTS.md`), every command, skill and agent is installed as an Agent Skill of the same
-name (`/qa-cases` is the skill `qa-cases`), and each rule as a rule file named `bem-te-vi-<rule>`,
+name (`/qa-cases` is the skill `qa-cases`), and each rule as a rule file named `qa-instinct-<rule>`,
 also kept in the `qa-rules` skill's `references/` folder.
 
 ---

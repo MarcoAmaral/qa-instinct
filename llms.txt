@@ -1,4 +1,4 @@
-# Bem-te-vi
+# QA Instinct
 
 > QA skills, slash commands, subagents and rules that give an AI coding assistant the practice of a senior QA analyst and QA engineer, grounded in the ISTQB CTFL v4.0.1 syllabus (cited by section). Plain Markdown under `.claude/`, used as it is by Claude Code and compiled into always-on rule files and Agent Skills for Cursor, Windsurf, GitHub Copilot, Cline and Antigravity; an npm CLI or two shell installers install it and never destroy the user's files. MIT. Links point at `main`; replace `main` with a release tag such as `v4.1.0` to pin a version.
 
@@ -6,85 +6,85 @@ To use the package, read the README, then the `/qa` router, which names the comm
 
 ## Start here
 
-- [README](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/README.md): what the package is, how to install it in each editor, what each install gives you, what runs and what does not.
-- [/qa router](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa.md): answers QA questions and routes each request to the right command or skill.
+- [README](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/README.md): what the package is, how to install it in each editor, what each install gives you, what runs and what does not.
+- [/qa router](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa.md): answers QA questions and routes each request to the right command or skill.
 
 ## Skills
 
-- [qa-plan](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-plan/SKILL.md): test strategies, test plans, risk registers, entry and exit criteria, the release gate.
-- [qa-explore](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-explore/SKILL.md): session-based exploratory testing: charters, heuristics, time-boxed sessions.
-- [qa-migrate](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-migrate/SKILL.md): incremental migration of a Cypress or Selenium suite to Playwright, with a parity table.
-- [qa-api](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-api/SKILL.md): REST and GraphQL testing against the OpenAPI or GraphQL schema, and contract strategy.
-- [qa-flaky](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-flaky/SKILL.md): finding flaky tests from run history, classifying the cause, quarantine and proof of a fix.
-- [qa-release](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-release/SKILL.md): a go/no-go record against the release gate the team already has.
-- [qa-a11y](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-a11y/SKILL.md): accessibility audits against WCAG 2.2 AA with axe-core and the manual checks it cannot make.
-- [qa-reference](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/SKILL.md): the index of the on-demand references below, with when to read each.
+- [qa-plan](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-plan/SKILL.md): test strategies, test plans, risk registers, entry and exit criteria, the release gate.
+- [qa-explore](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-explore/SKILL.md): session-based exploratory testing: charters, heuristics, time-boxed sessions.
+- [qa-migrate](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-migrate/SKILL.md): incremental migration of a Cypress or Selenium suite to Playwright, with a parity table.
+- [qa-api](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-api/SKILL.md): REST and GraphQL testing against the OpenAPI or GraphQL schema, and contract strategy.
+- [qa-flaky](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-flaky/SKILL.md): finding flaky tests from run history, classifying the cause, quarantine and proof of a fix.
+- [qa-release](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-release/SKILL.md): a go/no-go record against the release gate the team already has.
+- [qa-a11y](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-a11y/SKILL.md): accessibility audits against WCAG 2.2 AA with axe-core and the manual checks it cannot make.
+- [qa-reference](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/SKILL.md): the index of the on-demand references below, with when to read each.
 
 ## Commands
 
-- [/qa-cases](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-cases.md): formal test cases (TC-CODE-NNN) with ISTQB design techniques and tags.
-- [/qa-agentic](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-agentic.md): the groomer, designer and writer pipeline that turns a ticket into traceable test cases.
-- [/qa-automate](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-automate.md): Playwright and Vitest tests from test cases, with reviewable evidence.
-- [/qa-bdd](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-bdd.md): Gherkin scenarios and ATDD acceptance tests.
-- [/qa-defect](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-defect.md): defect reports with severity, priority, steps, environment and evidence.
-- [/qa-refinement](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-refinement.md): testability, acceptance criteria, scope and risk review of epics and stories.
-- [/qa-review](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-review.md): review of a branch's code and test code for testability, correctness, security and error handling.
-- [/qa-static](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-static.md): ISTQB static testing of a ticket, specification, ADR or API schema before anything runs.
-- [/qa-tdd](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-tdd.md): red-green-refactor, characterization tests, edge cases.
-- [/qa-trace](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/commands/qa-trace.md): requirement to test case to result traceability.
+- [/qa-cases](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-cases.md): formal test cases (TC-CODE-NNN) with ISTQB design techniques and tags.
+- [/qa-agentic](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-agentic.md): the groomer, designer and writer pipeline that turns a ticket into traceable test cases.
+- [/qa-automate](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-automate.md): Playwright and Vitest tests from test cases, with reviewable evidence.
+- [/qa-bdd](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-bdd.md): Gherkin scenarios and ATDD acceptance tests.
+- [/qa-defect](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-defect.md): defect reports with severity, priority, steps, environment and evidence.
+- [/qa-refinement](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-refinement.md): testability, acceptance criteria, scope and risk review of epics and stories.
+- [/qa-review](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-review.md): review of a branch's code and test code for testability, correctness, security and error handling.
+- [/qa-static](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-static.md): ISTQB static testing of a ticket, specification, ADR or API schema before anything runs.
+- [/qa-tdd](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-tdd.md): red-green-refactor, characterization tests, edge cases.
+- [/qa-trace](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/commands/qa-trace.md): requirement to test case to result traceability.
 
 ## Agents
 
-- [qa-groomer](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/agents/qa-groomer.md): first pipeline stage, a ticket into atomic, testable requirements.
-- [qa-designer](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/agents/qa-designer.md): second stage, each requirement mapped to test design techniques.
-- [qa-writer](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/agents/qa-writer.md): third stage, the checklist expanded into formatted test cases.
-- [qa-engineer](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/agents/qa-engineer.md): code review subagent for testability, correctness, security and test code quality.
+- [qa-groomer](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/agents/qa-groomer.md): first pipeline stage, a ticket into atomic, testable requirements.
+- [qa-designer](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/agents/qa-designer.md): second stage, each requirement mapped to test design techniques.
+- [qa-writer](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/agents/qa-writer.md): third stage, the checklist expanded into formatted test cases.
+- [qa-engineer](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/agents/qa-engineer.md): code review subagent for testability, correctness, security and test code quality.
 
 ## Rules (always loaded in Claude Code)
 
-- [testing-guidelines](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/testing-guidelines.md): testing principles, the tag taxonomy, release gate policy.
-- [context-discovery](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/context-discovery.md): read the codebase and the project's own sources before designing tests; disclose contradictions.
-- [code-style-qa](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/code-style-qa.md): test automation code style: Arrange-Act-Assert, Page Objects, locators, assertions.
-- [test-evidence](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/test-evidence.md): evidence a test run must leave: viewport screenshots, reviewed recordings, ASCII names.
-- [test-tools](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/test-tools.md): how to choose, justify and introduce a test tool.
-- [accessibility-qa](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/accessibility-qa.md): WCAG 2.2 AA verification.
-- [security-qa](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/security-qa.md): OWASP client-side verification.
-- [conventional-commits](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/conventional-commits.md): how the assistant writes commits in the project that installed the package.
-- [linting-standards](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/rules/linting-standards.md): detect and respect the project's own lint configuration.
+- [testing-guidelines](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/testing-guidelines.md): testing principles, the tag taxonomy, release gate policy.
+- [context-discovery](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/context-discovery.md): read the codebase and the project's own sources before designing tests; disclose contradictions.
+- [code-style-qa](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/code-style-qa.md): test automation code style: Arrange-Act-Assert, Page Objects, locators, assertions.
+- [test-evidence](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/test-evidence.md): evidence a test run must leave: viewport screenshots, reviewed recordings, ASCII names.
+- [test-tools](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/test-tools.md): how to choose, justify and introduce a test tool.
+- [accessibility-qa](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/accessibility-qa.md): WCAG 2.2 AA verification.
+- [security-qa](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/security-qa.md): OWASP client-side verification.
+- [conventional-commits](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/conventional-commits.md): how the assistant writes commits in the project that installed the package.
+- [linting-standards](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/rules/linting-standards.md): detect and respect the project's own lint configuration.
 
 ## References (read on demand)
 
-- [testing-design](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/testing-design.md): test pyramid, coverage measures, test doubles, CTFL test levels and types, design techniques and their coverage items.
-- [testing-in-delivery](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/testing-in-delivery.md): shift-left and DevOps, confirmation and regression testing, impact analysis, CI preconditions, delivery versus deployment, feature flags.
-- [test-case-writing](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/test-case-writing.md): tracker link formats, a worked example of each design technique in test case format, the runbook format.
-- [test-planning](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/test-planning.md): testing quadrants, estimation techniques, execution orderings, suite-level artifacts, roles and independence, configuration management.
-- [test-reporting](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/test-reporting.md): monitoring metrics, control, progress and completion reports, the row format for every case, retrospectives.
-- [automation-code](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/automation-code.md): Arrange-Act-Assert and Page Object detail, FIRST properties, test smells.
-- [playwright-patterns](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/playwright-patterns.md): Playwright project layout, configuration, fixtures, Page Objects.
-- [vitest-patterns](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/vitest-patterns.md): Vitest project layout, configuration, mocking.
-- [automation-ci](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/automation-ci.md): flakiness hunting, a CI pipeline with nightly regression, reporters.
-- [evidence-capture](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/evidence-capture.md): how to capture screenshots and recordings that a reviewer can trust.
-- [accessibility-checks](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/accessibility-checks.md): full WCAG 2.2 AA criteria, the axe-core audit template, the manual checklist.
-- [security-checks](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/security-checks.md): full OWASP client-side checks, payload spec, manual checklist.
-- [context-sources](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/context-sources.md): how to read specifications, trackers and feature-area notes.
-- [test-tools](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/test-tools.md): CTFL tool categories, benefits and risks of automation.
-- [repo-conventions](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/repo-conventions.md): full commit and linting conventions for the installing project.
-- [written-records](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/written-records.md): the N/A spelling for empty fields and the one correction format.
-- [defect-system-info](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/defect-system-info.md): commands that collect runtime and dependency versions for a defect report.
-- [tracker-azure-devops](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/.claude/skills/qa-reference/references/tracker-azure-devops.md): filing a defect report in Azure DevOps.
+- [testing-design](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/testing-design.md): test pyramid, coverage measures, test doubles, CTFL test levels and types, design techniques and their coverage items.
+- [testing-in-delivery](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/testing-in-delivery.md): shift-left and DevOps, confirmation and regression testing, impact analysis, CI preconditions, delivery versus deployment, feature flags.
+- [test-case-writing](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/test-case-writing.md): tracker link formats, a worked example of each design technique in test case format, the runbook format.
+- [test-planning](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/test-planning.md): testing quadrants, estimation techniques, execution orderings, suite-level artifacts, roles and independence, configuration management.
+- [test-reporting](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/test-reporting.md): monitoring metrics, control, progress and completion reports, the row format for every case, retrospectives.
+- [automation-code](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/automation-code.md): Arrange-Act-Assert and Page Object detail, FIRST properties, test smells.
+- [playwright-patterns](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/playwright-patterns.md): Playwright project layout, configuration, fixtures, Page Objects.
+- [vitest-patterns](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/vitest-patterns.md): Vitest project layout, configuration, mocking.
+- [automation-ci](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/automation-ci.md): flakiness hunting, a CI pipeline with nightly regression, reporters.
+- [evidence-capture](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/evidence-capture.md): how to capture screenshots and recordings that a reviewer can trust.
+- [accessibility-checks](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/accessibility-checks.md): full WCAG 2.2 AA criteria, the axe-core audit template, the manual checklist.
+- [security-checks](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/security-checks.md): full OWASP client-side checks, payload spec, manual checklist.
+- [context-sources](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/context-sources.md): how to read specifications, trackers and feature-area notes.
+- [test-tools](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/test-tools.md): CTFL tool categories, benefits and risks of automation.
+- [repo-conventions](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/repo-conventions.md): full commit and linting conventions for the installing project.
+- [written-records](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/written-records.md): the N/A spelling for empty fields and the one correction format.
+- [defect-system-info](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/defect-system-info.md): commands that collect runtime and dependency versions for a defect report.
+- [tracker-azure-devops](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/tracker-azure-devops.md): filing a defect report in Azure DevOps.
 
 ## Contributing
 
-- [CONTRIBUTING.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/CONTRIBUTING.md): what helps most, the evidence bar, what will not be merged, the checks CI runs.
-- [CLAUDE.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/CLAUDE.md): the development guide for an agent changing this repository: structure, build, tests, installer contracts.
-- [ROADMAP.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/ROADMAP.md): what ships, what is planned, what is out of scope.
-- [plans/README.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/plans/README.md): the index of numbered work plans and their status.
+- [CONTRIBUTING.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/CONTRIBUTING.md): what helps most, the evidence bar, what will not be merged, the checks CI runs.
+- [CLAUDE.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/CLAUDE.md): the development guide for an agent changing this repository: structure, build, tests, installer contracts.
+- [ROADMAP.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/ROADMAP.md): what ships, what is planned, what is out of scope.
+- [plans/README.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/plans/README.md): the index of numbered work plans and their status.
 
 ## Optional
 
-- [examples/README.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/examples/README.md): real, unedited output of the commands and skills on public software, with honest limits.
-- [CHANGELOG.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/CHANGELOG.md): every release and what changed.
-- [SECURITY.md](https://raw.githubusercontent.com/MarcoAmaral/bem-te-vi/main/SECURITY.md): how to report a vulnerability, and the installers' security invariants.
+- [examples/README.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/examples/README.md): real, unedited output of the commands and skills on public software, with honest limits.
+- [CHANGELOG.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/CHANGELOG.md): every release and what changed.
+- [SECURITY.md](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/SECURITY.md): how to report a vulnerability, and the installers' security invariants.
 
 ## Not context
 

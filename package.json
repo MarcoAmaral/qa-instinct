@@ -1,5 +1,5 @@
 {
-  "name": "@marcoamaral/bem-te-vi",
+  "name": "qa-instinct",
   "version": "4.1.1",
   "description": "Senior QA Analyst + QA Engineer skills for AI editors, grounded in software testing standards",
   "keywords": [
@@ -15,10 +15,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarcoAmaral/bem-te-vi.git"
+    "url": "git+https://github.com/MarcoAmaral/qa-instinct.git"
+  },
+  "homepage": "https://github.com/MarcoAmaral/qa-instinct#readme",
+  "bugs": {
+    "url": "https://github.com/MarcoAmaral/qa-instinct/issues"
   },
   "bin": {
-    "bem-te-vi": "./cli/bem-te-vi.js"
+    "qa-instinct": "./cli/qa-instinct.js"
   },
   "files": [
     ".claude/agents/",

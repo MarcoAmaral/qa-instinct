@@ -1,4 +1,4 @@
-name: Bem-te-vi CI
+name: QA Instinct CI
 
 # Branch pushes are deliberately not built. A branch with an open pull request would
 # otherwise run this whole matrix twice for the same commit — once for `push` and once for
