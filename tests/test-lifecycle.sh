@@ -2796,6 +2796,114 @@ grep -q 'Could not read the whole list' "$LOG_71" || { printf '%b\n' "${RED}✘ 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 71 passed successfully! An update that reads only part of an editor's file list removes nothing, keeps the manifest and fails.${NC}"
 
+# -----------------------------------------------------------------------------
+# TEST 72: install.sh recognises, replaces and removes every git hook any release wrote
+# (plan 064 item 1). tests/fixtures/git-hooks/ holds the bytes each release's installers wrote
+# (extract.sh there lists the tags). A project hook is ours by the marker alone, so install
+# replaces it and uninstall removes it, with or without a final line break; a global hook that
+# already names validate-tc-format.sh is left byte for byte by install, a fresh one is removed by
+# uninstall, and an appended block is cut out leaving exactly the user's lines.
+# -----------------------------------------------------------------------------
+echo ""
+echo "Running Test 72: install.sh handles every git hook a release wrote..."
+
+HOOKS_72="$REPO_DIR/tests/fixtures/git-hooks"
+WORK_72="$SANDBOX_DIR/hook-fixtures"
+rm -rf "$WORK_72"
+mkdir -p "$WORK_72"
+
+fail_72() {   # message
+    printf '%b\n' "${RED}✘ Test 72: $1${NC}"
+    exit 1
+}
+
+# 72a: project hooks. A fresh repository without the global template hook an earlier test may have
+# configured, so the only pre-commit hook present is the one seeded.
+for FIXTURE_72 in "$HOOKS_72"/project/*; do
+    NAME_72="project/$(basename "$FIXTURE_72")"
+    REPO_72="$WORK_72/repo"
+    rm -rf "$REPO_72"
+    mkdir -p "$REPO_72"
+    git -C "$REPO_72" -c init.templateDir= init -q -b main
+    mkdir -p "$REPO_72/.git/hooks"
+    cp "$FIXTURE_72" "$REPO_72/.git/hooks/pre-commit"
+    chmod +x "$REPO_72/.git/hooks/pre-commit"
+    cd "$REPO_72"
+    "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-color > "$WORK_72/install.log" 2>&1 || { cat "$WORK_72/install.log"; fail_72 "install over $NAME_72 failed"; }
+    cmp -s ".git/hooks/pre-commit" "$HOOKS_72/project/current.lf.nl" || { cat "$WORK_72/install.log"; fail_72 "install did not replace $NAME_72 with the current hook"; }
+    cp "$FIXTURE_72" ".git/hooks/pre-commit"
+    "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-color --uninstall > "$WORK_72/uninstall.log" 2>&1 || { cat "$WORK_72/uninstall.log"; fail_72 "uninstall over $NAME_72 failed"; }
+    [ ! -e ".git/hooks/pre-commit" ] || fail_72 "uninstall left $NAME_72 behind"
+done
+
+# 72b: global hooks written fresh by a release: install leaves them byte for byte, uninstall
+# removes the file. Each in its own throwaway HOME.
+for FIXTURE_72 in "$HOOKS_72"/global-fresh/*; do
+    NAME_72="global-fresh/$(basename "$FIXTURE_72")"
+    HOME_72="$WORK_72/home"
+    rm -rf "$HOME_72"
+    mkdir -p "$HOME_72/.git-templates/hooks"
+    cp "$FIXTURE_72" "$HOME_72/.git-templates/hooks/pre-commit"
+    cd "$WORK_72"
+    HOME="$HOME_72" GIT_CONFIG_GLOBAL="$HOME_72/.gitconfig" "$REPO_DIR/install.sh" --target global --editor claude --non-interactive --no-color > "$WORK_72/install.log" 2>&1 || { cat "$WORK_72/install.log"; fail_72 "global install over $NAME_72 failed"; }
+    cmp -s "$FIXTURE_72" "$HOME_72/.git-templates/hooks/pre-commit" || fail_72 "global install changed $NAME_72"
+    HOME="$HOME_72" GIT_CONFIG_GLOBAL="$HOME_72/.gitconfig" "$REPO_DIR/install.sh" --target global --editor claude --non-interactive --no-color --uninstall > "$WORK_72/uninstall.log" 2>&1 || { cat "$WORK_72/uninstall.log"; fail_72 "global uninstall over $NAME_72 failed"; }
+    [ ! -e "$HOME_72/.git-templates/hooks/pre-commit" ] || fail_72 "global uninstall left $NAME_72 behind"
+done
+
+# 72c: global blocks appended to a user's hook: uninstall leaves exactly the .expected bytes.
+for FIXTURE_72 in "$HOOKS_72"/global-appended/*; do
+    case "$FIXTURE_72" in *.expected) continue ;; esac
+    NAME_72="global-appended/$(basename "$FIXTURE_72")"
+    HOME_72="$WORK_72/home"
+    rm -rf "$HOME_72"
+    mkdir -p "$HOME_72/.git-templates/hooks"
+    cp "$FIXTURE_72" "$HOME_72/.git-templates/hooks/pre-commit"
+    cd "$WORK_72"
+    HOME="$HOME_72" GIT_CONFIG_GLOBAL="$HOME_72/.gitconfig" "$REPO_DIR/install.sh" --target global --editor claude --non-interactive --no-color --uninstall > "$WORK_72/uninstall.log" 2>&1 || { cat "$WORK_72/uninstall.log"; fail_72 "global uninstall over $NAME_72 failed"; }
+    cmp -s "$FIXTURE_72.expected" "$HOME_72/.git-templates/hooks/pre-commit" || fail_72 "global uninstall of $NAME_72 did not leave exactly the user's lines"
+done
+
+cd "$REPO_DIR"
+printf '%b\n' "${GREEN}✔ Test 72 passed successfully! install.sh replaces, removes and cleans every git hook text a release wrote, with and without a final line break.${NC}"
+
+# -----------------------------------------------------------------------------
+# TEST 73: install.sh writes exactly the hook bytes in tests/fixtures/git-hooks/current/
+# (plan 064 item 2b; lifecycle Test 57 in PowerShell). tests/test-hook-parity.sh compares the hook
+# text in the two installers' sources; the final newline is a property of how each installer
+# writes, which only a run shows. The fixtures are what install.sh writes on main: a project
+# install into a fresh repository, a global install with no hook, and a global install onto
+# "#!/bin/sh", "echo before".
+# -----------------------------------------------------------------------------
+echo ""
+echo "Running Test 73: install.sh writes the same git hook bytes as the fixtures..."
+
+CURRENT_73="$REPO_DIR/tests/fixtures/git-hooks/current"
+WORK_73="$SANDBOX_DIR/hook-bytes"
+rm -rf "$WORK_73"
+mkdir -p "$WORK_73/repo" "$WORK_73/home-fresh/.git-templates/hooks" "$WORK_73/home-appended/.git-templates/hooks"
+
+fail_73() {   # message
+    printf '%b\n' "${RED}✘ Test 73: $1${NC}"
+    exit 1
+}
+
+git -C "$WORK_73/repo" -c init.templateDir= init -q -b main
+cd "$WORK_73/repo"
+"$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-color > "$WORK_73/project.log" 2>&1 || { cat "$WORK_73/project.log"; fail_73 "project install failed"; }
+cmp -s ".git/hooks/pre-commit" "$CURRENT_73/project" || fail_73 "the project hook differs from current/project"
+
+cd "$WORK_73"
+HOME="$WORK_73/home-fresh" GIT_CONFIG_GLOBAL="$WORK_73/home-fresh/.gitconfig" "$REPO_DIR/install.sh" --target global --editor claude --non-interactive --no-color > "$WORK_73/fresh.log" 2>&1 || { cat "$WORK_73/fresh.log"; fail_73 "global install with no hook failed"; }
+cmp -s "$WORK_73/home-fresh/.git-templates/hooks/pre-commit" "$CURRENT_73/global-fresh" || fail_73 "the fresh global hook differs from current/global-fresh"
+
+printf '#!/bin/sh\necho before\n' > "$WORK_73/home-appended/.git-templates/hooks/pre-commit"
+HOME="$WORK_73/home-appended" GIT_CONFIG_GLOBAL="$WORK_73/home-appended/.gitconfig" "$REPO_DIR/install.sh" --target global --editor claude --non-interactive --no-color > "$WORK_73/appended.log" 2>&1 || { cat "$WORK_73/appended.log"; fail_73 "global install onto an existing hook failed"; }
+cmp -s "$WORK_73/home-appended/.git-templates/hooks/pre-commit" "$CURRENT_73/global-appended" || fail_73 "the appended global hook differs from current/global-appended"
+
+cd "$REPO_DIR"
+printf '%b\n' "${GREEN}✔ Test 73 passed successfully! install.sh writes the project hook, a fresh global hook and an appended global block byte for byte as the fixtures.${NC}"
+
 # Clean up sandbox
 rm -rf "$SANDBOX_DIR"
 

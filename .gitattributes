@@ -16,3 +16,7 @@ tests/fixtures/release-v4.0.1/** -text
 
 # Changelog fixtures are release-please's output as committed; the dedupe test reads them as is.
 tests/fixtures/dedupe-changelog/** -text
+
+# Git hook fixtures are the exact bytes a release's installer wrote, final line break and CRLF
+# included (plan 064). Never convert them.
+tests/fixtures/git-hooks/** -text

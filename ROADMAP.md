@@ -74,8 +74,6 @@ The [README](README.md) explains each part, and `CHANGELOG.md` lists every chang
   the commands and skills but not the rules they assume. Since plan 060 each command, skill and
   agent that names a rule says in its reply which rule it could not apply; closing the gap itself
   is still open.
-- **The git hook's text from one source.** `install.sh` and `install.ps1` each carry their own
-  copy of the pre-commit hook they register. One template for both would stop them drifting.
 
 The plugin without rules waits on a decision by the maintainer before any work starts.
 

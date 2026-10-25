@@ -153,6 +153,7 @@ repository root:
 | Run Conformance Suite | `./tests/conformance/test-runner.sh && ./tests/conformance/run.sh` |
 | Test Evidence Checker | `./tests/test-check-test-evidence.sh` |
 | Test Case Format Hook | `./tests/test-validate-tc-format.sh` |
+| Hook Text Parity | `./tests/test-hook-parity.sh` |
 | Skill and Command Frontmatter | `./tests/test-frontmatter.sh` |
 | CTFL Section Citations | `./tests/test-ctfl-citations.sh` |
 | Plan Format (Plans 038 On) | `./tests/test-plan-format.sh` |
@@ -173,8 +174,8 @@ repository root:
 
 For a quick pass before you push, `npm run lint` runs ESLint and Prettier, and `npm test` runs the
 checks in the table that take a few seconds and need only Node and bash: frontmatter, citations,
-plan format, `llms.txt`, test case contracts, both hook tests, the plugin manifests, rules size,
-reference pointers, `/qa-trace`, the changelog dedupe, Node engines, command names and sizes,
+plan format, `llms.txt`, test case contracts, both hook tests, the hook text parity check, the plugin
+manifests, rules size, reference pointers, `/qa-trace`, the changelog dedupe, Node engines, command names and sizes,
 TypeScript samples and the benchmark integrity check. It stops at the first failure. It does not run
 ShellCheck, markdownlint, the known-hash check, the adapter generator, the corpus index, the
 conformance suite or the integration tests: run those from the table when you touch what they cover.

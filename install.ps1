@@ -450,7 +450,7 @@ if [ -f "$VALIDATOR" ]; then
 fi
 '@
         $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-        [System.IO.File]::WriteAllText($hookFile, $hookContent, $utf8NoBom)
+        [System.IO.File]::WriteAllText($hookFile, $hookContent + "`n", $utf8NoBom)
         Write-Success "Registered project-level git pre-commit hook: $hookFile"
     }
     else {

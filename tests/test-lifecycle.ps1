@@ -2542,6 +2542,153 @@ if ($out55.Contains('in WSL, open the folder')) { throw "Test 55: install.ps1 pr
 Write-Host "[OK] Test 55 passed successfully! Under WSL, install.ps1 names the command that opens a WSL window; outside WSL it does not." -ForegroundColor Green
 Set-Location -Path $repoDir
 
+# -----------------------------------------------------------------------------
+# TEST 56: install.ps1 recognises, replaces and removes every git hook any release wrote
+# (plan 064 item 1; lifecycle Test 72 in bash). tests/fixtures/git-hooks/ holds the bytes each
+# release's installers wrote (extract.sh there lists the tags). A project hook is ours by the
+# marker alone, so install replaces it and uninstall removes it, with or without a final line
+# break; a global hook that already names validate-tc-format.sh is left byte for byte by install,
+# a fresh one is removed by uninstall, and an appended block is cut out leaving exactly the
+# user's lines.
+# -----------------------------------------------------------------------------
+Write-Host ""
+Write-Host "Running Test 56: install.ps1 handles every git hook a release wrote..." -ForegroundColor Yellow
+
+$hooks56 = Join-Path $repoDir 'tests\fixtures\git-hooks'
+$work56 = Join-Path $sandboxDir 'hook-fixtures'
+if (Test-Path -LiteralPath $work56) { Remove-Item -LiteralPath $work56 -Recurse -Force }
+New-Item -ItemType Directory -Path $work56 -Force | Out-Null
+
+function Get-Sha56([string]$Path) { return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash }
+
+# Runs install.ps1 against its own throwaway home so no earlier test's global state leaks in.
+function Invoke-Global56 {
+    param([string]$HomeDir, [bool]$Uninstall, [string]$Fixture)
+    $savedProfile = $env:USERPROFILE; $savedHome = $env:HOME; $savedGit = $env:GIT_CONFIG_GLOBAL
+    $env:USERPROFILE = $HomeDir; $env:HOME = $HomeDir; $env:GIT_CONFIG_GLOBAL = (Join-Path $HomeDir '.gitconfig')
+    try {
+        if ($Uninstall) {
+            $out = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target global -Editor claude -NonInteractive -Uninstall 2>&1 | Out-String
+        }
+        else {
+            $out = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target global -Editor claude -NonInteractive 2>&1 | Out-String
+        }
+        if ($LASTEXITCODE -ne 0) { throw "Test 56: install.ps1 (uninstall=$Uninstall) over $Fixture failed with exit status $LASTEXITCODE. Output was: $out" }
+    }
+    finally {
+        $env:USERPROFILE = $savedProfile; $env:HOME = $savedHome; $env:GIT_CONFIG_GLOBAL = $savedGit
+    }
+}
+
+# 56a: project hooks. A repository without the global template hook an earlier test may have
+# configured, so the only pre-commit hook present is the one seeded. The replacement is the current
+# text with or without its final line break: whether install.ps1 ends it with one is plan 064
+# item 3, not this test.
+$current56 = @((Get-Sha56 (Join-Path $hooks56 'project\current.lf.nl')), (Get-Sha56 (Join-Path $hooks56 'project\current.lf.nonl')))
+foreach ($fixture56 in (Get-ChildItem -LiteralPath (Join-Path $hooks56 'project') -File)) {
+    Set-Location -Path $work56
+    $repo56 = Join-Path $work56 'repo'
+    if (Test-Path -LiteralPath $repo56) { Remove-Item -LiteralPath $repo56 -Recurse -Force }
+    New-Item -ItemType Directory -Path $repo56 -Force | Out-Null
+    git -C $repo56 -c "init.templateDir=" init -q -b main
+    $hookDir56 = Join-Path $repo56 '.git\hooks'
+    New-Item -ItemType Directory -Path $hookDir56 -Force | Out-Null
+    $hook56 = Join-Path $hookDir56 'pre-commit'
+    Copy-Item -LiteralPath $fixture56.FullName -Destination $hook56
+    Set-Location -Path $repo56
+    $out56 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) { throw "Test 56: install.ps1 over project\$($fixture56.Name) failed with exit status $LASTEXITCODE. Output was: $out56" }
+    if ($current56 -notcontains (Get-Sha56 $hook56)) { throw "Test 56: install did not replace project\$($fixture56.Name) with the current hook. Output was: $out56" }
+    Copy-Item -LiteralPath $fixture56.FullName -Destination $hook56 -Force
+    $out56 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -Uninstall 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) { throw "Test 56: install.ps1 -Uninstall over project\$($fixture56.Name) failed with exit status $LASTEXITCODE. Output was: $out56" }
+    if (Test-Path -LiteralPath $hook56) { throw "Test 56: uninstall left project\$($fixture56.Name) behind" }
+}
+
+# 56b: global hooks written fresh by a release: install leaves them byte for byte, uninstall
+# removes the file. Each in its own throwaway home.
+Set-Location -Path $work56
+foreach ($fixture56 in (Get-ChildItem -LiteralPath (Join-Path $hooks56 'global-fresh') -File)) {
+    $home56 = Join-Path $work56 'home'
+    if (Test-Path -LiteralPath $home56) { Remove-Item -LiteralPath $home56 -Recurse -Force }
+    New-Item -ItemType Directory -Path (Join-Path $home56 '.git-templates\hooks') -Force | Out-Null
+    $hook56 = Join-Path $home56 '.git-templates\hooks\pre-commit'
+    Copy-Item -LiteralPath $fixture56.FullName -Destination $hook56
+    Invoke-Global56 $home56 $false "global-fresh\$($fixture56.Name)"
+    if ((Get-Sha56 $hook56) -ne (Get-Sha56 $fixture56.FullName)) { throw "Test 56: global install changed global-fresh\$($fixture56.Name)" }
+    Invoke-Global56 $home56 $true "global-fresh\$($fixture56.Name)"
+    if (Test-Path -LiteralPath $hook56) { throw "Test 56: global uninstall left global-fresh\$($fixture56.Name) behind" }
+}
+
+# 56c: global blocks appended to a user's hook: uninstall leaves exactly the .expected bytes.
+foreach ($fixture56 in (Get-ChildItem -LiteralPath (Join-Path $hooks56 'global-appended') -File | Where-Object { $_.Extension -ne '.expected' })) {
+    $home56 = Join-Path $work56 'home'
+    if (Test-Path -LiteralPath $home56) { Remove-Item -LiteralPath $home56 -Recurse -Force }
+    New-Item -ItemType Directory -Path (Join-Path $home56 '.git-templates\hooks') -Force | Out-Null
+    $hook56 = Join-Path $home56 '.git-templates\hooks\pre-commit'
+    Copy-Item -LiteralPath $fixture56.FullName -Destination $hook56
+    Invoke-Global56 $home56 $true "global-appended\$($fixture56.Name)"
+    if (-not (Test-Path -LiteralPath $hook56)) { throw "Test 56: global uninstall removed global-appended\$($fixture56.Name) although the user's lines remain" }
+    if ((Get-Sha56 $hook56) -ne (Get-Sha56 "$($fixture56.FullName).expected")) { throw "Test 56: global uninstall of global-appended\$($fixture56.Name) did not leave exactly the user's lines" }
+}
+
+Set-Location -Path $repoDir
+Write-Host "[OK] Test 56 passed successfully! install.ps1 replaces, removes and cleans every git hook text a release wrote, with and without a final line break." -ForegroundColor Green
+
+# -----------------------------------------------------------------------------
+# TEST 57: install.ps1 writes exactly the hook bytes in tests\fixtures\git-hooks\current\
+# (plan 064 item 2b; lifecycle Test 73 in bash). The fixtures are what install.sh writes. The text
+# of the hooks is compared in the sources by tests/test-hook-parity.sh; the final newline is a
+# property of how each installer writes, which only a run shows. A PowerShell here-string has no
+# final line break, so the project hook is the byte this test finds missing until plan 064 item 3.
+# -----------------------------------------------------------------------------
+Write-Host ""
+Write-Host "Running Test 57: install.ps1 writes the same git hook bytes as the fixtures..." -ForegroundColor Yellow
+
+$current57 = Join-Path $repoDir 'tests\fixtures\git-hooks\current'
+$work57 = Join-Path $sandboxDir 'hook-bytes'
+if (Test-Path -LiteralPath $work57) { Remove-Item -LiteralPath $work57 -Recurse -Force }
+New-Item -ItemType Directory -Path $work57 -Force | Out-Null
+
+function Get-Sha57([string]$Path) { return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash }
+
+$repo57 = Join-Path $work57 'repo'
+New-Item -ItemType Directory -Path $repo57 -Force | Out-Null
+git -C $repo57 -c "init.templateDir=" init -q -b main
+Set-Location -Path $repo57
+$out57 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive 2>&1 | Out-String
+if ($LASTEXITCODE -ne 0) { throw "Test 57: project install failed with exit status $LASTEXITCODE. Output was: $out57" }
+$projectHook57 = Join-Path $repo57 '.git\hooks\pre-commit'
+# All three hooks are compared before failing, so one run shows every difference.
+$mismatch57 = @()
+$projectExpected57 = Join-Path $current57 'project'
+if ((Get-Sha57 $projectHook57) -ne (Get-Sha57 $projectExpected57)) { $mismatch57 += "the project hook differs from current\project ($((Get-Item -LiteralPath $projectHook57).Length) bytes, expected $((Get-Item -LiteralPath $projectExpected57).Length))" }
+
+Set-Location -Path $work57
+foreach ($case57 in @('fresh', 'appended')) {
+    $home57 = Join-Path $work57 "home-$case57"
+    $hookDir57 = Join-Path $home57 '.git-templates\hooks'
+    New-Item -ItemType Directory -Path $hookDir57 -Force | Out-Null
+    $hook57 = Join-Path $hookDir57 'pre-commit'
+    if ($case57 -eq 'appended') { [System.IO.File]::WriteAllText($hook57, "#!/bin/sh`necho before`n", (New-Object System.Text.UTF8Encoding($false))) }
+    $savedProfile = $env:USERPROFILE; $savedHome = $env:HOME; $savedGit = $env:GIT_CONFIG_GLOBAL
+    $env:USERPROFILE = $home57; $env:HOME = $home57; $env:GIT_CONFIG_GLOBAL = (Join-Path $home57 '.gitconfig')
+    try {
+        $out57 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target global -Editor claude -NonInteractive 2>&1 | Out-String
+        $exit57 = $LASTEXITCODE
+    }
+    finally {
+        $env:USERPROFILE = $savedProfile; $env:HOME = $savedHome; $env:GIT_CONFIG_GLOBAL = $savedGit
+    }
+    if ($exit57 -ne 0) { throw "Test 57: global install ($case57) failed with exit status $exit57. Output was: $out57" }
+    $expected57 = Join-Path $current57 "global-$case57"
+    if ((Get-Sha57 $hook57) -ne (Get-Sha57 $expected57)) { $mismatch57 += "the $case57 global hook differs from current\global-$case57" }
+}
+if ($mismatch57.Count -gt 0) { throw "Test 57: $($mismatch57 -join '; ')" }
+
+Set-Location -Path $repoDir
+Write-Host "[OK] Test 57 passed successfully! install.ps1 writes the project hook, a fresh global hook and an appended global block byte for byte as the fixtures." -ForegroundColor Green
+
 # Clean up sandbox
 Set-Location -Path $repoDir
 Remove-Item -Path $sandboxDir -Recurse -Force -ErrorAction SilentlyContinue

@@ -107,7 +107,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          shellcheck install.sh generate-adapters.sh generate-known-hashes.sh dedupe-changelog.sh verify-merge-commits.sh tests/test-lifecycle.sh tests/verify-adapters.sh tests/test-dedupe-changelog.sh .claude/hooks/check-test-evidence.sh tests/test-check-test-evidence.sh .claude/hooks/validate-tc-format.sh tests/test-validate-tc-format.sh tests/test-frontmatter.sh tests/test-tc-contracts.sh tests/plugin/verify-plugin.sh tests/test-rules-size.sh tests/test-skill-bodies.sh tests/test-reference-links.sh tests/test-qa-trace.sh demo/record.sh demo/shell.sh
+          shellcheck install.sh generate-adapters.sh generate-known-hashes.sh dedupe-changelog.sh verify-merge-commits.sh tests/test-lifecycle.sh tests/verify-adapters.sh tests/test-dedupe-changelog.sh .claude/hooks/check-test-evidence.sh tests/test-check-test-evidence.sh .claude/hooks/validate-tc-format.sh tests/test-validate-tc-format.sh tests/test-hook-parity.sh tests/test-frontmatter.sh tests/test-tc-contracts.sh tests/plugin/verify-plugin.sh tests/test-rules-size.sh tests/test-skill-bodies.sh tests/test-reference-links.sh tests/test-qa-trace.sh demo/record.sh demo/shell.sh
 
       - name: Install Dependencies
         run: npm ci
@@ -184,6 +184,11 @@ jobs:
         run: |
           chmod +x ./tests/test-validate-tc-format.sh ./.claude/hooks/validate-tc-format.sh
           ./tests/test-validate-tc-format.sh
+
+      - name: Hook Text Parity
+        run: |
+          chmod +x ./tests/test-hook-parity.sh
+          ./tests/test-hook-parity.sh
 
       - name: Skill and Command Frontmatter
         run: |
