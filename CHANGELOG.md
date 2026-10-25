@@ -1,8 +1,8 @@
 # Changelog
 
-**Bem-te-vi** — Created by Marco Amaral
+**QA Instinct** — Created by Marco Amaral (named Bem-te-vi up to 4.1.1)
 
-All notable changes to Bem-te-vi will be documented in this file.
+All notable changes to QA Instinct will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries up to 2.2.0 were written by hand following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
