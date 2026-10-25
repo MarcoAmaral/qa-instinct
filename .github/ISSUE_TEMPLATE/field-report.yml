@@ -1,5 +1,5 @@
 name: Field report
-description: You used Bem-te-vi on real QA work. Tell us what it caught, what it missed, and what did not work.
+description: You used QA Instinct on real QA work. Tell us what it caught, what it missed, and what did not work.
 title: "[Field] "
 labels: ["field-report"]
 body:
@@ -21,7 +21,7 @@ body:
     id: setup
     attributes:
       label: Editor, model and install method
-      placeholder: "Claude Code, bem-te-vi init (project), 4.1.0"
+      placeholder: "Claude Code, qa-instinct init (project), 4.1.0"
     validations:
       required: true
   - type: input

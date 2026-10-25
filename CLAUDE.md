@@ -1,6 +1,6 @@
-# Bem-te-vi — Project Development Guide
+# QA Instinct — Project Development Guide
 
-Welcome to the **Bem-te-vi** package repository. This file serves as the primary entry point for AI agents and developers working on this project. It outlines the technology stack, project structure, build/compilation workflows, and development guidelines.
+Welcome to the **QA Instinct** package repository. This file serves as the primary entry point for AI agents and developers working on this project. It outlines the technology stack, project structure, build/compilation workflows, and development guidelines.
 
 ---
 
@@ -9,7 +9,7 @@ Welcome to the **Bem-te-vi** package repository. This file serves as the primary
 - **Purpose**: A universal, model-agnostic package providing high-fidelity QA Analyst + QA Engineer capabilities based on **ISTQB CTFL v4.0** and modern software engineering practices.
 - **Target Editors**: Claude Code, Cursor, Windsurf, GitHub Copilot, Cline and Antigravity, plus a universal `AGENTS.md` / `CLAUDE.md` for any agent that reads Markdown.
 - **Source Language**: Standard English Markdown (`.md`).
-- **Build Scripts**: Bash and PowerShell compilers and installers, and a Node CLI (`cli/bem-te-vi.js`).
+- **Build Scripts**: Bash and PowerShell compilers and installers, and a Node CLI (`cli/qa-instinct.js`).
 
 ---
 
@@ -18,7 +18,7 @@ Welcome to the **Bem-te-vi** package repository. This file serves as the primary
 The source files are structured in the modern, modular Claude Code layout under `.claude/`. The compiler compiles these source files into editor-specific targets under `adapters/`: each editor's always-on rule files, one Agent Skill per command, skill and agent in `adapters/skills/`, and the universal `AGENTS.md` / `CLAUDE.md`.
 
 ```text
-bem-te-vi/
+qa-instinct/
 ├── CLAUDE.md                   # You are here (project entry point)
 ├── README.md                   # Public distribution guide
 ├── CHANGELOG.md                # Release history (Release Please writes it)
@@ -34,7 +34,7 @@ bem-te-vi/
 ├── known-hashes-before-public.txt # Hashes of the releases before the public repository; sealed at export
 ├── install.sh                  # Linux/macOS interactive installer
 ├── install.ps1                 # Windows PowerShell installer
-├── cli/bem-te-vi.js            # npm CLI — bem-te-vi init / update / uninstall / link / unlink
+├── cli/qa-instinct.js            # npm CLI — qa-instinct init / update / uninstall / link / unlink
 ├── .claude-plugin/             # Claude Code plugin and marketplace manifests
 ├── history/                    # Retired v1.x guides (usage examples, skill self-tests); not maintained
 ├── prompt-history/             # Session logs from `/qa` (local memory store; not published)
@@ -102,10 +102,10 @@ suite: it is written once as a case under `tests/conformance/cases/` and run aga
 installer. See `tests/conformance/README.md`.
 
 ```bash
-# Linux/macOS: install.sh and cli/bem-te-vi.js
+# Linux/macOS: install.sh and cli/qa-instinct.js
 ./tests/conformance/run.sh
 
-# Windows PowerShell: install.ps1 and cli/bem-te-vi.js
+# Windows PowerShell: install.ps1 and cli/qa-instinct.js
 .\tests\conformance\run.ps1
 ```
 
@@ -125,7 +125,7 @@ benchmark's integrity and others); `CONTRIBUTING.md` section 4 lists every one w
    - `docs`: Update readme, changelog, or distribution files
    - Every type the checks accept, with its meaning, is in `CONTRIBUTING.md` section 2.
 4. **Test Case Formatting Hook**: Newly created test cases matching `TC-*.md` must pass the validation hook in `.claude/hooks/validate-tc-format.sh`.
-5. **Installer File-Safety Contracts**: `install.sh`, `install.ps1` and `cli/bem-te-vi.js` must behave identically, and a user's own file must never be destroyed. Before changing any of them, read `plans/009`-`plans/012`, and keep these invariants:
+5. **Installer File-Safety Contracts**: `install.sh`, `install.ps1` and `cli/qa-instinct.js` must behave identically, and a user's own file must never be destroyed. Before changing any of them, read `plans/009`-`plans/012`, and keep these invariants:
    - `.qa-skills-manifest` and `.qa-skills-known-hashes` are shared, portable formats: no BOM, LF endings, forward-slash paths. The manifest is `<sha256>  <editor>  <path>`; the known-hash list is `<sha256>  <path>`. Reads tolerate a leading BOM and trailing `\r`. A file written by one installer must be readable by the other two — the suites round-trip this.
    - A colliding file is backed up to `<file>.qa-skills-backup-<UTC timestamp>` unless it is identical to the package's current file or its hash appears in `.qa-skills-known-hashes`, in which case it is the package's own and is adopted silently. Never guess by any other means.
    - Never write through a symlinked destination: back up the content it points at, record the target in `<backup>.link-target`, and replace the link. Never write or delete through a symlinked directory below the editor's top-level folder (plan 033 item 1). Never overwrite a read-only file; skip it and carry on installing the rest. Skip a destination that is a directory the same way, and keep a recorded path that is now a directory on uninstall (conformance cases 044-045).

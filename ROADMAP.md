@@ -1,4 +1,4 @@
-# Bem-te-vi Roadmap
+# QA Instinct Roadmap
 
 One page for newcomers: what the package ships, what comes next, what it will not do, and how to
 suggest something. It is written by hand from [`plans/README.md`](plans/README.md), last on
@@ -40,7 +40,7 @@ this page and `plans/README.md` disagree, the plans index is right.
   WSL install reports a Windows home it cannot resolve (plans 053 and 057). An install from WSL
   into the Windows user profile says that its pre-commit hook is not active for Windows-side git
   and that `install.ps1` sets it up there (plan 014, A3).
-- **A CLI help that is true**: `bem-te-vi --help` lists each command with only the options it
+- **A CLI help that is true**: `qa-instinct --help` lists each command with only the options it
   accepts, and the package requires Node 24, the latest LTS (#197).
 - **Corrected `/qa-defect` and `/qa-cases`**: Root Cause stays "not yet analysed" until analysis
   finds it, with a separate field for suspicions; every good title states its condition; and
@@ -102,12 +102,12 @@ names static analysis tools but does not teach running one or triaging its findi
 
 ## How to Propose Something
 
-- **A new skill or command**: open a [proposal](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=proposal.yml)
+- **A new skill or command**: open a [proposal](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=proposal.yml)
   before writing it.
-- **Something wrong in what the package teaches**: the [CTFL claim](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=ctfl-claim.yml)
+- **Something wrong in what the package teaches**: the [CTFL claim](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=ctfl-claim.yml)
   form.
-- **What happened when you used it**: a [field report](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=field-report.yml).
-- **A question or an early idea**: [Discussions](https://github.com/MarcoAmaral/bem-te-vi/discussions).
+- **What happened when you used it**: a [field report](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=field-report.yml).
+- **A question or an early idea**: [Discussions](https://github.com/MarcoAmaral/qa-instinct/discussions).
 
 Larger work becomes a numbered plan in `plans/` before any code. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 has the evidence a change needs and the steps from fork to pull request.

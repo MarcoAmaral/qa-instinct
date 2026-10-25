@@ -1,6 +1,6 @@
-# Contributing to Bem-te-vi
+# Contributing to QA Instinct
 
-First off, thank you for considering contributing to Bem-te-vi! We welcome contributions from everyone and value your feedback.
+First off, thank you for considering contributing to QA Instinct! We welcome contributions from everyone and value your feedback.
 
 **Start here.** To report a problem or send a change, read sections 7 to 10 first: the
 contributions that help most, the evidence a change needs, what will not be merged, and the steps
@@ -115,7 +115,7 @@ If you are modifying the shell scripts or adapter generation logic:
 3. Test the installation locally via `tests/test-lifecycle.sh`, and
    `tests/test-lifecycle.ps1` if you touched `install.ps1`.
 
-If you are modifying an installer (`install.sh`, `install.ps1` or `cli/bem-te-vi.js`), also:
+If you are modifying an installer (`install.sh`, `install.ps1` or `cli/qa-instinct.js`), also:
 
 1. Read the file-safety contracts in `CLAUDE.md` first. All three installers share the
    `.qa-skills-manifest` and `.qa-skills-known-hashes` formats, and the suites round-trip a
@@ -248,12 +248,12 @@ it, so cite the version or commit with the anchor.
 1. **A wrong or missing CTFL claim.** The package cites the CTFL v4.0.1 syllabus by section so that
    each claim can be checked against it. A claim the cited section does not support, a wrong section
    number, or a topic taught without its section is the most serious content defect it can have.
-   Open a [wrong or missing CTFL claim](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=ctfl-claim.yml)
+   Open a [wrong or missing CTFL claim](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=ctfl-claim.yml)
    issue with the file, the claim quoted and the section.
 2. **A field report.** You used a command or skill on real QA work and something happened: it
    caught a defect, missed one, produced a document your team could not use, or your assistant did
    something with an instruction that surprised you. A failure, written down with the output, is
-   worth more than praise. Open a [field report](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=field-report.yml).
+   worth more than praise. Open a [field report](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=field-report.yml).
 3. **A worked example.** Real output on someone else's public software, committed unedited, with a
    `README.md` giving the prompt, the date, the package version, the editor and model, and honest
    limits. [`examples/README.md`](examples/README.md) shows the shape and which commands have one.
@@ -262,9 +262,9 @@ it, so cite the version or commit with the anchor.
    which all three installers read; a new editor also needs its adapter in both generators, and
    either change starts with a failing conformance case (section 8).
 
-Installer defects are welcome too: the [installer bug](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=installer-bug.yml)
+Installer defects are welcome too: the [installer bug](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=installer-bug.yml)
 form asks for what decides whether a report reproduces. For a new skill or command, open a
-[proposal](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=proposal.yml) before
+[proposal](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=proposal.yml) before
 writing it. Security problems go to [SECURITY.md](SECURITY.md), never to a public issue.
 
 ## 8. The Evidence Bar
@@ -286,7 +286,7 @@ reads well.
 - **Installer changes start with a failing test.** A behaviour the three installers share is a
   case under `tests/conformance/cases/`, run against every installer. Write the case first, show it
   failing, and quote the failure in the pull request. Then change `install.sh`, `install.ps1` and
-  `cli/bem-te-vi.js` together, so they still behave identically, keeping the file-safety contracts
+  `cli/qa-instinct.js` together, so they still behave identically, keeping the file-safety contracts
   in `CLAUDE.md` and bash 3.2 for `install.sh` (section 4).
 - **The always-loaded rules stay small.** `.claude/rules/` loads into every conversation in an
   installed Claude Code project. `tests/test-rules-size.sh` caps the rules at 25,000 bytes and
