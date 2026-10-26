@@ -172,16 +172,30 @@ use `qa-instinct init`.
 
 What each install gives you, and what the commands do where a part is missing:
 
-| Install | Rules | References (`qa-reference`) | Scripts (`validate-tc-format.sh`, `check-test-evidence.sh`) |
+| Install | Rules | References | Scripts |
 | --- | --- | --- | --- |
-| `qa-instinct init` (project) | In context in every conversation | Yes | Yes, in `.claude/hooks/` |
-| `qa-instinct init --global` | In context, from `~/.claude/rules/` | Yes | Yes, in `~/.claude/hooks/` |
-| Claude Code plugin | **No**: a command, skill or agent that names a rule goes on without it and says so in its reply | Yes, in the plugin's skill folder | **No** (copied, not wired): commands apply the checks by reading the files and say the script was not run |
-| `npx skills add` | **No**: a skill that names a rule goes on without it and says so | Yes, with the `qa-reference` skill | **No**, and no commands either |
-| Cursor, Windsurf, Copilot, Cline, Antigravity (project) | Always on, one rule file per rule named `qa-instinct-<rule>` (Copilot: sections of `.github/copilot-instructions.md`) | Yes, in the `qa-reference` skill of the editor's skills folder | **No**: the checks are applied by reading the files, and the reply says the script was not run |
-| Cursor, Windsurf, Copilot, Antigravity (global) | **No** rule files (none of them documents a global rules folder every surface reads that the package may write); the `qa-rules` skill holds every rule | Yes, as above | **No**, as above |
-| Cline (global) | Always on, one rule file per rule in `~/.cline/rules/` | Yes, as above | **No**, as above |
-| `AGENTS.md`, `CLAUDE.md` (copied by hand) | Inline, each under a `<!-- qa-instinct-<rule> -->` line | Only if you also copy the package's `adapters/skills/` folders, as the file's header says | **No**, as above |
+| `qa-instinct init` (project) | Always loaded | Yes | Yes, `.claude/hooks/` |
+| `qa-instinct init --global` | Always loaded, `~/.claude/rules/` | Yes | Yes, `~/.claude/hooks/` |
+| Claude Code plugin | **No** ¹ | Yes | **No** ² |
+| `npx skills add` | **No** ¹ | Yes | **No**, no commands |
+| Other editors (project) ³ | Always loaded ⁴ | Yes | **No** ² |
+| Other editors (global) ³ | `qa-rules` skill ⁵ | Yes | **No** ² |
+| Cline (global) | Always loaded, `~/.cline/rules/` | Yes | **No** ² |
+| `AGENTS.md`, `CLAUDE.md` ⁶ | Inline | With `adapters/skills/` ⁷ | **No** ² |
+
+References are the `qa-reference` skill, in the editor's skills folder (the plugin's own skill
+folder for the plugin). Scripts are `validate-tc-format.sh` and `check-test-evidence.sh`.
+
+1. A command, skill or agent that names a rule goes on without it and says so in its reply.
+2. The commands apply the checks by reading the files, and the reply says the script was not
+   run. The plugin copies the scripts but does not wire them.
+3. Cursor, Windsurf, Copilot, Antigravity; Cline too for a project install.
+4. One rule file per rule, named `qa-instinct-<rule>`. Copilot: sections of
+   `.github/copilot-instructions.md`.
+5. No rule files: none of these editors documents a global rules folder every surface reads that
+   the package may write, so the `qa-rules` skill holds every rule.
+6. Copied by hand. Each rule sits under a `<!-- qa-instinct-<rule> -->` line.
+7. Only if you also copy the package's `adapters/skills/` folders, as the file's header says.
 
 Commands name a rule by its name (the `test-evidence` rule), a reference by the skill that holds
 it (the `qa-reference` skill's `references/evidence-capture.md`, opened by loading that skill and
