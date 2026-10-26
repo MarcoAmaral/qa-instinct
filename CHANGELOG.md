@@ -18,7 +18,7 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ### ⚠ BREAKING CHANGES
 
-- **installers:** an install made by 5.x records itself in .qa-instinct-manifest, which a 4.x CLI does not read: update with qa-instinct 5 or later. QA_SKILLS_DEBUG is now QA_INSTINCT_DEBUG.
+- **installers:** an install made by 4.3.0 or later records itself in .qa-instinct-manifest, which an older CLI does not read: update with qa-instinct 4.3.0 or later. An older install's .qa-skills-manifest is moved on its next run. QA_SKILLS_DEBUG is now QA_INSTINCT_DEBUG.
 
 ### Features
 
