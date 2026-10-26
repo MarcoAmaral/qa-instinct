@@ -1,6 +1,6 @@
 # QA Instinct
 
-> QA skills, slash commands, subagents and rules that give an AI coding assistant the practice of a senior QA analyst and QA engineer, grounded in the ISTQB CTFL v4.0.1 syllabus (cited by section). Plain Markdown under `.claude/`, used as it is by Claude Code and compiled into always-on rule files and Agent Skills for Cursor, Windsurf, GitHub Copilot, Cline and Antigravity; an npm CLI or two shell installers install it and never destroy the user's files. MIT. Links point at `main`; replace `main` with a release tag such as `v4.1.0` to pin a version.
+> QA skills, slash commands, subagents and rules that give an AI coding assistant the practice of a senior QA engineer, grounded in the ISTQB CTFL v4.0.1 syllabus (cited by section). Plain Markdown under `.claude/`, used as it is by Claude Code and compiled into always-on rule files and Agent Skills for Cursor, Windsurf, GitHub Copilot, Cline and Antigravity; an npm CLI or two shell installers install it and never destroy the user's files. MIT. Links point at `main`; replace `main` with a release tag such as `v4.1.0` to pin a version.
 
 To use the package, read the README, then the `/qa` router, which names the command or skill for each QA task. The rules are always loaded in an installed project, in Claude Code and as each other editor's always-on rule files; skills and references are read on demand, only when a task needs them.
 

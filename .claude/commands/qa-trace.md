@@ -5,7 +5,7 @@ argument-hint: "<ticket folder, spec directory or pasted ticket> [results file] 
 ---
 # QA — Traceability (Requirement → Test Case → Result)
 
-> **Senior QA Analyst** | ISTQB CTFL v4.0 (syllabus v4.0.1) — §1.4.4 | Read-only by default
+> **Senior QA Engineer** | ISTQB CTFL v4.0 (syllabus v4.0.1) — §1.4.4 | Read-only by default
 > Respond in the language of the user's prompt (default: English)
 
 **If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.

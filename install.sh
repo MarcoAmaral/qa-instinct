@@ -312,7 +312,7 @@ generate_cursor_mdc() {
     mkdir -p "$(dirname "$TARGET")"
     cat > "$TARGET" << 'FRONTMATTER'
 ---
-description: "Senior QA Analyst + QA Engineer — aligned with ISTQB CTFL v4.0; Playwright, Vitest, BDD and CI/CD"
+description: "Senior QA Engineer — aligned with ISTQB CTFL v4.0; Playwright, Vitest, BDD and CI/CD"
 alwaysApply: false
 ---
 FRONTMATTER

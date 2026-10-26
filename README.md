@@ -5,7 +5,7 @@
 <h1 align="center">QA Instinct</h1>
 
 <p align="center">
-  Built by Marco Amaral — Senior QA skills for any AI coding assistant
+  Built by Marco Amaral — Senior QA Engineer skills for any AI coding assistant
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
 
 *QA Instinct is a senior QA engineer's instincts, loaded into your AI assistant before the first prompt.*
 
-QA Instinct is a plug-and-play skill package that gives AI coding assistants (Claude Code, Cursor, Windsurf, Copilot, Cline, Gemini) the expertise of a **Senior QA Analyst and QA Engineer**. It ships as a set of modular rules, slash commands, auto-loaded skills, and four subagents (a code reviewer and the three stages of a test-design pipeline) — all grounded in the **ISTQB CTFL v4.0** syllabus and modern test engineering practices. Instead of prompting your AI with long, custom instructions every time, you install this once and get structured test case generation, defect reports, BDD scenarios, Playwright/Vitest scaffolding, risk analysis, TDD workflows, and more — all following industry standards out of the box.
+QA Instinct is a plug-and-play skill package that gives AI coding assistants (Claude Code, Cursor, Windsurf, Copilot, Cline, Gemini) the expertise of a **Senior QA Engineer**. It ships as a set of modular rules, slash commands, auto-loaded skills, and four subagents (a code reviewer and the three stages of a test-design pipeline) — all grounded in the **ISTQB CTFL v4.0** syllabus and modern test engineering practices. Instead of prompting your AI with long, custom instructions every time, you install this once and get structured test case generation, defect reports, BDD scenarios, Playwright/Vitest scaffolding, risk analysis, TDD workflows, and more — all following industry standards out of the box.
 
 ---
 
@@ -37,7 +37,7 @@ QA Instinct is a plug-and-play skill package that gives AI coding assistants (Cl
 
 As a QA professional, I found myself repeating the same detailed prompts every time I wanted AI help with testing tasks: "follow ISTQB standards", "use the AAA pattern", "apply Boundary Value Analysis", "use Page Object Model", "tag tests with @smoke @p0"... Every new conversation started from zero.
 
-I wanted a solution where the AI **already knows** how a Senior QA works — the standards, the patterns, the templates, the techniques — so I could focus on the actual testing problem instead of re-teaching fundamentals every session.
+I wanted a solution where the AI **already knows** how a Senior QA Engineer works — the standards, the patterns, the templates, the techniques — so I could focus on the actual testing problem instead of re-teaching fundamentals every session.
 
 QA Instinct solves this by encoding years of QA expertise into a portable, installable package. Install it once, and every AI conversation starts with a QA engineer's brain already loaded.
 
@@ -172,16 +172,30 @@ use `qa-instinct init`.
 
 What each install gives you, and what the commands do where a part is missing:
 
-| Install | Rules | References (`qa-reference`) | Scripts (`validate-tc-format.sh`, `check-test-evidence.sh`) |
+| Install | Rules | References | Scripts |
 | --- | --- | --- | --- |
-| `qa-instinct init` (project) | In context in every conversation | Yes | Yes, in `.claude/hooks/` |
-| `qa-instinct init --global` | In context, from `~/.claude/rules/` | Yes | Yes, in `~/.claude/hooks/` |
-| Claude Code plugin | **No**: a command, skill or agent that names a rule goes on without it and says so in its reply | Yes, in the plugin's skill folder | **No** (copied, not wired): commands apply the checks by reading the files and say the script was not run |
-| `npx skills add` | **No**: a skill that names a rule goes on without it and says so | Yes, with the `qa-reference` skill | **No**, and no commands either |
-| Cursor, Windsurf, Copilot, Cline, Antigravity (project) | Always on, one rule file per rule named `qa-instinct-<rule>` (Copilot: sections of `.github/copilot-instructions.md`) | Yes, in the `qa-reference` skill of the editor's skills folder | **No**: the checks are applied by reading the files, and the reply says the script was not run |
-| Cursor, Windsurf, Copilot, Antigravity (global) | **No** rule files (none of them documents a global rules folder every surface reads that the package may write); the `qa-rules` skill holds every rule | Yes, as above | **No**, as above |
-| Cline (global) | Always on, one rule file per rule in `~/.cline/rules/` | Yes, as above | **No**, as above |
-| `AGENTS.md`, `CLAUDE.md` (copied by hand) | Inline, each under a `<!-- qa-instinct-<rule> -->` line | Only if you also copy the package's `adapters/skills/` folders, as the file's header says | **No**, as above |
+| `qa-instinct init` (project) | Always loaded | Yes | Yes, `.claude/hooks/` |
+| `qa-instinct init --global` | Always loaded, `~/.claude/rules/` | Yes | Yes, `~/.claude/hooks/` |
+| Claude Code plugin | **No** ¹ | Yes | **No** ² |
+| `npx skills add` | **No** ¹ | Yes | **No**, no commands |
+| Other editors (project) ³ | Always loaded ⁴ | Yes | **No** ² |
+| Other editors (global) ³ | `qa-rules` skill ⁵ | Yes | **No** ² |
+| Cline (global) | Always loaded, `~/.cline/rules/` | Yes | **No** ² |
+| `AGENTS.md`, `CLAUDE.md` ⁶ | Inline | With `adapters/skills/` ⁷ | **No** ² |
+
+References are the `qa-reference` skill, in the editor's skills folder (the plugin's own skill
+folder for the plugin). Scripts are `validate-tc-format.sh` and `check-test-evidence.sh`.
+
+1. A command, skill or agent that names a rule goes on without it and says so in its reply.
+2. The commands apply the checks by reading the files, and the reply says the script was not
+   run. The plugin copies the scripts but does not wire them.
+3. Cursor, Windsurf, Copilot, Antigravity; Cline too for a project install.
+4. One rule file per rule, named `qa-instinct-<rule>`. Copilot: sections of
+   `.github/copilot-instructions.md`.
+5. No rule files: none of these editors documents a global rules folder every surface reads that
+   the package may write, so the `qa-rules` skill holds every rule.
+6. Copied by hand. Each rule sits under a `<!-- qa-instinct-<rule> -->` line.
+7. Only if you also copy the package's `adapters/skills/` folders, as the file's header says.
 
 Commands name a rule by its name (the `test-evidence` rule), a reference by the skill that holds
 it (the `qa-reference` skill's `references/evidence-capture.md`, opened by loading that skill and
@@ -305,15 +319,15 @@ measures):
 
 | Editor | Always-on files | Largest | All | Documented limit |
 | --- | --- | --- | --- | --- |
-| Windsurf | 10 | 7,887 characters | 23,243 characters | 12,000 characters per rule file |
+| Windsurf | 10 | 7,887 characters | 23,235 characters | 12,000 characters per rule file |
 | Cursor | 10 | 126 lines | 415 lines | "under 500 lines" per rule |
 | Copilot | 1 | 393 lines | 393 lines | "about 1,000 lines" per file |
-| Antigravity | 10 | 7,906 bytes | 23,368 bytes (23,283 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
-| Cline | 10 | 7,860 characters | 22,973 characters | none stated |
-| `AGENTS.md` | 1 | 24,383 bytes | 24,383 bytes | Codex reads 32 KiB |
+| Antigravity | 10 | 7,906 bytes | 23,360 bytes (23,275 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
+| Cline | 10 | 7,860 characters | 22,965 characters | none stated |
+| `AGENTS.md` | 1 | 24,362 bytes | 24,362 bytes | Codex reads 32 KiB |
 
 The 24 skills hold 51 files; their names and descriptions, all that is in context before one is
-used, come to 7,802 characters (about 1,950 tokens at 4 characters a token).
+used, come to 7,790 characters (about 1,950 tokens at 4 characters a token).
 
 **Three notes on the editor layout.** Cursor, Windsurf, Copilot and Cline also read other tools'
 skill folders (`.agents/skills/`, `.claude/skills/`), so with two editors installed in one project
@@ -628,7 +642,7 @@ ISTQB® is a registered trademark of the International Software Testing Qualific
 
 ## Author
 
-**Marco Amaral** — Senior QA Analyst
+**Marco Amaral** — Senior QA Engineer
 
 - GitHub: [github.com/MarcoAmaral](https://github.com/MarcoAmaral)
 - npm: [@marcoamaral](https://www.npmjs.com/~marcoamaral)
