@@ -15,6 +15,7 @@
 102de791654fb3287552a3ac24856114c97d553d393d2f0361499579a724c774  .claude/commands/qa-agentic.md
 1032ad46782ab430d3457ecab203f34b033505a1481410529f2de02214f2df28  .claude/skills/qa-api/SKILL.md
 11e94e34a4a7b1122d398f8ff24169e8d9864521e42d496b6515396305324a44  .claude/hooks/check-test-evidence.sh
+126986baed1dffb57fb4c9adb7699f4a135f2ee3aca2bc68b98b888335b9d4ab  .claude/commands/qa-static.md
 14c0914d085186e109bfa85cdad54b19f450ddbd120b7d4dc707242ce2b7b65a  .claude/agents/qa-designer.md
 192938a8d24e27908b88f9c16d9ac3203f2f4f3a729733b540410606ddf7c473  .claude/skills/qa-reference/references/automation-code.md
 192b83da421f5f172912f9c644691e736e945b2f38576d532f5432bfc1c1be50  .claude/skills/qa-reference/references/testing-design.md
@@ -60,6 +61,8 @@
 40b29e2e81d2ee0bc5257a069c545a7bc75de830b4783e93dd808e873c78421f  .claude/commands/qa.md
 422916392cd36aef1531698aeb4bda4ab5a656b37bb7f26095eeb41a7a21a415  .claude/rules/testing-guidelines.md
 43a58eb77ae33ee1f277a794d72e5842cbb8967eb3614b470ddb7783b452021c  .claude/commands/qa.md
+4582240069e9c636925c9eeede10ffc93ea2a713e0c903aa40eb571f4dab668f  .claude/skills/qa-plan/SKILL.md
+4588824e1b42cc5fcfd0f64201f910b43167b92baf30a6d478c8ff8f4e591c2e  .claude/commands/qa-refinement.md
 45b12d8f99f4dc02e7c122a2559cca957590bbd73be22982729863ec414935bd  .claude/rules/test-tools.md
 468a7d74814b50fac1052bf033138ce3cb675e32e813b34ba247a94260007191  .claude/skills/qa-reference/references/context-sources.md
 4867a68e63bfa4502c91a73e6365b87cb5790540a142f41a852792ad4ca4bdf7  .claude/commands/qa-refinement.md
@@ -73,6 +76,7 @@
 52072b2e9f08133b7323aaf509beedfae20b6fb48003e167173c8716e7f0dd58  .claude/skills/qa-plan/SKILL.md
 54a7e5a1dd2df6feb43c2cdfb755dd64f1bbbdc5f16899f3277f38cce6ac1918  .claude/agents/qa-engineer.md
 553007617439b046100b006d6a53c21a8a59d3afa10778962a9252f794400b73  .claude/skills/qa-reference/references/context-sources.md
+56df0bf01bc845ebf999af200562b81dfd0f63ce5e804f5666d226d7e5790620  .claude/commands/qa-trace.md
 5738f28d1a365cbee08d48190fbd243735633fc5106081e7e9cf341a03ef9d9c  .claude/commands/qa-bdd.md
 5a708d29012a4badbb8b814648ba14c38bca9f87120370dff86f77e4912e4353  .claude/commands/qa-tdd.md
 5b169fd0410eb10279b00bd9faea085285ffe35fb01391cce6fdf8df257d197f  .claude/commands/qa-static.md
@@ -120,6 +124,7 @@
 84e4ee45c135cce10d3cbb7b6f3d4fd43e4260eecdc9902cc49ede6d10681153  .claude/commands/qa-agentic.md
 86a76171c6a3858c1f5f97201b7f09887354b372b55f99b3686d798dd397a945  .claude/commands/qa-bdd.md
 881789cfc6f6b260bc862fc6a1d7ba991d4db5e4b8274ddc252a37619aa3b9d5  .claude/agents/qa-writer.md
+88b076580151904e58cf7f6872a2e3642c4e561c9405a37b3ee1e0129ac0cd32  .claude/commands/qa.md
 89a79267c6e748e82688dca2c0aa1a0c045ee4732cda0c650ea17ec6a5658322  .claude/commands/qa-automate.md
 8b3ceaafc9fab22a3f375ab2a51fca1dbd21214e2d84a04e2bcc3813a281263c  .claude/rules/conventional-commits.md
 8d4cbcc5fb48296d18a000726191a0ea54f730c1c5c9c6c15ad2ec7c9f66c4b5  .claude/skills/qa-reference/SKILL.md
@@ -131,6 +136,7 @@
 9beebd81abacc285a11575b83282d687a667c2a4ff70a9b212a39eff6578dc24  .claude/hooks/validate-tc-format.sh
 9c9ee62bfdd46bf87adcf8760570cbe4d3af183b68f8857fc7fc04528e025e50  .claude/hooks/validate-tc-format.sh
 9fc85b1711e878cdd8cab8b9b1e0a1ce2e3cb72040d64f49a721a7ac1ca82c68  .claude/rules/context-discovery.md
+a1b864bac5ecd7300422849e5a28f5d8d4e12224d603a117cd2c2df39a5ae98d  .claude/commands/qa-defect.md
 a2a0a3a89756fdcd0b088ececb60ddded94c1c2ae024bd3ee0b441ee3323dcb6  .claude/rules/testing-guidelines.md
 a42ba028cb5f93b4616a6d456be09a71809d8695a6c7d130bbaec66123a32878  .claude/commands/qa-defect.md
 a7fba4cd6bd664864c4814c3388f71478f07fe5175cac01b7d6a03adcd349420  .claude/rules/code-style-qa.md
@@ -140,6 +146,7 @@ aef91e101f3f7db199884928f5327a32c3e7c00ab42980ffec6b444934bf0dcd  .claude/rules/
 afd9e3548dbaca727bd7a286a7d35a1a287bb64903450c605d9f3a0e5e25bb3b  .claude/agents/qa-engineer.md
 b072531150ad728afe65e5eafb65c0ef370ae41a9f57cfccea218ebe2b0f29ba  .claude/commands/qa.md
 b07357f02beb6b2c3d8a4029f3e647205a04ed13728faf7c0d5d1fde4308cc3f  .claude/commands/qa.md
+b0b53e05fcec56471f011fc5da0a9fcd5e5dc605542d8283f09ccb43330b5242  .claude/commands/qa-bdd.md
 b14a3e176ac1ea13667d2fc65540cb36ed287adcd804a20ce11939d773159926  .claude/commands/qa.md
 b4ffa03d45b38b64c2d1fea68f4885d4c01abc7e75d60ce8d00f1c621deac0fc  .claude/commands/qa-static.md
 b5eb8a025a062c6fdef75b6225b3daec44fbf0d64783557a94589e2e2ad98eda  .claude/commands/qa.md
@@ -164,6 +171,7 @@ cfdfbe7090f9144d1e1be614a62bf1efeb0ee8788080e86b1bb3d4c3ba0a8e62  .claude/hooks/
 d3ea5949477c05751baff4c9a967bc7ac716217963bf05d267d8ecdb890beff7  .claude/agents/qa-writer.md
 d474ff5a0ea2adc1379e74d9b85fa0922da53eecb1f4653deb8d717991b54f0c  .claude/agents/qa-designer.md
 d4cd85fe29d4fe4134a836e4b28788007dc3a2caa98b00ec812d7aca53af4789  .claude/rules/security-qa.md
+d53cec3d91b6a3eb575f94fcd5e2ead3bc25b4fb74124393af036011603eb916  .claude/skills/qa-explore/SKILL.md
 d66f1e1e23184897567a97158675946c8565408708d0118c25bb141b8c9ea278  .claude/agents/qa-groomer.md
 d6e2d6e0defc909a649f5006fb142e3206f4fb325ff8a43f9f992fb04161cf15  .claude/commands/qa-automate.md
 d78c6d9a0139fa7e21f67498f208334df4c87ccb9d3932104ccec91ccc7fe43d  .claude/skills/qa-reference/SKILL.md
@@ -200,6 +208,8 @@ f297ea794243b0960c8776b7074f1a20a99f6387952e815ffc8d8ebb3efe7637  .claude/comman
 f31276a71c20d40a3a17cfbd16e5b52d2786b15c491b6231b38b18e2cf668634  .claude/skills/qa-reference/references/vitest-patterns.md
 f40a1f97f945570722d96d9e79c1f1398a4a6147bd9111441febb5d67c195d46  .claude/agents/qa-writer.md
 f48e12cc1de488f1e0708ec8fa6c9bbe81da9edb96e7c90404a069ccf5a7cf09  .claude/skills/qa-reference/references/repo-conventions.md
+f54f2d8e32522a87227a29a84942cb7a9c0dcb67ef5ef59cd88dc8d87fbff92d  .claude/commands/qa-cases.md
+f5ad38c3286ddc0af4aeea73f72ba423257ce36a343ca2ee004388c6de77b1ec  .claude/skills/qa-release/SKILL.md
 f66547bf3658da2999386da1fb16eeeb86f637b98acd52cd89b4f3d4c22f0d42  .claude/commands/qa-tdd.md
 f902eeb3348a6c11ee0610f876991fe14b9167a8e8e80950295779a54cb0f3ce  .claude/skills/qa-reference/references/evidence-capture.md
 fbba4248d6f3d89a966ef0ac47b634899537eb80ee379cae08eecf50c7d9cf11  .claude/rules/linting-standards.md
