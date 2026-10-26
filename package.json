@@ -34,8 +34,8 @@
     "adapters/",
     "README.md",
     "CHANGELOG.md",
-    ".qa-skills-known-hashes",
-    ".qa-skills-editor-map"
+    ".qa-instinct-known-hashes",
+    ".qa-instinct-editor-map"
   ],
   "engines": {
     "node": ">=24"

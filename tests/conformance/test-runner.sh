@@ -57,6 +57,8 @@ rejected package-path-climbs-out 'name: x\nseed-package: home:copy.txt = ../outs
 rejected fixture-path-climbs-out 'name: x\nseed-fixture: home:copy.txt = ../../canary\n'
 rejected manifest-path-absolute 'name: x\nseed-manifest: project claude /etc/hostname\n'
 rejected manifest-entry-at-sandbox-root 'name: x\nseed-manifest: project claude ../output.log\n'
+rejected legacy-manifest-bad-scope 'name: x\nlegacy-manifest: global\n'
+rejected legacy-manifest-link-climbs-out 'name: x\nlegacy-manifest: project -> home:../../canary\n'
 rejected expect-path-climbs-out 'name: x\nexpect-absent: home:../../canary\n'
 rejected readonly-climbs-out 'name: x\nseed-readonly: home:../../canary\n'
 rejected unreadable-climbs-out 'name: x\nseed-unreadable: home:../../canary\n'
@@ -99,6 +101,7 @@ accepted manifest-path-with-a-space 'name: a manifest path may hold a space\nsee
 rejected manifest-path-with-a-space-climbs-out 'name: x\ndrop-manifest: project claude ../../canary x\n'
 accepted package-tree 'name: a copy of a package folder matches it file for file\nseed-package: home:t/check-test-evidence.sh = .claude/hooks/check-test-evidence.sh\nseed-package: home:t/validate-tc-format.sh = .claude/hooks/validate-tc-format.sh\nexpect-tree-as-package: home:t = .claude/hooks\n'
 # The editor of a run line may be left out: the installer then gets no editor option (plan 061 B1).
+accepted legacy-manifest 'name: legacy-manifest renames the manifest to its 4.x name\nseed: project:a.md = A\nseed-manifest: project claude a.md\nlegacy-manifest: project\nexpect-file: project:.qa-skills-manifest\nexpect-absent: project:.qa-instinct-manifest\n'
 accepted run-without-editor 'name: a run line may name no editor\nrun: uninstall project\nexpect-exit: 0\n'
 accepted every-directive 'name: every directive\nseed: project:a/b.txt = HELLO\nseed-fixture: project:fx.txt = fixture.txt\nexpect-content: project:fx.txt = FIXTURE TEXT\nseed: project:crlf.txt = LINE\nseed-crlf: project:crlf.txt\nseed-readonly: project:a/b.txt\nseed: project:locked.txt = LOCKED\nseed-unreadable: project:locked.txt\nseed-package: home:pkg.md = .claude/rules/security-qa.md\nseed-manifest: home claude pkg.md\nseed: project:gone.txt = BYE\nseed-manifest: project claude gone.txt\ndrop-manifest: project claude gone.txt\nseed-symlink: project:link.md -> home:pkg.md\nseed-dir: project:empty/folder\nexpect-file: project:empty/folder\nexpect-exit: 0\nexpect-file: project:link.md\nexpect-absent: project:gone.txt\nexpect-content: project:a/b.txt = HELLO\nexpect-same-as-package: home:pkg.md = .claude/rules/security-qa.md\nexpect-manifest: home claude pkg.md\nexpect-no-manifest: project claude gone.txt\nexpect-no-backup: project:a/b.txt\nexpect-no-output: anything at all\n'
 

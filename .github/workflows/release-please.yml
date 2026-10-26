@@ -96,11 +96,11 @@ jobs:
           ./generate-known-hashes.sh
           # While known-hashes-before-public.txt is open it gains the release too; once sealed
           # the script never rewrites it, and this commits only the list.
-          if git diff --quiet -- .qa-skills-known-hashes known-hashes-before-public.txt; then
+          if git diff --quiet -- .qa-instinct-known-hashes known-hashes-before-public.txt; then
             echo "Known-hash list already covers this release"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: record file hashes shipped in the new release" -- .qa-skills-known-hashes known-hashes-before-public.txt
+          git commit -m "chore: record file hashes shipped in the new release" -- .qa-instinct-known-hashes known-hashes-before-public.txt
           git push origin HEAD:main

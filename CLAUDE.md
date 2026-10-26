@@ -29,8 +29,8 @@ qa-instinct/
 ├── generate-adapters.ps1       # Windows PowerShell compiler script
 ├── generate-known-hashes.sh    # Records the SHA-256 each release shipped (see below)
 ├── generate-corpus.js          # Indexes the tree as citable chunks (CONTRIBUTING.md section 6)
-├── .qa-skills-known-hashes     # Generated: lets installers identify their own older files
-├── .qa-skills-editor-map       # Each editor's install paths, read by all three installers
+├── .qa-instinct-known-hashes     # Generated: lets installers identify their own older files
+├── .qa-instinct-editor-map       # Each editor's install paths, read by all three installers
 ├── known-hashes-before-public.txt # Hashes of the releases before the public repository; sealed at export
 ├── install.sh                  # Linux/macOS interactive installer
 ├── install.ps1                 # Windows PowerShell installer
@@ -126,8 +126,8 @@ benchmark's integrity and others); `CONTRIBUTING.md` section 4 lists every one w
    - Every type the checks accept, with its meaning, is in `CONTRIBUTING.md` section 2.
 4. **Test Case Formatting Hook**: Newly created test cases matching `TC-*.md` must pass the validation hook in `.claude/hooks/validate-tc-format.sh`.
 5. **Installer File-Safety Contracts**: `install.sh`, `install.ps1` and `cli/qa-instinct.js` must behave identically, and a user's own file must never be destroyed. Before changing any of them, read `plans/009`-`plans/012`, and keep these invariants:
-   - `.qa-skills-manifest` and `.qa-skills-known-hashes` are shared, portable formats: no BOM, LF endings, forward-slash paths. The manifest is `<sha256>  <editor>  <path>`; the known-hash list is `<sha256>  <path>`. Reads tolerate a leading BOM and trailing `\r`. A file written by one installer must be readable by the other two — the suites round-trip this.
-   - A colliding file is backed up to `<file>.qa-skills-backup-<UTC timestamp>` unless it is identical to the package's current file or its hash appears in `.qa-skills-known-hashes`, in which case it is the package's own and is adopted silently. Never guess by any other means.
+   - `.qa-instinct-manifest` and `.qa-instinct-known-hashes` are shared, portable formats: no BOM, LF endings, forward-slash paths. The manifest is `<sha256>  <editor>  <path>`; the known-hash list is `<sha256>  <path>`. Reads tolerate a leading BOM and trailing `\r`. A file written by one installer must be readable by the other two — the suites round-trip this.
+   - A colliding file is backed up to `<file>.qa-instinct-backup-<UTC timestamp>` unless it is identical to the package's current file or its hash appears in `.qa-instinct-known-hashes`, in which case it is the package's own and is adopted silently. Never guess by any other means.
    - Never write through a symlinked destination: back up the content it points at, record the target in `<backup>.link-target`, and replace the link. Never write or delete through a symlinked directory below the editor's top-level folder (plan 033 item 1). Never overwrite a read-only file; skip it and carry on installing the rest. Skip a destination that is a directory the same way, and keep a recorded path that is now a directory on uninstall (conformance cases 044-045).
    - Every manifest write goes to an exclusively created temporary file renamed into place.
    - Uninstall removes only files still exactly as installed, keeps and reports the rest, and never deletes backups.

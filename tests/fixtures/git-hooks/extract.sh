@@ -128,7 +128,9 @@ project_texts() {
 }
 project_texts echo-e v2.1.0 v2.1.0
 project_texts printf-split v2.7.0 -
-project_texts current v4.1.0 v4.1.0
+# Written as project/current.* until plan 066 renamed the marker; current.* now holds the new
+# text, written from it by hand, and fenced-qa-instinct.lf.nl the new fresh global hook.
+project_texts qa-skills-marker v4.1.0 v4.1.0
 same "$(bsha v4.0.1 sh.PRECOMMIT)" "$(bsha v4.1.0 sh.PRECOMMIT)" "the project hook at v4.0.1 and v4.1.0"
 same "$(bsha v2.0.0 sh.PRECOMMIT)" "$(bsha v2.1.0 sh.PRECOMMIT)" "the project hook at v2.0.0 and v2.1.0"
 

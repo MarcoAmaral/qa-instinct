@@ -121,7 +121,7 @@ fi
 
 # The edit above stands in for a user-modified file: update must preserve it in a backup
 # rather than discarding it.
-EDIT_BACKUP=$(find .claude/commands -name 'qa.md.qa-skills-backup-*' | head -1)
+EDIT_BACKUP=$(find .claude/commands -name 'qa.md.qa-instinct-backup-*' | head -1)
 [ -n "$EDIT_BACKUP" ] || { printf '%b\n' "${RED}✘ Update overwrote a modified file without a backup${NC}"; exit 1; }
 grep -q "Version: 1.0.0" "$EDIT_BACKUP" || { printf '%b\n' "${RED}✘ Backup does not contain the modified content${NC}"; exit 1; }
 # This backup is left in place deliberately: it is the user's data, uninstall must never
@@ -262,7 +262,7 @@ mkdir -p "$SANDBOX_DIR/global-caller"
 cd "$SANDBOX_DIR/global-caller"
 "$REPO_DIR/install.sh" --target global --editor claude --non-interactive --no-hooks
 
-HOME_BACKUP=$(find "$HOME/.claude/rules" -name 'testing-guidelines.md.qa-skills-backup-*' | head -1)
+HOME_BACKUP=$(find "$HOME/.claude/rules" -name 'testing-guidelines.md.qa-instinct-backup-*' | head -1)
 [ -n "$HOME_BACKUP" ] || { printf '%b\n' "${RED}✘ Global install overwrote a colliding file without a backup${NC}"; exit 1; }
 [ "$(cat "$HOME_BACKUP")" = "$HOME_CONTENT" ] || { printf '%b\n' "${RED}✘ Global backup does not contain the original content${NC}"; exit 1; }
 
@@ -286,12 +286,12 @@ git init -q -b main
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
 
-[ -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Install did not write .qa-skills-manifest${NC}"; exit 1; }
+[ -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Install did not write .qa-instinct-manifest${NC}"; exit 1; }
 INSTALLED_COUNT=$(find .claude -type f | wc -l | tr -d ' ')
 
 # Rewrite the manifest into install.ps1's exact on-disk form: UTF-8 BOM, CRLF line endings,
 # and backslash path separators.
-MF=".qa-skills-manifest"
+MF=".qa-instinct-manifest"
 MF_TMP="$(mktemp)"
 printf '\xEF\xBB\xBF' > "$MF_TMP"
 while IFS= read -r line || [ -n "$line" ]; do
@@ -303,7 +303,7 @@ mv "$MF_TMP" "$MF"
 
 echo "Verifying every installed file was actually removed..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ .claude folder still exists — files installed under a foreign-platform manifest were orphaned${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest still exists after uninstall${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Manifest still exists after uninstall${NC}"; exit 1; }
 [ "$INSTALLED_COUNT" -gt 0 ] || { printf '%b\n' "${RED}✘ Test setup error: nothing was installed${NC}"; exit 1; }
 
 cd "$REPO_DIR"
@@ -321,17 +321,17 @@ cd "$SANDBOX_DIR/space project"
 git init -q -b main
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
-FIRST_INSTALL_LINES=$(wc -l < ".qa-skills-manifest")
+FIRST_INSTALL_LINES=$(wc -l < ".qa-instinct-manifest")
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
-SECOND_INSTALL_LINES=$(wc -l < ".qa-skills-manifest")
+SECOND_INSTALL_LINES=$(wc -l < ".qa-instinct-manifest")
 
 [ "$FIRST_INSTALL_LINES" -eq "$SECOND_INSTALL_LINES" ] || { printf '%b\n' "${RED}✘ Re-installing into a path with a space duplicated manifest entries ($FIRST_INSTALL_LINES -> $SECOND_INSTALL_LINES lines)${NC}"; exit 1; }
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --uninstall
 
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ .claude folder still exists in a path with a space${NC}"; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest still exists after uninstall in a path with a space${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Manifest still exists after uninstall in a path with a space${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 10 passed successfully! A project path with a space installs and uninstalls cleanly with no duplicate manifest entries.${NC}"
@@ -432,7 +432,7 @@ echo "Verifying the out-of-base destination was never written..."
 [ ! -f "$OUTSIDE_DEST" ] || { printf '%b\n' "${RED}✘ install_file wrote to a destination outside its base${NC}"; exit 1; }
 
 echo "Verifying no unusable manifest entry was recorded..."
-FAKE_MANIFEST="$FAKE_BASE/.qa-skills-manifest"
+FAKE_MANIFEST="$FAKE_BASE/.qa-instinct-manifest"
 if [ -f "$FAKE_MANIFEST" ] && grep -q "antigravity" "$FAKE_MANIFEST"; then
     printf '%b\n' "${RED}✘ install_file recorded a manifest entry despite refusing the out-of-base destination${NC}"
     cat "$FAKE_MANIFEST"
@@ -447,7 +447,7 @@ printf '%b\n' "${GREEN}✔ Test 13 passed successfully! install_file refused to 
 # -----------------------------------------------------------------------------
 # TEST 14: The manifest is staged along with the rest of the installed files
 # when the user accepts the installer's "add to git" offer, so consuming repos
-# are not left with a stray untracked .qa-skills-manifest.
+# are not left with a stray untracked .qa-instinct-manifest.
 # -----------------------------------------------------------------------------
 echo ""
 echo "Running Test 14: The manifest is included in the installer's git add..."
@@ -477,8 +477,8 @@ chmod +x "$FAKE_BIN/claude"
 # the unread answer is simply ignored).
 printf '1\ny\nn\nn\n' | PATH="$FAKE_BIN:$PATH" "$REPO_DIR/install.sh" --target project --editor claude --no-hooks > "$GITADD_LOG" 2>&1
 
-git log -1 --name-only --pretty=format: | grep -qx ".qa-skills-manifest" || {
-    printf '%b\n' "${RED}✘ .qa-skills-manifest was not staged/committed with the rest of the installed files${NC}"
+git log -1 --name-only --pretty=format: | grep -qx ".qa-instinct-manifest" || {
+    printf '%b\n' "${RED}✘ .qa-instinct-manifest was not staged/committed with the rest of the installed files${NC}"
     cat "$GITADD_LOG"
     exit 1
 }
@@ -499,17 +499,17 @@ git init -q -b main
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
 [ -f ".claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ Missing qa.md in non-ASCII project path${NC}"; exit 1; }
-FIRST_INSTALL_LINES=$(wc -l < ".qa-skills-manifest")
+FIRST_INSTALL_LINES=$(wc -l < ".qa-instinct-manifest")
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
-SECOND_INSTALL_LINES=$(wc -l < ".qa-skills-manifest")
+SECOND_INSTALL_LINES=$(wc -l < ".qa-instinct-manifest")
 
 [ "$FIRST_INSTALL_LINES" -eq "$SECOND_INSTALL_LINES" ] || { printf '%b\n' "${RED}✘ Re-installing into a non-ASCII path duplicated manifest entries ($FIRST_INSTALL_LINES -> $SECOND_INSTALL_LINES lines)${NC}"; exit 1; }
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --uninstall
 
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ .claude folder still exists in a non-ASCII path${NC}"; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest still exists after uninstall in a non-ASCII path${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Manifest still exists after uninstall in a non-ASCII path${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 15 passed successfully! A project path with non-ASCII characters installs and uninstalls cleanly with no duplicate manifest entries.${NC}"
@@ -526,11 +526,11 @@ cd "$SANDBOX_DIR/no-manifest-project"
 git init -q -b main
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-hooks
-[ -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Test setup error: install did not write .qa-skills-manifest${NC}"; exit 1; }
+[ -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Test setup error: install did not write .qa-instinct-manifest${NC}"; exit 1; }
 
 # Simulate a pre-v2.3.3 install: a file the user modified after installing, and no manifest.
 echo "user edited this" > ".claude/rules/testing-guidelines.md"
-rm -f ".qa-skills-manifest"
+rm -f ".qa-instinct-manifest"
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --uninstall
 
@@ -566,15 +566,15 @@ git init -q -b main
 USER_CONTENT="MY OWN SECURITY POLICY - DO NOT TOUCH"
 echo "$USER_CONTENT" > ".claude/rules/security-qa.md"
 USER_HASH=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
-grep -q "^$USER_HASH  " "$REPO_DIR/.qa-skills-known-hashes" && { printf '%b\n' "${RED}✘ Test setup error: the user-edit content collides with a known release hash${NC}"; exit 1; }
-rm -f ".qa-skills-manifest"
+grep -q "^$USER_HASH  " "$REPO_DIR/.qa-instinct-known-hashes" && { printf '%b\n' "${RED}✘ Test setup error: the user-edit content collides with a known release hash${NC}"; exit 1; }
+rm -f ".qa-instinct-manifest"
 
 # A reinstall, not --update: with no manifest, update adopts only files a release shipped and
 # leaves this one alone (plan 033 item 3), so only install reaches the backup path.
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive
 
 echo "Verifying the user's edit was backed up, not silently discarded..."
-BACKUP=$(find .claude/rules -name 'security-qa.md.qa-skills-backup-*' | head -1)
+BACKUP=$(find .claude/rules -name 'security-qa.md.qa-instinct-backup-*' | head -1)
 [ -n "$BACKUP" ] || { printf '%b\n' "${RED}✘ A genuinely user-edited file was adopted instead of backed up${NC}"; exit 1; }
 [ "$(cat "$BACKUP")" = "$USER_CONTENT" ] || { printf '%b\n' "${RED}✘ Backup does not contain the user's edit${NC}"; exit 1; }
 grep -q "OWASP" ".claude/rules/security-qa.md" || { printf '%b\n' "${RED}✘ The current release's content was not installed${NC}"; exit 1; }
@@ -600,12 +600,12 @@ git init -q -b main
 for f in .claude/rules/security-qa.md .claude/rules/accessibility-qa.md .claude/commands/qa.md; do
     cp "$V220_DIR/$(basename "$f")" "$f"
 done
-rm -f ".qa-skills-manifest"
+rm -f ".qa-instinct-manifest"
 
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --update
 
 echo "Verifying the upgrade left no spurious backups..."
-SPURIOUS=$(find .claude -name '*.qa-skills-backup-*')
+SPURIOUS=$(find .claude -name '*.qa-instinct-backup-*')
 [ -z "$SPURIOUS" ] || { printf '%b\n' "${RED}✘ The no-manifest upgrade created spurious backups:${NC}"; while IFS= read -r F; do echo "  $F"; done <<< "$SPURIOUS"; exit 1; }
 grep -q "OWASP" ".claude/rules/security-qa.md" || { printf '%b\n' "${RED}✘ security-qa.md was not updated to the current release${NC}"; exit 1; }
 
@@ -613,7 +613,7 @@ grep -q "OWASP" ".claude/rules/security-qa.md" || { printf '%b\n' "${RED}✘ sec
 
 echo "Verifying uninstall left a clean tree..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ .claude survived uninstall after a no-manifest upgrade${NC}"; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived uninstall${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived uninstall${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 20 passed successfully! The no-manifest upgrade path left no spurious backups and uninstalled to a clean tree.${NC}"
@@ -676,7 +676,7 @@ node "$REPO_DIR/cli/qa-instinct.js" init
 
 echo "Verifying install.sh fully uninstalled a cli/qa-instinct.js install..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ install.sh left .claude behind after uninstalling a cli/qa-instinct.js install${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived install.sh's uninstall${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived install.sh's uninstall${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 
@@ -692,7 +692,7 @@ node "$REPO_DIR/cli/qa-instinct.js" uninstall
 
 echo "Verifying cli/qa-instinct.js fully uninstalled an install.sh install..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ cli/qa-instinct.js left .claude behind after uninstalling an install.sh install${NC}"; find .claude -mindepth 1 | sed 's/^/  /'; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived cli/qa-instinct.js's uninstall${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ Manifest survived cli/qa-instinct.js's uninstall${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 25 passed successfully! The manifest format round-trips between cli/qa-instinct.js and install.sh in both directions.${NC}"
@@ -722,13 +722,13 @@ else
 
     echo "Verifying the read-only file was left untouched and not backed up..."
     grep -qx "$CLI_RO_CONTENT" ".claude/rules/code-style-qa.md" || { printf '%b\n' "${RED}✘ cli/qa-instinct.js overwrote the read-only destination${NC}"; exit 1; }
-    [ -z "$(find .claude/rules -name 'code-style-qa.md.qa-skills-backup-*')" ] || { printf '%b\n' "${RED}✘ A skipped read-only file should leave no backup${NC}"; exit 1; }
+    [ -z "$(find .claude/rules -name 'code-style-qa.md.qa-instinct-backup-*')" ] || { printf '%b\n' "${RED}✘ A skipped read-only file should leave no backup${NC}"; exit 1; }
 
     echo "Verifying the rest of the tree still installed completely..."
     for SUB in commands rules skills agents hooks; do
         [ -d ".claude/$SUB" ] || { printf '%b\n' "${RED}✘ .claude/$SUB is missing — the install stopped part-way${NC}"; exit 1; }
     done
-    grep -q "code-style-qa.md" ".qa-skills-manifest" && { printf '%b\n' "${RED}✘ A skipped file must not be recorded in the manifest${NC}"; exit 1; }
+    grep -q "code-style-qa.md" ".qa-instinct-manifest" && { printf '%b\n' "${RED}✘ A skipped file must not be recorded in the manifest${NC}"; exit 1; }
 
     cd "$REPO_DIR"
     printf '%b\n' "${GREEN}✔ Test 26 passed successfully! cli/qa-instinct.js skipped the read-only file and completed the install.${NC}"
@@ -752,8 +752,8 @@ diff "$REPO_DIR/adapters/cursor/rules/qa-instinct.mdc" ".cursor/rules/qa-instinc
 diff -r "$REPO_DIR/adapters/skills" ".cursor/skills" || { printf '%b\n' "${RED}✘ .cursor/skills does not match adapters/skills byte-for-byte${NC}"; exit 1; }
 
 echo "Verifying the manifest records them under 'cursor', not 'claude'..."
-grep -q "  cursor  .cursor/rules/qa-instinct.mdc$" ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor install under the 'cursor' editor${NC}"; exit 1; }
-grep -q "  cursor  .cursor/skills/qa/SKILL.md$" ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor skills under the 'cursor' editor${NC}"; exit 1; }
+grep -q "  cursor  .cursor/rules/qa-instinct.mdc$" ".qa-instinct-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor install under the 'cursor' editor${NC}"; exit 1; }
+grep -q "  cursor  .cursor/skills/qa/SKILL.md$" ".qa-instinct-manifest" || { printf '%b\n' "${RED}✘ Manifest did not record the cursor skills under the 'cursor' editor${NC}"; exit 1; }
 
 echo "Verifying no claude tree was installed alongside it..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ --editor cursor unexpectedly installed the claude tree too${NC}"; exit 1; }
@@ -779,7 +779,7 @@ echo "Verifying the package's file was installed..."
 diff "$REPO_DIR/adapters/copilot/rules/copilot-instructions.md" ".github/copilot-instructions.md" || { printf '%b\n' "${RED}✘ The package's copilot-instructions.md was not installed${NC}"; exit 1; }
 
 echo "Verifying the user's original content is recoverable from a backup..."
-CLI_EDITOR_BACKUP=$(find ".github" -name 'copilot-instructions.md.qa-skills-backup-*')
+CLI_EDITOR_BACKUP=$(find ".github" -name 'copilot-instructions.md.qa-instinct-backup-*')
 [ -n "$CLI_EDITOR_BACKUP" ] || { printf '%b\n' "${RED}✘ cli/qa-instinct.js init --editor copilot did not back up the colliding file${NC}"; exit 1; }
 [ "$(cat "$CLI_EDITOR_BACKUP")" = "$CLI_EDITOR_USER_CONTENT" ] || { printf '%b\n' "${RED}✘ Backup does not contain the user's original content${NC}"; exit 1; }
 
@@ -810,8 +810,8 @@ node "$REPO_DIR/cli/qa-instinct.js" init --editor claude | cat
 [ -d ".claude/commands" ] || { printf '%b\n' "${RED}✘ Test setup error: --editor claude did not install${NC}"; exit 1; }
 
 echo "Verifying both produced the same manifest content (modulo the recorded path prefix)..."
-diff <(sed 's/^[0-9a-f]*//' "$SANDBOX_DIR/cli-nontty-default/.qa-skills-manifest" | sort) \
-     <(sed 's/^[0-9a-f]*//' "$SANDBOX_DIR/cli-explicit-claude/.qa-skills-manifest" | sort) \
+diff <(sed 's/^[0-9a-f]*//' "$SANDBOX_DIR/cli-nontty-default/.qa-instinct-manifest" | sort) \
+     <(sed 's/^[0-9a-f]*//' "$SANDBOX_DIR/cli-explicit-claude/.qa-instinct-manifest" | sort) \
      || { printf '%b\n' "${RED}✘ Non-TTY default manifest differs from an explicit --editor claude install${NC}"; exit 1; }
 
 cd "$REPO_DIR"
@@ -842,7 +842,7 @@ git init -q -b main
 # The manifest lives at the project root and is committed into consuming repositories, so its
 # contents cannot be trusted. The relative escape is conformance case 005; the absolute path
 # cannot be written as a case (the sandbox path is not known in advance), so it stays here.
-printf '%s  claude  %s\n' "$VICTIM_HASH" "$VICTIM" > ".qa-skills-manifest"
+printf '%s  claude  %s\n' "$VICTIM_HASH" "$VICTIM" > ".qa-instinct-manifest"
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --uninstall > "$SANDBOX_DIR/test31.log" 2>&1 || true
 
 [ -f "$VICTIM" ] || { printf '%b\n' "${RED}✘ Uninstall deleted a file outside the install tree via '$VICTIM'${NC}"; exit 1; }
@@ -867,7 +867,7 @@ cd "$SANDBOX_DIR/update-refresh-project"
 # unmodified since install, but stale relative to the current package.
 cp "$V220_DIR/security-qa.md" ".claude/rules/security-qa.md"
 OLD_HASH=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
-printf '%s  claude  %s\n' "$OLD_HASH" ".claude/rules/security-qa.md" > ".qa-skills-manifest"
+printf '%s  claude  %s\n' "$OLD_HASH" ".claude/rules/security-qa.md" > ".qa-instinct-manifest"
 # The exact current-release hash, so refresh is proven precisely rather than by a substring
 # that might already appear in the older release's content too.
 CURRENT_HASH_32=$(sha256sum "$REPO_DIR/.claude/rules/security-qa.md" | awk '{print $1}')
@@ -877,9 +877,9 @@ node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test32.log" 2>&1
 echo "Verifying the stale-but-unmodified file was refreshed to the current release..."
 NEW_HASH=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
 [ "$NEW_HASH" = "$CURRENT_HASH_32" ] || { printf '%b\n' "${RED}✘ update did not refresh a stale, unmodified file to the current release${NC}"; exit 1; }
-REFRESH_BACKUPS=$(find .claude/rules -name 'security-qa.md.qa-skills-backup-*')
+REFRESH_BACKUPS=$(find .claude/rules -name 'security-qa.md.qa-instinct-backup-*')
 [ -z "$REFRESH_BACKUPS" ] || { printf '%b\n' "${RED}✘ An unmodified file was backed up instead of refreshed in place${NC}"; exit 1; }
-grep -q "^$NEW_HASH  claude  .claude/rules/security-qa.md$" ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ The manifest was not updated to the refreshed file's new hash${NC}"; exit 1; }
+grep -q "^$NEW_HASH  claude  .claude/rules/security-qa.md$" ".qa-instinct-manifest" || { printf '%b\n' "${RED}✘ The manifest was not updated to the refreshed file's new hash${NC}"; exit 1; }
 grep -q "Refreshed .claude/rules/security-qa.md" "$SANDBOX_DIR/test32.log" || { printf '%b\n' "${RED}✘ update did not report the file as refreshed${NC}"; exit 1; }
 
 cd "$REPO_DIR"
@@ -898,16 +898,16 @@ cd "$SANDBOX_DIR/update-backup-project"
 USER_CONTENT_33="MY OWN SECURITY POLICY - DO NOT TOUCH"
 echo "$USER_CONTENT_33" > ".claude/rules/security-qa.md"
 USER_HASH_33=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
-grep -q "^$USER_HASH_33  " "$REPO_DIR/.qa-skills-known-hashes" && { printf '%b\n' "${RED}✘ Test setup error: the user-edit content collides with a known release hash${NC}"; exit 1; }
+grep -q "^$USER_HASH_33  " "$REPO_DIR/.qa-instinct-known-hashes" && { printf '%b\n' "${RED}✘ Test setup error: the user-edit content collides with a known release hash${NC}"; exit 1; }
 # The manifest records the hash of whatever was installed originally (an older release), not
 # the user's later edit, so update sees a genuine change rather than "still unmodified".
 INSTALL_HASH_33=$(sha256sum < "$V220_DIR/security-qa.md" | awk '{print $1}')
-printf '%s  claude  %s\n' "$INSTALL_HASH_33" ".claude/rules/security-qa.md" > ".qa-skills-manifest"
+printf '%s  claude  %s\n' "$INSTALL_HASH_33" ".claude/rules/security-qa.md" > ".qa-instinct-manifest"
 
 node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test33.log" 2>&1
 
 echo "Verifying the user's edit was backed up, not silently discarded..."
-BACKUP_33=$(find .claude/rules -name 'security-qa.md.qa-skills-backup-*' | head -1)
+BACKUP_33=$(find .claude/rules -name 'security-qa.md.qa-instinct-backup-*' | head -1)
 [ -n "$BACKUP_33" ] || { printf '%b\n' "${RED}✘ update did not back up a user-modified file${NC}"; exit 1; }
 [ "$(cat "$BACKUP_33")" = "$USER_CONTENT_33" ] || { printf '%b\n' "${RED}✘ Backup does not contain the user's edit${NC}"; exit 1; }
 CURRENT_HASH_33=$(sha256sum "$REPO_DIR/.claude/rules/security-qa.md" | awk '{print $1}')
@@ -939,13 +939,13 @@ echo "the user's own addition" >> ".claude/rules/deprecated-rule-2.md"
 {
     printf '%s  claude  %s\n' "$DEP_HASH_34" ".claude/rules/deprecated-rule.md"
     printf '%s  claude  %s\n' "$DEP2_INSTALL_HASH_34" ".claude/rules/deprecated-rule-2.md"
-} > ".qa-skills-manifest"
+} > ".qa-instinct-manifest"
 
 node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test34.log" 2>&1
 
 echo "Verifying the unmodified no-longer-shipped file was removed..."
 [ ! -f ".claude/rules/deprecated-rule.md" ] || { printf '%b\n' "${RED}✘ update left an unmodified, no-longer-shipped file in place${NC}"; exit 1; }
-[ -f ".qa-skills-manifest" ] && grep -q "deprecated-rule.md" ".qa-skills-manifest" && { printf '%b\n' "${RED}✘ The removed file's stale manifest entry survived${NC}"; exit 1; }
+[ -f ".qa-instinct-manifest" ] && grep -q "deprecated-rule.md" ".qa-instinct-manifest" && { printf '%b\n' "${RED}✘ The removed file's stale manifest entry survived${NC}"; exit 1; }
 grep -q "Removed .claude/rules/deprecated-rule.md" "$SANDBOX_DIR/test34.log" || { printf '%b\n' "${RED}✘ update did not report removing the dropped file${NC}"; exit 1; }
 
 echo "Verifying the modified no-longer-shipped file was kept..."
@@ -971,7 +971,7 @@ cd "$SANDBOX_DIR/update-adopt-project"
 mkdir -p ".claude/rules"
 cp "$V220_DIR/security-qa.md" ".claude/rules/security-qa.md"
 ADOPT_HASH_35=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
-grep -q "^$ADOPT_HASH_35  " "$REPO_DIR/.qa-skills-known-hashes" || { printf '%b\n' "${RED}✘ Test setup error: v2.2.0's security-qa.md hash is not in the known-hash list${NC}"; exit 1; }
+grep -q "^$ADOPT_HASH_35  " "$REPO_DIR/.qa-instinct-known-hashes" || { printf '%b\n' "${RED}✘ Test setup error: v2.2.0's security-qa.md hash is not in the known-hash list${NC}"; exit 1; }
 
 # The user's own file, sitting at another path this package also ships - update must leave it
 # alone; its hash proves nothing, so it is never adopted on the strength of its path alone.
@@ -984,7 +984,7 @@ node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test35.log" 2>&1
 
 echo "Verifying the pre-manifest install was detected and adopted..."
 [ "$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')" = "$CURRENT_HASH_35" ] || { printf '%b\n' "${RED}✘ update did not adopt a pre-manifest install matching a known release${NC}"; exit 1; }
-ADOPT_BACKUPS_35=$(find .claude/rules -name 'security-qa.md.qa-skills-backup-*')
+ADOPT_BACKUPS_35=$(find .claude/rules -name 'security-qa.md.qa-instinct-backup-*')
 [ -z "$ADOPT_BACKUPS_35" ] || { printf '%b\n' "${RED}✘ A file matching a previous release was backed up instead of adopted${NC}"; exit 1; }
 grep -q "Adopted .claude/rules/security-qa.md" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ update did not report adopting the pre-manifest file${NC}"; exit 1; }
 
@@ -1008,7 +1008,7 @@ node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test36.log" 2>&1
 
 echo "Verifying update did not install anything when nothing was there..."
 [ ! -d ".claude" ] || { printf '%b\n' "${RED}✘ update created .claude/ out of nothing${NC}"; exit 1; }
-[ ! -f ".qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ update created a manifest out of nothing${NC}"; exit 1; }
+[ ! -f ".qa-instinct-manifest" ] || { printf '%b\n' "${RED}✘ update created a manifest out of nothing${NC}"; exit 1; }
 grep -q "Nothing installed" "$SANDBOX_DIR/test36.log" || { printf '%b\n' "${RED}✘ update did not honestly report that nothing is installed${NC}"; cat "$SANDBOX_DIR/test36.log"; exit 1; }
 
 cd "$REPO_DIR"
@@ -1037,7 +1037,7 @@ node "$REPO_DIR/cli/qa-instinct.js" init > /dev/null
 # A manifest entry naming a file this package no longer ships, at a path that escapes the
 # project tree, must never reach update's removal branch (fs.rmSync) without a refusal.
 for EVIL_REL in "../update-traversal-outside/victim.txt" "$VICTIM_37"; do
-    printf '%s  claude  %s\n' "$VICTIM_37_HASH" "$EVIL_REL" > ".qa-skills-manifest"
+    printf '%s  claude  %s\n' "$VICTIM_37_HASH" "$EVIL_REL" > ".qa-instinct-manifest"
     node "$REPO_DIR/cli/qa-instinct.js" update > "$SANDBOX_DIR/test37.log" 2>&1 || true
 
     [ -f "$VICTIM_37" ] || { printf '%b\n' "${RED}✘ update deleted a file outside the install tree via '$EVIL_REL'${NC}"; exit 1; }
@@ -1078,7 +1078,7 @@ echo "Running Test 39: link then uninstall leaves the package intact; unlink kee
 PKG_39="$SANDBOX_DIR/link-pkg"
 PROJ_39="$SANDBOX_DIR/link-project"
 mkdir -p "$PKG_39/.claude" "$PROJ_39"
-cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-skills-known-hashes" "$REPO_DIR/.qa-skills-editor-map" "$PKG_39/"
+cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-instinct-known-hashes" "$REPO_DIR/.qa-instinct-editor-map" "$PKG_39/"
 ln -s "$REPO_DIR/node_modules" "$PKG_39/node_modules"
 for SUB in agents commands rules skills hooks; do
     cp -R "$REPO_DIR/.claude/$SUB" "$PKG_39/.claude/"
@@ -1126,7 +1126,7 @@ echo "Running Test 39b: link --global, a stale link, and a real directory in the
 
 make_package_39b() {   # destination folder: a package copy that cli/qa-instinct.js treats as its own
     mkdir -p "$1/.claude"
-    cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-skills-known-hashes" "$REPO_DIR/.qa-skills-editor-map" "$1/"
+    cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-instinct-known-hashes" "$REPO_DIR/.qa-instinct-editor-map" "$1/"
     ln -s "$REPO_DIR/node_modules" "$1/node_modules"
     for SUB in agents commands rules skills hooks; do
         cp -R "$REPO_DIR/.claude/$SUB" "$1/.claude/"
@@ -1267,7 +1267,7 @@ REPO_40C="$SANDBOX_DIR/hook-none"
 new_hook_repo_40 "$REPO_40C"
 cd "$REPO_40C"
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-color > /dev/null 2>&1
-grep -q "Pre-commit hook to validate test cases in qa-skills" ".git/hooks/pre-commit" || { printf '%b\n' "${RED}✘ install did not create the pre-commit hook in a repository without one${NC}"; exit 1; }
+grep -q "Pre-commit hook to validate test cases in qa-instinct" ".git/hooks/pre-commit" || { printf '%b\n' "${RED}✘ install did not create the pre-commit hook in a repository without one${NC}"; exit 1; }
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-color --uninstall > /dev/null 2>&1
 [ ! -e ".git/hooks/pre-commit" ] || { printf '%b\n' "${RED}✘ uninstall left our pre-commit hook behind${NC}"; exit 1; }
 
@@ -1278,7 +1278,7 @@ git -C "$REPO_40C" -c user.name=t -c user.email=t@t commit -q --allow-empty -m i
 git -C "$REPO_40C" worktree add -q -b wt-40 "$WT_40"
 cd "$WT_40"
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive --no-color > /dev/null 2>&1
-grep -q "Pre-commit hook to validate test cases in qa-skills" "$REPO_40C/.git/hooks/pre-commit" || { printf '%b\n' "${RED}✘ install did not register the hook for a worktree checkout${NC}"; exit 1; }
+grep -q "Pre-commit hook to validate test cases in qa-instinct" "$REPO_40C/.git/hooks/pre-commit" || { printf '%b\n' "${RED}✘ install did not register the hook for a worktree checkout${NC}"; exit 1; }
 
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 40 passed successfully! The user's own hook and core.hooksPath were respected, and our hook was created and removed.${NC}"
@@ -1349,7 +1349,7 @@ menu_expect_39c() {
 }
 
 menu_editors_39c() {   # manifest of the project: the editors it records, sorted, space separated
-    sed -n 's/^[0-9a-f]\{64\}  \([^ ]*\)  .*/\1/p' "$MENU_PROJ_39C/.qa-skills-manifest" 2>/dev/null | LC_ALL=C sort -u | tr '\n' ' '
+    sed -n 's/^[0-9a-f]\{64\}  \([^ ]*\)  .*/\1/p' "$MENU_PROJ_39C/.qa-instinct-manifest" 2>/dev/null | LC_ALL=C sort -u | tr '\n' ' '
 }
 
 # Operation menu (flags give the scope and editor): 1 install, empty = install, 2 update,
@@ -1696,7 +1696,7 @@ chmod +x "$FAKE_BIN_43/claude"
 printf '1\ny\nn\nn\n' | PATH="$FAKE_BIN_43:$PATH" "$REPO_DIR/install.sh" --target project --editor claude --no-hooks > "$SANDBOX_DIR/commit-offer.log" 2>&1
 
 COMMITTED_43="$(git show --name-only --pretty=format: HEAD)"
-printf '%s\n' "$COMMITTED_43" | grep -qx ".qa-skills-manifest" || { printf '%b\n' "${RED}✘ the manifest was not committed${NC}"; cat "$SANDBOX_DIR/commit-offer.log"; exit 1; }
+printf '%s\n' "$COMMITTED_43" | grep -qx ".qa-instinct-manifest" || { printf '%b\n' "${RED}✘ the manifest was not committed${NC}"; cat "$SANDBOX_DIR/commit-offer.log"; exit 1; }
 for LEAK in CLAUDE.md unrelated.txt; do
     if printf '%s\n' "$COMMITTED_43" | grep -qx "$LEAK"; then
         printf '%b\n' "${RED}✘ the installer committed $LEAK, which it did not write${NC}"
@@ -1706,8 +1706,22 @@ done
 git diff --cached --name-only | grep -qx "unrelated.txt" || { printf '%b\n' "${RED}✘ the user's staged file is no longer staged${NC}"; exit 1; }
 git diff --name-only | grep -qx "CLAUDE.md" || { printf '%b\n' "${RED}✘ the user's edit to CLAUDE.md was committed or lost${NC}"; exit 1; }
 
+# 43b: a 4.x install committed its manifest as .qa-skills-manifest. The next run moves it to the
+# current name (plan 066), and the commit it offers carries the old name's removal with it, so the
+# repository is not left with a deleted file outside the commit.
+git checkout -q -- CLAUDE.md
+git reset -q
+git mv .qa-instinct-manifest .qa-skills-manifest
+git commit -q -m "a 4.x install" -- .qa-instinct-manifest .qa-skills-manifest
+# Answers: Install, yes to "Overwrite?" (an install is there), yes to the commit, no, no.
+printf '1\ny\ny\nn\nn\n' | PATH="$FAKE_BIN_43:$PATH" "$REPO_DIR/install.sh" --target project --editor claude --no-hooks > "$SANDBOX_DIR/commit-offer-43b.log" 2>&1
+COMMITTED_43="$(git show --name-status --no-renames --pretty=format: HEAD)"
+printf '%s\n' "$COMMITTED_43" | grep -qx "A	.qa-instinct-manifest" || { printf '%b\n' "${RED}✘ 43b: the new manifest was not committed${NC}"; printf '%s\n' "$COMMITTED_43"; cat "$SANDBOX_DIR/commit-offer-43b.log"; exit 1; }
+printf '%s\n' "$COMMITTED_43" | grep -qx "D	.qa-skills-manifest" || { printf '%b\n' "${RED}✘ 43b: the old manifest's removal was not committed${NC}"; printf '%s\n' "$COMMITTED_43"; exit 1; }
+[ -z "$(git status --porcelain -- .qa-skills-manifest)" ] || { printf '%b\n' "${RED}✘ 43b: the old manifest's removal was left out of the commit${NC}"; exit 1; }
+
 cd "$REPO_DIR"
-printf '%b\n' "${GREEN}✔ Test 43 passed successfully! The commit offer committed only installer-written files and left the user's work alone.${NC}"
+printf '%b\n' "${GREEN}✔ Test 43 passed successfully! The commit offer committed only installer-written files, left the user's work alone, and carried a 4.x manifest's move.${NC}"
 
 # -----------------------------------------------------------------------------
 # TEST 44: After `qa-instinct link`, install.sh install and uninstall must not write or delete
@@ -1719,7 +1733,7 @@ echo "Running Test 44: install.sh never writes or deletes through folders qa-ins
 PKG_44="$SANDBOX_DIR/linked-pkg-44"
 PROJ_44="$SANDBOX_DIR/linked-project-44"
 mkdir -p "$PKG_44/.claude" "$PROJ_44"
-cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-skills-known-hashes" "$REPO_DIR/.qa-skills-editor-map" "$PKG_44/"
+cp -R "$REPO_DIR/cli" "$REPO_DIR/package.json" "$REPO_DIR/.qa-instinct-known-hashes" "$REPO_DIR/.qa-instinct-editor-map" "$PKG_44/"
 for SUB in agents commands rules skills hooks; do
     cp -R "$REPO_DIR/.claude/$SUB" "$PKG_44/.claude/"
 done
@@ -1812,7 +1826,7 @@ for INSTALLER_46 in install.sh cli; do
     else
         (umask 002 && node "$REPO_DIR/cli/qa-instinct.js" init --editor claude > /dev/null 2>&1)
     fi
-    [ -n "$(find .qa-skills-manifest -perm 664)" ] || { printf '%b\n' "${RED}✘ $INSTALLER_46 did not give the manifest the umask's mode (664)${NC}"; exit 1; }
+    [ -n "$(find .qa-instinct-manifest -perm 664)" ] || { printf '%b\n' "${RED}✘ $INSTALLER_46 did not give the manifest the umask's mode (664)${NC}"; exit 1; }
     cd "$REPO_DIR"
 done
 
@@ -1830,14 +1844,14 @@ VICTIM_46="$SANDBOX_DIR/manifest-plant-victim.txt"
 PLANTED_46="$SANDBOX_DIR/manifest-plant-name.txt"
 cat > "$ENV_46" <<'PLANT_46'
 RANDOM=4646
-QA_PLANT_AT="$PWD/.qa-skills-manifest.tmp.$$.$RANDOM$RANDOM$RANDOM"
+QA_PLANT_AT="$PWD/.qa-instinct-manifest.tmp.$$.$RANDOM$RANDOM$RANDOM"
 ln -s "$QA_PLANT_VICTIM" "$QA_PLANT_AT" && printf '%s\n' "$QA_PLANT_AT" > "$QA_PLANT_RECORD"
 unset BASH_ENV QA_PLANT_AT QA_PLANT_VICTIM QA_PLANT_RECORD
 RANDOM=4646
 PLANT_46
 MUTANT_46="$SANDBOX_DIR/manifest-plant-mutant"
 mkdir -p "$MUTANT_46"
-for PKG_46 in .claude adapters .qa-skills-editor-map .qa-skills-known-hashes; do ln -s "$REPO_DIR/$PKG_46" "$MUTANT_46/$PKG_46"; done
+for PKG_46 in .claude adapters .qa-instinct-editor-map .qa-instinct-known-hashes; do ln -s "$REPO_DIR/$PKG_46" "$MUTANT_46/$PKG_46"; done
 grep -q '^write_exclusive() {' "$REPO_DIR/install.sh" || { printf '%b\n' "${RED}✘ install.sh has no write_exclusive any more; update Test 46b's control${NC}"; exit 1; }
 # shellcheck disable=SC2016 # the replacement is shell code for the copy, not for this script
 sed -e '/^write_exclusive() {/,/^}/c\
@@ -1860,7 +1874,7 @@ plant_46 "$REPO_DIR/install.sh" "$SANDBOX_DIR/manifest-plant"
 [ "$(cat "$VICTIM_46")" = "VICTIM CONTENT" ] || { printf '%b\n' "${RED}✘ install.sh wrote the manifest through a link planted at its temp file's name${NC}"; head -3 "$VICTIM_46"; exit 1; }
 [ -n "$(find "$VICTIM_46" -perm 600)" ] || { printf '%b\n' "${RED}✘ install.sh changed the mode of a file through a link planted at its temp file's name${NC}"; exit 1; }
 [ "$(readlink "$(cat "$PLANTED_46")")" = "$VICTIM_46" ] || { printf '%b\n' "${RED}✘ install.sh removed or replaced the link planted at its temp file's name${NC}"; exit 1; }
-MF_46="$SANDBOX_DIR/manifest-plant/.qa-skills-manifest"
+MF_46="$SANDBOX_DIR/manifest-plant/.qa-instinct-manifest"
 { [ -f "$MF_46" ] && [ ! -L "$MF_46" ] && grep -q '  claude  .claude/commands/qa.md$' "$MF_46"; } || { printf '%b\n' "${RED}✘ install.sh did not write its manifest beside the planted link${NC}"; tail -5 "$SANDBOX_DIR/manifest-plant.log"; exit 1; }
 cd "$REPO_DIR"
 
@@ -1951,7 +1965,7 @@ global.Date = class extends RealDate {
   }
 };
 EOF
-STAMP_49="qa-skills-backup-20300101T000000Z"
+STAMP_49="qa-instinct-backup-20300101T000000Z"
 
 for INSTALLER_49 in install.sh cli; do
     for LAYOUT_49 in backup link-target; do
@@ -1980,7 +1994,7 @@ for INSTALLER_49 in install.sh cli; do
         fi
         [ "$STATUS_49" -eq 0 ] || { printf '%b\n' "${RED}✘ $INSTALLER_49 failed ($STATUS_49) on a link planted at the $LAYOUT_49 name${NC}"; tail -5 "$SANDBOX_DIR/planted-49.log"; exit 1; }
         if [ "$LAYOUT_49" = backup ]; then
-            BACKUP_49="$(grep -lx 'MY OWN RULE 49' .claude/rules/security-qa.md.qa-skills-backup-* 2>/dev/null | head -1)"
+            BACKUP_49="$(grep -lx 'MY OWN RULE 49' .claude/rules/security-qa.md.qa-instinct-backup-* 2>/dev/null | head -1)"
             [ -n "$BACKUP_49" ] || { printf '%b\n' "${RED}✘ $INSTALLER_49 did not back up the user's file under another name${NC}"; ls .claude/rules; exit 1; }
         fi
         cd "$REPO_DIR"
@@ -2029,9 +2043,9 @@ else
     [ "$STATUS_50" -eq 0 ] || { printf '%b\n' "${RED}✘ install.sh failed ($STATUS_50) on a destination it cannot read${NC}"; tail -5 "$SANDBOX_DIR/unreadable-50.log"; exit 1; }
     [ "$(cat "$PROJ_50/.claude/rules/security-qa.md")" = "MY SECRET RULES 50" ] || { printf '%b\n' "${RED}✘ install.sh overwrote a file it could not read${NC}"; exit 1; }
     grep -q "Skipped .claude/rules/security-qa.md" "$SANDBOX_DIR/unreadable-50.log" || { printf '%b\n' "${RED}✘ install.sh did not report the file it skipped${NC}"; tail -5 "$SANDBOX_DIR/unreadable-50.log"; exit 1; }
-    if grep -q "security-qa.md" "$PROJ_50/.qa-skills-manifest"; then printf '%b\n' "${RED}✘ a skipped file was recorded in the manifest${NC}"; exit 1; fi
+    if grep -q "security-qa.md" "$PROJ_50/.qa-instinct-manifest"; then printf '%b\n' "${RED}✘ a skipped file was recorded in the manifest${NC}"; exit 1; fi
     [ -f "$PROJ_50/.claude/commands/qa.md" ] || { printf '%b\n' "${RED}✘ the rest of the tree did not install${NC}"; exit 1; }
-    if grep -vE '^[0-9a-f]{64}  [a-z]+  [^ ]' "$PROJ_50/.qa-skills-manifest"; then printf '%b\n' "${RED}✘ the manifest has a line without a hash (above)${NC}"; exit 1; fi
+    if grep -vE '^[0-9a-f]{64}  [a-z]+  [^ ]' "$PROJ_50/.qa-instinct-manifest"; then printf '%b\n' "${RED}✘ the manifest has a line without a hash (above)${NC}"; exit 1; fi
 fi
 
 printf '%b\n' "${GREEN}✔ Test 50 passed successfully! No hash, no decision: nothing was overwritten unproven.${NC}"
@@ -2094,7 +2108,7 @@ PATH="$PIN_49/bin:$PATH" "${LIMIT_52[@]}" "$REPO_DIR/install.sh" --target projec
 [ "$STATUS_52" -eq 0 ] || { printf '%b\n' "${RED}✘ install.sh hung or failed ($STATUS_52) on a link to a FIFO at the backup name${NC}"; tail -5 "$FIFO_52/install.log"; exit 1; }
 [ -p "$FIFO_52/fifo" ] || { printf '%b\n' "${RED}✘ the FIFO behind the planted link was replaced${NC}"; exit 1; }
 [ -L ".claude/rules/security-qa.md.$STAMP_49" ] || { printf '%b\n' "${RED}✘ the planted link was replaced${NC}"; exit 1; }
-BACKUP_52="$(grep -lx 'MY OWN RULE 52' .claude/rules/security-qa.md.qa-skills-backup-*-* 2>/dev/null | head -1)"
+BACKUP_52="$(grep -lx 'MY OWN RULE 52' .claude/rules/security-qa.md.qa-instinct-backup-*-* 2>/dev/null | head -1)"
 [ -n "$BACKUP_52" ] || { printf '%b\n' "${RED}✘ install.sh did not back up the user's file under the next name${NC}"; ls .claude/rules; exit 1; }
 cmp -s .claude/rules/security-qa.md "$REPO_DIR/.claude/rules/security-qa.md" || { printf '%b\n' "${RED}✘ the package's file was not installed${NC}"; exit 1; }
 cd "$REPO_DIR"
@@ -2130,13 +2144,13 @@ cd "$WT_53"
 # A committed manifest is attacker-controllable: an entry climbing out of the project must never
 # reach git add, where it would make the whole commit fail (or add a file outside).
 printf 'outside the project\n' > "$SANDBOX_DIR/commit-worktree-outside.txt"
-printf '%064d  cursor  ../commit-worktree-outside.txt\n' 0 > .qa-skills-manifest
+printf '%064d  cursor  ../commit-worktree-outside.txt\n' 0 > .qa-instinct-manifest
 # Answers: (1) Install, (2) yes to "Add to git and commit?", (3) no to "Push to remote?",
 # (4) no to the WSL prompt (ignored off WSL).
 printf '1\ny\nn\nn\n' | PATH="$FAKE_BIN_53:$PATH" "$REPO_DIR/install.sh" --target project --editor claude --no-hooks --no-color > "$SANDBOX_DIR/commit-worktree.log" 2>&1 || { printf '%b\n' "${RED}✘ install.sh failed in a worktree${NC}"; tail -5 "$SANDBOX_DIR/commit-worktree.log"; exit 1; }
 [ "$(git log -1 --format=%s)" = "Add/update QA skill for AI-assisted editors (ISTQB CTFL v4.0)" ] || { printf '%b\n' "${RED}✘ install.sh did not commit in a worktree${NC}"; tail -8 "$SANDBOX_DIR/commit-worktree.log"; exit 1; }
 COMMITTED_53="$(git show --name-only --pretty=format: HEAD)"
-for WANT_53 in .qa-skills-manifest .claude/commands/qa.md; do
+for WANT_53 in .qa-instinct-manifest .claude/commands/qa.md; do
     printf '%s\n' "$COMMITTED_53" | grep -qx "$WANT_53" || { printf '%b\n' "${RED}✘ $WANT_53 was not committed${NC}"; exit 1; }
 done
 if printf '%s\n' "$COMMITTED_53" | grep -q "outside"; then printf '%b\n' "${RED}✘ a manifest path outside the project was committed${NC}"; exit 1; fi
@@ -2151,6 +2165,8 @@ printf '%b\n' "${GREEN}✔ Test 53 passed successfully! The worktree got its com
 # tree, file for file and manifest line for manifest line, with no backup; uninstall must then
 # leave nothing behind. 4.0.1 had no global install of Copilot or Cline, and update never adds an
 # editor, so the fresh home install is of the editors 4.0.1 installed there (plan 058).
+# 4.0.1 recorded its install in .qa-skills-manifest, so the update also moves the manifest to its
+# current name (plan 066); the tree comparison fails on an old manifest left behind.
 # -----------------------------------------------------------------------------
 echo ""
 echo "Running Test 54: An install of release 4.0.1 updates to the current tree and uninstalls cleanly..."
@@ -2171,11 +2187,11 @@ for ED_54 in claude cursor windsurf antigravity; do
     (cd "$FRESH_54/project" && HOME="$FRESH_54/home" "$REPO_DIR/install.sh" --target global --editor "$ED_54" --non-interactive --no-hooks --no-color > /dev/null 2>&1)
 done
 
-BACKUPS_54="$(find "$UP_54" -name '*.qa-skills-backup-*')"
+BACKUPS_54="$(find "$UP_54" -name '*.qa-instinct-backup-*')"
 [ -z "$BACKUPS_54" ] || { printf '%b\n' "${RED}✘ --update over release 4.0.1 made backups:${NC}"; printf '%s\n' "$BACKUPS_54"; exit 1; }
 if grep -q "Kept" "$SANDBOX_DIR/v401-update.log"; then printf '%b\n' "${RED}✘ --update over release 4.0.1 kept files it should have replaced:${NC}"; grep "Kept" "$SANDBOX_DIR/v401-update.log"; exit 1; fi
 for SCOPE_54 in project home; do
-    if ! diff <(LC_ALL=C sort "$UP_54/$SCOPE_54/.qa-skills-manifest") <(LC_ALL=C sort "$FRESH_54/$SCOPE_54/.qa-skills-manifest") > "$SANDBOX_DIR/v401-manifest.diff"; then
+    if ! diff <(LC_ALL=C sort "$UP_54/$SCOPE_54/.qa-instinct-manifest") <(LC_ALL=C sort "$FRESH_54/$SCOPE_54/.qa-instinct-manifest") > "$SANDBOX_DIR/v401-manifest.diff"; then
         printf '%b\n' "${RED}✘ the $SCOPE_54 manifest after --update differs from a fresh install's (< updated, > fresh):${NC}"; head -20 "$SANDBOX_DIR/v401-manifest.diff"; exit 1
     fi
     if ! diff -r "$UP_54/$SCOPE_54" "$FRESH_54/$SCOPE_54" > "$SANDBOX_DIR/v401-tree.diff" 2>&1; then
@@ -2217,7 +2233,7 @@ for OP_60 in "init --editor all" "update --editor all" "uninstall --editor all";
     if [ "$(find "$DIR_60" -mindepth 1 | tr '\n' ' ')" != "$DIR_60/01-mine.md " ] || [ "$(cat "$DIR_60/01-mine.md")" != "MY COPILOT NOTES 60" ]; then
         printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' changed the folder at $DIR_60:${NC}"; find "$DIR_60"; exit 1
     fi
-    if grep -q "  copilot  $DIR_60$" .qa-skills-manifest 2>/dev/null; then
+    if grep -q "  copilot  $DIR_60$" .qa-instinct-manifest 2>/dev/null; then
         printf '%b\n' "${RED}✘ 'qa-instinct $OP_60' recorded the folder at $DIR_60 in the manifest${NC}"; exit 1
     fi
     case "$OP_60" in
@@ -2406,13 +2422,16 @@ for INST_63 in install.sh cli; do
         while IFS= read -r OLD_FILE_63; do
             case "$OLD_FILE_63" in project/.github/copilot-instructions.md|project/.agents/skills/qa/SKILL.md) continue ;; esac
             [ ! -e "$ROOT_63/$OLD_FILE_63" ] || { printf '%b\n' "${RED}✘ $INST_63 update left 4.0.1's $OLD_FILE_63${NC}"; exit 1; }
-            if grep -q "  ${OLD_FILE_63#*/}$" "$ROOT_63/${OLD_FILE_63%%/*}/.qa-skills-manifest" 2>/dev/null; then
+            if grep -q "  ${OLD_FILE_63#*/}$" "$ROOT_63/${OLD_FILE_63%%/*}/.qa-instinct-manifest" 2>/dev/null; then
                 printf '%b\n' "${RED}✘ $INST_63 update still records 4.0.1's $OLD_FILE_63${NC}"; exit 1
             fi
         done <<< "$OLD_63"
-        SKILLS_63="$(awk -F'\t' -v ed="$ED_63" '$1 == ed { print $4 }' "$REPO_DIR/.qa-skills-editor-map")"
+        for SCOPE_63 in project home; do
+            [ ! -e "$ROOT_63/$SCOPE_63/.qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ $INST_63 update left 4.0.1's $SCOPE_63 manifest under its old name${NC}"; exit 1; }
+        done
+        SKILLS_63="$(awk -F'\t' -v ed="$ED_63" '$1 == ed { print $4 }' "$REPO_DIR/.qa-instinct-editor-map")"
         diff -r "$REPO_DIR/adapters/skills" "$ROOT_63/project/$SKILLS_63" > /dev/null || { printf '%b\n' "${RED}✘ $INST_63 update did not install $ED_63's skills in $SKILLS_63${NC}"; exit 1; }
-        [ -z "$(find "$ROOT_63" -name '*.qa-skills-backup-*')" ] || { printf '%b\n' "${RED}✘ $INST_63 update made a backup${NC}"; find "$ROOT_63" -name '*.qa-skills-backup-*'; exit 1; }
+        [ -z "$(find "$ROOT_63" -name '*.qa-instinct-backup-*')" ] || { printf '%b\n' "${RED}✘ $INST_63 update made a backup${NC}"; find "$ROOT_63" -name '*.qa-instinct-backup-*'; exit 1; }
 
         run_current_63 "$INST_63" uninstall "$ED_63" "$ROOT_63"
         [ -z "$(left_63 "$ROOT_63")" ] || { printf '%b\n' "${RED}✘ $INST_63 uninstall after the update of $ED_63 left:${NC}"; left_63 "$ROOT_63" | head -10; exit 1; }
@@ -2567,7 +2586,7 @@ crypto.randomBytes = function (size, callback) {
   }
   return realRandomBytes.apply(this, arguments);
 };
-const planted = path.join(process.cwd(), `.qa-skills-manifest.tmp-${process.pid}-${"66".repeat(6)}`);
+const planted = path.join(process.cwd(), `.qa-instinct-manifest.tmp-${process.pid}-${"66".repeat(6)}`);
 fs.symlinkSync(process.env.VICTIM_66, planted);
 const realOpenSync = fs.openSync;
 fs.openSync = function (file, ...rest) {
@@ -2587,7 +2606,7 @@ cd "$REPO_DIR"
 [ -n "$(find "$VICTIM_66" -perm 600)" ] || { printf '%b\n' "${RED}✘ the CLI changed the mode of a file through a link planted at its temp file's name${NC}"; exit 1; }
 [ "$(readlink "$(head -1 "$TRIED_66")")" = "$VICTIM_66" ] || { printf '%b\n' "${RED}✘ the CLI removed or replaced the link planted at its temp file's name${NC}"; exit 1; }
 [ "$STATUS_66" -eq 0 ] || { printf '%b\n' "${RED}✘ the CLI exited $STATUS_66 over a link at its manifest temp name, where install.sh picks another name${NC}"; grep -m3 "Error\|EEXIST" "$PROJ_66.log"; exit 1; }
-grep -q '  cursor  .cursor/skills/qa/SKILL.md$' "$PROJ_66/.qa-skills-manifest" 2>/dev/null || { printf '%b\n' "${RED}✘ the CLI did not record what it installed${NC}"; exit 1; }
+grep -q '  cursor  .cursor/skills/qa/SKILL.md$' "$PROJ_66/.qa-instinct-manifest" 2>/dev/null || { printf '%b\n' "${RED}✘ the CLI did not record what it installed${NC}"; exit 1; }
 printf '%b\n' "${GREEN}✔ Test 66 passed successfully! The CLI passed over the link planted at its manifest temp name and finished the install.${NC}"
 
 # -----------------------------------------------------------------------------
@@ -2624,7 +2643,7 @@ for SCOPE_67 in project home; do
     [ -f "$UP_67/$SCOPE_67/.qa-skills-manifest" ] || { printf '%b\n' "${RED}✘ release 4.0.1 wrote no $SCOPE_67 manifest${NC}"; exit 1; }
     cli_67 init "$FRESH_67" "$SCOPE_67" > "$SANDBOX_DIR/fresh-67-$SCOPE_67.log" 2>&1 || { printf '%b\n' "${RED}✘ the CLI's fresh $SCOPE_67 install failed${NC}"; tail -5 "$SANDBOX_DIR/fresh-67-$SCOPE_67.log"; exit 1; }
     # A 4.0.1 install that already equals a fresh one would make the comparison below prove nothing.
-    if diff <(LC_ALL=C sort "$UP_67/$SCOPE_67/.qa-skills-manifest") <(LC_ALL=C sort "$FRESH_67/$SCOPE_67/.qa-skills-manifest") > /dev/null; then
+    if diff <(LC_ALL=C sort "$UP_67/$SCOPE_67/.qa-skills-manifest") <(LC_ALL=C sort "$FRESH_67/$SCOPE_67/.qa-instinct-manifest") > /dev/null; then
         printf '%b\n' "${RED}✘ release 4.0.1's $SCOPE_67 install already equals a fresh CLI install; Test 67 would prove nothing${NC}"; exit 1
     fi
     cli_67 update "$UP_67" "$SCOPE_67" > "$SANDBOX_DIR/v401-update-67-$SCOPE_67.log" 2>&1 || { printf '%b\n' "${RED}✘ the CLI's $SCOPE_67 update over release 4.0.1 failed${NC}"; tail -5 "$SANDBOX_DIR/v401-update-67-$SCOPE_67.log"; exit 1; }
@@ -2633,13 +2652,13 @@ for SCOPE_67 in project home; do
     fi
 done
 
-BACKUPS_67="$(find "$UP_67" -name '*.qa-skills-backup-*')"
+BACKUPS_67="$(find "$UP_67" -name '*.qa-instinct-backup-*')"
 [ -z "$BACKUPS_67" ] || { printf '%b\n' "${RED}✘ the CLI's update over release 4.0.1 made backups:${NC}"; printf '%s\n' "$BACKUPS_67" | head -10; exit 1; }
 for SCOPE_67 in project home; do
-    if ! diff <(LC_ALL=C sort "$UP_67/$SCOPE_67/.qa-skills-manifest") <(LC_ALL=C sort "$FRESH_67/$SCOPE_67/.qa-skills-manifest") > "$SANDBOX_DIR/v401-manifest-67.diff"; then
+    if ! diff <(LC_ALL=C sort "$UP_67/$SCOPE_67/.qa-instinct-manifest") <(LC_ALL=C sort "$FRESH_67/$SCOPE_67/.qa-instinct-manifest") > "$SANDBOX_DIR/v401-manifest-67.diff"; then
         printf '%b\n' "${RED}✘ the $SCOPE_67 manifest after the CLI's update differs from a fresh CLI install's (< updated, > fresh):${NC}"; head -20 "$SANDBOX_DIR/v401-manifest-67.diff"; exit 1
     fi
-    if ! diff -r -x .qa-skills-manifest "$UP_67/$SCOPE_67" "$FRESH_67/$SCOPE_67" > "$SANDBOX_DIR/v401-tree-67.diff" 2>&1; then
+    if ! diff -r -x .qa-instinct-manifest "$UP_67/$SCOPE_67" "$FRESH_67/$SCOPE_67" > "$SANDBOX_DIR/v401-tree-67.diff" 2>&1; then
         printf '%b\n' "${RED}✘ the $SCOPE_67 tree after the CLI's update differs from a fresh CLI install's:${NC}"; head -20 "$SANDBOX_DIR/v401-tree-67.diff"; exit 1
     fi
 done
@@ -2780,7 +2799,7 @@ LOG_71="$SANDBOX_DIR/cut-list.log"
 mkdir -p "$DIR_71"
 cd "$DIR_71"
 "$REPO_DIR/install.sh" --target project --editor windsurf --non-interactive --no-hooks > "$LOG_71" 2>&1
-RECORDED_71="$(grep -c '  windsurf  ' .qa-skills-manifest)"
+RECORDED_71="$(grep -c '  windsurf  ' .qa-instinct-manifest)"
 EXIT_71=0
 QA_INSTINCT_TEST_CUT_LIST=13 "$REPO_DIR/install.sh" --target project --editor windsurf --update --non-interactive --no-hooks > "$LOG_71" 2>&1 || EXIT_71=$?
 while IFS= read -r FILE_71; do
@@ -2790,7 +2809,7 @@ done < <(find "$REPO_DIR/adapters/skills" -type f)
 if grep -q 'no longer shipped' "$LOG_71"; then
     printf '%b\n' "${RED}✘ the update removed files as no longer shipped from a cut list${NC}"; cat "$LOG_71"; exit 1
 fi
-[ "$(grep -c '  windsurf  ' .qa-skills-manifest)" = "$RECORDED_71" ] || { printf '%b\n' "${RED}✘ the update dropped manifest entries after a cut list${NC}"; cat "$LOG_71"; exit 1; }
+[ "$(grep -c '  windsurf  ' .qa-instinct-manifest)" = "$RECORDED_71" ] || { printf '%b\n' "${RED}✘ the update dropped manifest entries after a cut list${NC}"; cat "$LOG_71"; exit 1; }
 [ "$EXIT_71" -ne 0 ] || { printf '%b\n' "${RED}✘ the update exited 0 after a cut list${NC}"; cat "$LOG_71"; exit 1; }
 grep -q 'Could not read the whole list' "$LOG_71" || { printf '%b\n' "${RED}✘ the update did not say it could not read the whole list${NC}"; cat "$LOG_71"; exit 1; }
 cd "$REPO_DIR"

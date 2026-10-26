@@ -55,7 +55,7 @@ function Get-Body {
 $Rules = @(Get-ChildItem -LiteralPath (Join-Path $ClaudeDir 'rules') -File | Where-Object { $_.Extension -ceq '.md' } |
     ForEach-Object { $_.Name.Substring(0, $_.Name.Length - 3) })
 
-# Every file the installers install, by editor. Keep in step with .qa-skills-editor-map.
+# Every file the installers install, by editor. Keep in step with .qa-instinct-editor-map.
 $Expected = @('copilot/rules/copilot-instructions.md', 'universal/AGENTS.md', 'universal/CLAUDE.md')
 foreach ($key in @('cursor', 'windsurf', 'cline', 'antigravity')) {
     $ext = if ($key -eq 'cursor') { 'mdc' } else { 'md' }

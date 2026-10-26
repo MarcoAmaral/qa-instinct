@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Global pre-commit hook to validate test cases in qa-skills
+# Global pre-commit hook to validate test cases in qa-instinct
 
 # >>> bem-te-vi global pre-commit >>>
 # Added by qa-skills global installer

@@ -2,7 +2,7 @@
 
 `qa-instinct` installs files into other people's repositories. Its installers create,
 overwrite and delete files on a user's machine, and they make those decisions partly from
-`.qa-skills-manifest` — a file that lives inside the consuming repo and is therefore outside the
+`.qa-instinct-manifest` — a file that lives inside the consuming repo and is therefore outside the
 package's control. That is where this package's real risk sits, and it is what this policy is
 mostly about.
 
@@ -100,7 +100,7 @@ below).
   limits the published tarball to the rule content, `cli/`, `adapters/` and metadata. CI gates
   production dependencies at `--audit-level=high` and treats dev findings as warnings.
 - **Anything requiring an attacker who can already write to the user's repository as a
-  precondition and gains nothing new by it.** Note the important exception: `.qa-skills-manifest`
+  precondition and gains nothing new by it.** Note the important exception: `.qa-instinct-manifest`
   *is* attacker-controllable by design, because it is committed and travels with the repo. A
   crafted manifest that makes an installer act outside the install tree is firmly in scope — see
   the history below.
@@ -112,11 +112,11 @@ below).
 Three invariants the installers are required to hold. A bug that breaks one of them is a
 vulnerability, not a defect:
 
-1. **Manifest paths are validated before use.** Every path read from `.qa-skills-manifest` is
+1. **Manifest paths are validated before use.** Every path read from `.qa-instinct-manifest` is
    checked to be relative, free of `..` segments, and to resolve inside the install tree. An entry
    that fails is refused and reported, never acted on.
 2. **A file that is not ours is never destroyed.** A colliding file is backed up to
-   `<file>.qa-skills-backup-<UTC timestamp>` unless its hash appears in `.qa-skills-known-hashes`,
+   `<file>.qa-instinct-backup-<UTC timestamp>` unless its hash appears in `.qa-instinct-known-hashes`,
    which identifies it as the package's own older file. Uninstall removes only files still exactly
    as installed, keeps and reports the rest, and never deletes a backup.
 3. **Links and read-only files are never forced.** A symlinked destination file is never written

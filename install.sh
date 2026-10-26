@@ -198,7 +198,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 QA_COMMANDS_DIR="$SCRIPT_DIR/.claude/commands"
 QA_SKILL_FILE="$QA_COMMANDS_DIR/qa.md"
 ADAPTERS_DIR="$SCRIPT_DIR/adapters"
-EDITOR_MAP_FILE="$SCRIPT_DIR/.qa-skills-editor-map"
+EDITOR_MAP_FILE="$SCRIPT_DIR/.qa-instinct-editor-map"
 
 # 1. Check qa.md exists
 if [ ! -f "$QA_SKILL_FILE" ]; then
@@ -333,8 +333,10 @@ check_adapter_exists() {
 
 # ─── Helper: register Git hooks ──────────────────────────────────────────────
 
-# The marker line the project hook carries; uninstall and the "is this ours?" check match on it.
-PROJECT_HOOK_MARKER="Pre-commit hook to validate test cases in qa-skills"
+# The marker line the project hook carries; uninstall and the "is this ours?" check match on it,
+# and on the line every 4.x release wrote (plan 066).
+PROJECT_HOOK_MARKER="Pre-commit hook to validate test cases in qa-instinct"
+PROJECT_HOOK_OLD_MARKER="Pre-commit hook to validate test cases in qa-skills"
 
 # Prints the hooks directory of the git repository rooted at $1 and fails when $1 is not the
 # root of one. Asking git (rather than assuming $1/.git/hooks) handles a .git that is a file,
@@ -357,7 +359,9 @@ GLOBAL_HOOK_BEGIN="# >>> bem-te-vi global pre-commit >>>"
 GLOBAL_HOOK_END="# <<< bem-te-vi global pre-commit <<<"
 GLOBAL_HOOK_OLD_MARKER="# Added by qa-skills global installer"
 GLOBAL_HOOK_OLD_END="# GLOBAL_PRECOMMIT_APPEND"
-GLOBAL_HOOK_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-skills"
+GLOBAL_HOOK_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-instinct"
+# The header a 4.x or older release wrote; a fresh hook from before the fences starts at it.
+GLOBAL_HOOK_OLD_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-skills"
 
 # Matches a first line that is a sh or bash shebang, the only hooks a bash block can be appended to.
 SH_SHEBANG_RE='^#![[:space:]]*(/[^[:space:]]*/)?(env[[:space:]]+)?(ba)?sh([[:space:]]|$)'
@@ -394,7 +398,7 @@ GLOBAL_PRECOMMIT_BLOCK
 # nothing is printed and the caller must leave the file alone.
 strip_global_hook_block() {
     awk -v B="$GLOBAL_HOOK_BEGIN" -v E="$GLOBAL_HOOK_END" -v O="$GLOBAL_HOOK_OLD_MARKER" \
-        -v A="$GLOBAL_HOOK_OLD_END" -v H="$GLOBAL_HOOK_FRESH_HEADER" '
+        -v A="$GLOBAL_HOOK_OLD_END" -v H="$GLOBAL_HOOK_OLD_FRESH_HEADER" '
         { line[NR] = $0; t = $0; sub(/\r$/, "", t); trim[NR] = t }
         END {
             s = 0; old = 0
@@ -438,7 +442,7 @@ register_git_hook() {
 
         local HOOK_FILE="$HOOK_DIR/pre-commit"
         # Never replace a hook we did not write: it is the user's (or their hook manager's).
-        if [ -L "$HOOK_FILE" ] || { [ -e "$HOOK_FILE" ] && ! grep -q "$PROJECT_HOOK_MARKER" "$HOOK_FILE"; }; then
+        if [ -L "$HOOK_FILE" ] || { [ -e "$HOOK_FILE" ] && ! grep -qF -e "$PROJECT_HOOK_MARKER" -e "$PROJECT_HOOK_OLD_MARKER" "$HOOK_FILE"; }; then
             printf '%b\n' "${YELLOW}  ⚠ Kept your existing pre-commit hook: $HOOK_FILE${NC}"
             printf '%b\n' "${CYAN}      To validate test cases from it, run: bash .claude/hooks/validate-tc-format.sh <file>${NC}"
             return 0
@@ -449,7 +453,7 @@ register_git_hook() {
         # Create pre-commit script
         cat > "$HOOK_FILE" << 'PRECOMMIT'
 #!/usr/bin/env bash
-# Pre-commit hook to validate test cases in qa-skills
+# Pre-commit hook to validate test cases in qa-instinct
 
 SCRIPT_DIR="$(git rev-parse --show-toplevel)"
 VALIDATOR="$SCRIPT_DIR/.claude/hooks/validate-tc-format.sh"
@@ -528,7 +532,7 @@ PRECOMMIT
 
 # ─── Shared editor → install-folder mapping ──────────────────────────────────
 # Single source of truth for every non-claude editor's install folders and display label, shared
-# with install.ps1 and cli/qa-instinct.js. See .qa-skills-editor-map. Format: tab-separated
+# with install.ps1 and cli/qa-instinct.js. See .qa-instinct-editor-map. Format: tab-separated
 # "<editor>\t<project rules>\t<global rules>\t<project skills>\t<global skills>\t<label>",
 # "-" where the editor has none (plan 047). The generated rule files of adapters/<editor>/rules/
 # go into the rules folder, and the one Agent Skills tree adapters/skills/ into the skills folder.
@@ -566,7 +570,7 @@ remove_empty_ancestors() {
 }
 
 # ─── Install manifest ─────────────────────────────────────────────────────────
-# Every file the installer writes is recorded in <base>/.qa-skills-manifest as
+# Every file the installer writes is recorded in <base>/.qa-instinct-manifest as
 # "<sha256>  <editor>  <path relative to base>". Uninstall then removes only files whose
 # content still matches what was installed, so a project's own files are never destroyed —
 # including ones whose names collide with the package's, and files this package shipped
@@ -577,7 +581,9 @@ remove_empty_ancestors() {
 # stray leading UTF-8 BOM and trailing \r so a manifest written by an older release, or by
 # PowerShell's platform-native encoding, still parses correctly.
 
-manifest_file() { echo "$1/.qa-skills-manifest"; }
+manifest_file() { echo "$1/.qa-instinct-manifest"; }
+# The name every 4.x release wrote the manifest under (plan 066).
+legacy_manifest_file() { echo "$1/.qa-skills-manifest"; }
 
 valid_sha256() {   # text -> success when it is 64 lowercase hex digits
     [ "${#1}" -eq 64 ] && [ -z "${1//[0-9a-f]/}" ]
@@ -681,6 +687,41 @@ manifest_record() {   # base editor rel hash
     manifest_write "$MF" "$BODY"
 }
 
+# Moves a 4.x install's manifest to the current name, the same in all three installers (plan 066),
+# once per base and before anything reads the manifest. Every entry of both files is kept; on the
+# same editor and path the current manifest's entry wins. The new manifest is written the usual
+# way, then the old name is removed: a symlink there is unlinked, never its target. A folder or an
+# unreadable file at the old name is not a manifest this run can use, so it is left and reported.
+MIGRATED_BASES=""
+migrate_manifest() {   # base
+    local BASE="$1" OLD NEW BODY="" KEYS=$'\n' HASH ED REL
+    case "$MIGRATED_BASES" in *"|$BASE|"*) return 0 ;; esac
+    MIGRATED_BASES="$MIGRATED_BASES|$BASE|"
+    OLD="$(legacy_manifest_file "$BASE")"
+    NEW="$(manifest_file "$BASE")"
+    if [ -d "$OLD" ]; then
+        printf '%b\n' "${YELLOW}  ! Kept ${OLD##*/} — it is a directory, not a manifest${NC}"
+        return 0
+    fi
+    [ -f "$OLD" ] || return 0
+    if [ ! -r "$OLD" ]; then
+        printf '%b\n' "${YELLOW}  ! Kept ${OLD##*/} — it cannot be read${NC}"
+        return 0
+    fi
+    while read -r HASH ED REL; do
+        [ -n "$HASH" ] || continue
+        KEYS="$KEYS$ED  $REL"$'\n'
+        BODY="$BODY$HASH  $ED  $REL"$'\n'
+    done < <(manifest_lines "$NEW")
+    while read -r HASH ED REL; do
+        [ -n "$HASH" ] || continue
+        case "$KEYS" in *$'\n'"$ED  $REL"$'\n'*) continue ;; esac
+        BODY="$BODY$HASH  $ED  $REL"$'\n'
+    done < <(manifest_lines "$OLD")
+    manifest_write "$NEW" "$BODY" || return 1
+    rm -f "$OLD"
+}
+
 # Known-hash list: the SHA-256 of every file this package has ever shipped, across all tagged
 # releases (see generate-known-hashes.sh and plans/011-release-hash-provenance.md). Lets the
 # installer tell its own older file from the user's edit with certainty instead of guessing —
@@ -691,7 +732,7 @@ KNOWN_HASHES_LOADED=false
 load_known_hashes() {
     [ "$KNOWN_HASHES_LOADED" = true ] && return 0
     KNOWN_HASHES_LOADED=true
-    local LIST="$SCRIPT_DIR/.qa-skills-known-hashes"
+    local LIST="$SCRIPT_DIR/.qa-instinct-known-hashes"
     # Missing list (old checkout, trimmed package) is not an error: known_hash simply never
     # matches, and every differing destination falls back to today's back-up-and-warn behavior.
     [ -f "$LIST" ] || return 0
@@ -735,7 +776,7 @@ backup_dest() {   # base editor rel dest src -> if dest's content differs from s
     done
     local BACKUP SUFFIX N=0
     SUFFIX="$(date -u +%Y%m%dT%H%M%SZ)"
-    BACKUP="$DEST.qa-skills-backup-$SUFFIX"
+    BACKUP="$DEST.qa-instinct-backup-$SUFFIX"
     # Created exclusively, like the manifest's temp file: a name already taken, a link planted
     # there included, is never opened; the next number is tried instead.
     until write_exclusive "$BACKUP" cat "$DEST"; do
@@ -744,7 +785,7 @@ backup_dest() {   # base editor rel dest src -> if dest's content differs from s
             printf '%b\n' "${RED}Error: could not back up $DEST${NC}" >&2
             return 1
         fi
-        BACKUP="$DEST.qa-skills-backup-$SUFFIX-$N"
+        BACKUP="$DEST.qa-instinct-backup-$SUFFIX-$N"
     done
     echo "BACKUP $BACKUP"
 }
@@ -913,7 +954,7 @@ install_file() {      # base editor src dest
             UPDATE_CHANGED_COUNT=$((UPDATE_CHANGED_COUNT + 1))
         fi
     fi
-    if [ -n "${QA_SKILLS_DEBUG:-}" ]; then
+    if [ -n "${QA_INSTINCT_DEBUG:-}" ]; then
         echo "  (debug) recorded $REL in $(manifest_file "$BASE")"
     fi
 }
@@ -1255,6 +1296,7 @@ adopt_known() {   # editor scope base
 
 # Install, or update when --update was given.
 deploy_to_editor() {   # editor scope base
+    migrate_manifest "$3"
     if [ "$OPERATION" = update ]; then update_to_editor "$@"; else install_to_editor "$@"; fi
 }
 
@@ -1336,7 +1378,7 @@ purge_git_hook() {
             [ -n "$HOOK_DIR" ] || continue
             HOOK_FILE="$HOOK_DIR/pre-commit"
             if [ -f "$HOOK_FILE" ] && [ ! -L "$HOOK_FILE" ]; then
-                if grep -q "$PROJECT_HOOK_MARKER" "$HOOK_FILE"; then
+                if grep -qF -e "$PROJECT_HOOK_MARKER" -e "$PROJECT_HOOK_OLD_MARKER" "$HOOK_FILE"; then
                     rm -f "$HOOK_FILE"
                     printf '%b\n' "${GREEN}  ✓ Purged project-level git pre-commit hook: $HOOK_FILE${NC}"
                 fi
@@ -1365,7 +1407,7 @@ purge_git_hook() {
                     printf '%b\n' "${GREEN}  ✓ Cleaned global git pre-commit hook: $HOOK_FILE${NC}"
 
                     # Remove if nothing is left but the shebang and our own header comments
-                    if ! grep -qvE "^(#!.*|$GLOBAL_HOOK_FRESH_HEADER|$GLOBAL_HOOK_OLD_END|[[:space:]]*)\$" "$HOOK_FILE"; then
+                    if ! grep -qvE "^(#!.*|$GLOBAL_HOOK_FRESH_HEADER|$GLOBAL_HOOK_OLD_FRESH_HEADER|$GLOBAL_HOOK_OLD_END|[[:space:]]*)\$" "$HOOK_FILE"; then
                         rm -f "$HOOK_FILE"
                         printf '%b\n' "${CYAN}  i Removed empty global hook file.${NC}"
                     fi
@@ -1401,6 +1443,7 @@ uninstall_from_editor() {
     local BASE_DIR="$3"       # base directory (project dir or $HOME)
     local ED_REMOVED_START=$UNINSTALL_REMOVED_COUNT
     local ED_KEPT_START=$UNINSTALL_KEPT_COUNT
+    migrate_manifest "$BASE_DIR"
     note_uninstall_base "$BASE_DIR"
 
     case "$EDITOR_NAME" in
@@ -1449,7 +1492,7 @@ uninstall_from_editor() {
             # removals left empty. Editors with no global skills folder are never installed there.
             # With no manifest there is nothing to remove: unlike Claude Code's, these
             # destinations were never written without one, and the package's older files here
-            # are not in .qa-skills-known-hashes, so a match could only be a copy the user made
+            # are not in .qa-instinct-known-hashes, so a match could only be a copy the user made
             # (plan 047, review of #193).
             local LABEL REL PKG_DEST
             LABEL="$(editor_map_field "$EDITOR_NAME" label)"
@@ -1493,6 +1536,11 @@ git_commit_and_push() {
                 safe_manifest_rel "$REL" && [ -e "$REL" ] && PATHS+=("$REL")
             done < <(manifest_lines "$MANIFEST")
             [ -e "$MANIFEST" ] && PATHS+=("$(basename "$MANIFEST")")
+            # A manifest moved from its 4.x name: commit the old name's removal with it (plan 066).
+            if [ ! -e "$(legacy_manifest_file "$(pwd)")" ] \
+                && git ls-files --error-unmatch -- "$(basename "$(legacy_manifest_file "$(pwd)")")" >/dev/null 2>&1; then
+                PATHS+=("$(basename "$(legacy_manifest_file "$(pwd)")")")
+            fi
 
             if [ "${#PATHS[@]}" -gt 0 ] \
                 && git add -- "${PATHS[@]}" \

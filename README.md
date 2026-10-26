@@ -372,22 +372,25 @@ installers print that command after an Antigravity install. Checked on Antigravi
 ### Your own files are never destroyed
 
 All three installers — `install.sh`, `install.ps1` and the npm CLI (`qa-instinct`) — record every
-file they write in `.qa-skills-manifest`, at the root of the project (or of your home directory
+file they write in `.qa-instinct-manifest`, at the root of the project (or of your home directory
 for a global install).
 
 - **Installing** over a file that already exists and differs from what the installer is about to
-  write first checks its content hash against `.qa-skills-known-hashes` — every SHA-256 the
+  write first checks its content hash against `.qa-instinct-known-hashes` — every SHA-256 the
   package has ever shipped, across all its tagged releases. A match means the file is the
   package's own older content (however it got there, and whatever it's currently named), so it is
   overwritten and recorded in the manifest, with no backup. No match means it's treated as yours:
-  it is copied to `<file>.qa-skills-backup-<UTC timestamp>` first, and reported. This covers a file
+  it is copied to `<file>.qa-instinct-backup-<UTC timestamp>` first, and reported. This covers a file
   of your own whose name matches one of the package's (for example your own
   `.claude/rules/security-qa.md` or `.github/copilot-instructions.md`), including one you happen to have edited to the
   exact bytes of an older release.
 - **Uninstalling** removes only files that are still exactly as installed. Anything you added or
   changed is kept, and reported. Backups are never removed.
-- Keep `.qa-skills-manifest` for as long as the package is installed; deleting it makes uninstall
+- Keep `.qa-instinct-manifest` for as long as the package is installed; deleting it makes uninstall
   fall back to removing only files whose content still matches the package's current copy.
+- **An install made before 5.0** recorded itself in `.qa-skills-manifest`. The next `init`, `update`
+  or `uninstall` moves it to `.qa-instinct-manifest`, keeping every entry, and removes the old file;
+  commit both changes. Backups named `.qa-skills-backup-*` are kept like any other backup.
 - **A read-only file is left alone**, on install and on uninstall alike. Marking a file read-only
   is taken as a deliberate signal, and the rest of the tree still installs.
 - **A symlinked destination is never written through.** The file it points at, outside the
@@ -404,7 +407,7 @@ for a global install).
   trailing `\r` from an older release — and all three agree on SHA-256, whether it comes from
   `sha256sum` (Linux), `shasum -a 256` (macOS), `Get-FileHash` (Windows) or Node's `crypto`.
   They read the same known-hash list the same tolerant way.
-- Set `QA_SKILLS_DEBUG=1` (`install.sh` or `install.ps1`) to print a trace line for every manifest entry
+- Set `QA_INSTINCT_DEBUG=1` (`install.sh` or `install.ps1`) to print a trace line for every manifest entry
   recorded during install.
 
 ---
@@ -418,7 +421,7 @@ is text your AI assistant reads, plus an installer.
   `.claude/skills/`, `.claude/agents/` and `.claude/hooks/` in your project (or in `~/.claude/`
   with `--global`). For the other editors: the rule files and the skills folder at the paths in
   [Editor Support](#editor-support).
-  It also writes `.qa-skills-manifest`, the record of what it installed, and backs up any file of
+  It also writes `.qa-instinct-manifest`, the record of what it installed, and backs up any file of
   yours that was in the way (see [Your own files are never destroyed](#your-own-files-are-never-destroyed)).
 - **No network, no telemetry.** The `qa-instinct` command makes no network requests and starts no
   other programs: it copies files and records their hashes. (Getting the package from npm is, of
@@ -467,7 +470,7 @@ qa-instinct --version
 | `unlink` | Remove qa-instinct symlinks |
 | `update` | Refresh installed files to this package's current version, install the files it added since your install, and remove unmodified ones it no longer ships. Files you changed are backed up, never overwritten. Never installs an editor that was not already installed; with nothing installed, does nothing. `install.sh --update` and `install.ps1 -Update` do the same |
 | `update --editor <name>` | Refresh one editor's files. With no `--editor`, refreshes every editor the manifest records |
-| `update --global` | Refresh the global install recorded in `~/.qa-skills-manifest` |
+| `update --global` | Refresh the global install recorded in `~/.qa-instinct-manifest` |
 | `--version` / `-v` | Print the installed version (`qa-instinct <version>`) |
 | `help` / `--help` / `-h` | Print the commands and flags |
 
@@ -604,7 +607,7 @@ qa-instinct/
 ├── install.sh             # Multi-editor installer (Linux/macOS/WSL)
 ├── install.ps1            # Multi-editor installer (Windows)
 ├── generate-adapters.sh   # Compiler: .claude/ → adapters/ (generate-adapters.ps1 on Windows)
-├── .qa-skills-editor-map  # Each editor's install paths, read by all three installers
+├── .qa-instinct-editor-map  # Each editor's install paths, read by all three installers
 ├── tests/                 # Conformance and lifecycle suites, content checks
 ├── examples/              # Real output on public software
 ├── benchmark/             # The efficacy benchmark and its pilot results
