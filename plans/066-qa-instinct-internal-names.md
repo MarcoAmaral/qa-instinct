@@ -123,3 +123,12 @@ for its rename. A `Release-As: 4.3.0` footer sets the version. The incompatibili
 describes is unchanged: a CLI older than 4.3.0 does not read `.qa-instinct-manifest`, and the
 changelog's breaking-change note says so. Rejected: 5.0.0, the semantic-versioning answer (see
 "Version").
+
+## Note, 2026-10-26: published
+
+Release PR #15 tagged `v4.3.0`; Marco published it from the tag (the first attempt failed with
+E404 on the PUT: the npm login had expired). Checked against the registry in a scratch git
+repository: `npx qa-instinct@4.2.1 init --editor claude` wrote `.qa-skills-manifest` (52 entries);
+`npx qa-instinct@4.3.0 update` exited 0, left `.qa-skills-manifest` deleted and
+`.qa-instinct-manifest` with the same 52 entries, made no backup and kept no file; `uninstall`
+then removed all 52 files.
