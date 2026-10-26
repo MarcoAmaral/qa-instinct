@@ -127,3 +127,15 @@ assistant, as the README's "a QA engineer's brain already loaded" puts it.
 The version continues the series (4.2.0, the next minor after 4.1.1), so the release history
 stays readable. Publishing `qa-instinct` and removing the old package are approved for this
 rename; any other outward-facing step still needs Marco's go-ahead.
+
+## Decision (2026-10-25, internal names)
+
+> **Status: decided, 2026-10-25, by Marco.** Supersedes option B's keep-list. Executed in
+> `plans/066-qa-instinct-internal-names.md`.
+
+**Take option C.** Marco installed QA Instinct in his portfolio repository and found
+`.qa-skills-manifest` at its root, named after the package's first name. The manifest, the backup
+suffix, the hook markers, the debug switch, the known-hash list and the editor map move to
+`qa-instinct`. All three installers migrate an old manifest on their next run and keep
+recognising the old hook text, so no install is stranded. Released as 5.0.0, because a 4.x CLI
+cannot see an install made by 5.x.
