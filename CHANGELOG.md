@@ -24,7 +24,6 @@ the links to that repository's commits and comparisons were removed, as they are
 ### Features
 
 * **installers:** rename the internal qa-skills names to qa-instinct ([c2604f9](https://github.com/MarcoAmaral/qa-instinct/commit/c2604f9f560a749b840b29ba1405ef5c299dfc7b))
-* present the package as a Senior QA Engineer ([c397034](https://github.com/MarcoAmaral/qa-instinct/commit/c397034c14d9345a9f474c8126e0d5aaed1ca8e0))
 * present the package as a Senior QA Engineer ([6cff708](https://github.com/MarcoAmaral/qa-instinct/commit/6cff7080b75bc268f94210b2c852e1fbd6b07eb7))
 
 
