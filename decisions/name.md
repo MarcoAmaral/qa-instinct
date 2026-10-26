@@ -139,3 +139,7 @@ suffix, the hook markers, the debug switch, the known-hash list and the editor m
 `qa-instinct`. All three installers migrate an old manifest on their next run and keep
 recognising the old hook text, so no install is stranded. Released as 5.0.0, because a 4.x CLI
 cannot see an install made by 5.x.
+
+> **Note, 2026-10-26, Marco.** Released as **4.3.0**, not 5.0.0: the version series stays
+> continuous, as for the 4.2.0 rename. A CLI older than 4.3.0 cannot see an install made by 4.3.0
+> or later; the changelog's breaking-change note says so.
