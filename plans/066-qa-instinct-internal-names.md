@@ -97,3 +97,21 @@ installed" against it: that is breaking, and `decisions/name.md` option C priced
 - **Rename only the manifest**: leaves the other names, and the request was all of them.
 - **Keep reading the old name forever without migrating**: two manifests could diverge.
 - **Accept `QA_SKILLS_DEBUG` as an alias**: code kept for a debug switch nobody scripts.
+
+## Outcome
+
+- **Red**: the six cases 081-086, run with the new runner against the installers on `main`,
+  failed 14 of 16 runs: every installer still wrote `.qa-skills-manifest`, so "missing
+  project:.qa-instinct-manifest" and "no manifest to rename" (case 008 failed too, on the backup
+  suffix). After the change, the full suite passed 140 of 140 locally (`install.sh`, CLI).
+- **The 4.0.1 fixture** now exercises the migration end to end: lifecycle Tests 54, 63 and 67 run
+  the real 4.0.1 installer, then update with the current tree, and require the old manifest gone.
+  PowerShell Test 50 builds the same install by hand.
+- **Found while testing**: the interactive commit offer committed the new manifest but left the
+  tracked old one deleted outside the commit. Both installers now add the old name's removal when
+  git tracks it. Lifecycle Test 43b proved it red against a copy of the tree without that fix
+  ("the old manifest's removal was not committed"), then green; PowerShell Test 49b mirrors it.
+- **Hook fixtures**: the 4.x project hook moved to `project/qa-skills-marker.*`; `project/current.*`,
+  `current/` and `global-fresh/fenced-qa-instinct.lf.nl` hold the new text. Lifecycle Tests 72 and
+  73 pass on it.
+- **Not run locally**: the PowerShell suites (no `pwsh` on this machine); CI runs them on Windows.
