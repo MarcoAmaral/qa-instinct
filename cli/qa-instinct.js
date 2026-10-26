@@ -11,7 +11,7 @@ const crypto = require("crypto");
 const PKG_DIR = path.resolve(__dirname, "..");
 const PKG_CLAUDE = path.join(PKG_DIR, ".claude");
 const ADAPTERS_DIR = path.join(PKG_DIR, "adapters");
-const EDITOR_MAP_FILE = path.join(PKG_DIR, ".qa-skills-editor-map");
+const EDITOR_MAP_FILE = path.join(PKG_DIR, ".qa-instinct-editor-map");
 
 const SUBDIRS = ["commands", "rules", "skills", "agents", "hooks"];
 
@@ -24,7 +24,7 @@ const SUBDIRS = ["commands", "rules", "skills", "agents", "hooks"];
 // has a skills folder there. A skills column may name several folders separated
 // by "," (Antigravity's App and IDE share one global folder, its CLI reads
 // another; plan 058), so `skills` is a list. Single source of truth for this mapping is
-// .qa-skills-editor-map, shared with install.sh and install.ps1 — see that
+// .qa-instinct-editor-map, shared with install.sh and install.ps1 — see that
 // file's header comment there for the on-disk format. Read once at startup
 // instead of hardcoded here, so all three installers stay in sync automatically.
 
@@ -194,7 +194,7 @@ function removeEmptyDirChain(dir, stopBase) {
 }
 
 // ─── Install manifest ─────────────────────────────────────────────────────────
-// Every file this CLI writes is recorded in <base>/.qa-skills-manifest as
+// Every file this CLI writes is recorded in <base>/.qa-instinct-manifest as
 // "<sha256>  <editor>  <path relative to base>" (editor is always "claude" here).
 // This is the exact on-disk contract shared with install.sh / install.ps1: no BOM,
 // LF line endings, forward-slash paths, two spaces between fields. Reads tolerate a
@@ -202,6 +202,11 @@ function removeEmptyDirChain(dir, stopBase) {
 // by either shell installer — or an older release — still parses correctly.
 
 function manifestFile(base) {
+  return path.join(base, ".qa-instinct-manifest");
+}
+
+// The name every 4.x release wrote the manifest under (plan 066).
+function legacyManifestFile(base) {
   return path.join(base, ".qa-skills-manifest");
 }
 
@@ -325,6 +330,37 @@ function writeManifest(mf, entries) {
   fs.renameSync(tmp, mf);
 }
 
+// Moves a 4.x install's manifest to the current name, the same in all three installers (plan 066),
+// before anything reads the manifest. Every entry of both files is kept; on the same editor and
+// path the current manifest's entry wins. The new manifest is written the usual way, then the old
+// name is removed: a symlink there is unlinked, never its target. A folder or an unreadable file at
+// the old name is not a manifest this run can use, so it is left and reported.
+function migrateManifest(base) {
+  const old = legacyManifestFile(base);
+  if (!fs.existsSync(old)) return;
+  const name = path.basename(old);
+  if (fs.statSync(old).isDirectory()) {
+    console.log(
+      c.yellow(`  ! Kept ${name} — it is a directory, not a manifest`),
+    );
+    return;
+  }
+  if (isUnreadable(old)) {
+    console.log(c.yellow(`  ! Kept ${name} — it cannot be read`));
+    return;
+  }
+  const mf = manifestFile(base);
+  const entries = readPortableLines(mf).map(parseManifestLine).filter(Boolean);
+  const keys = new Set(entries.map((e) => `${e.editor}  ${e.rel}`));
+  for (const e of readPortableLines(old)
+    .map(parseManifestLine)
+    .filter(Boolean)) {
+    if (!keys.has(`${e.editor}  ${e.rel}`)) entries.push(e);
+  }
+  writeManifest(mf, entries);
+  fs.rmSync(old, { force: true });
+}
+
 function manifestRecord(base, editor, rel, hash) {
   const mf = manifestFile(base);
   const entries = readPortableLines(mf)
@@ -334,13 +370,13 @@ function manifestRecord(base, editor, rel, hash) {
   writeManifest(mf, entries);
 }
 
-// .qa-skills-known-hashes ships in the npm package and records the SHA-256 of
+// .qa-instinct-known-hashes ships in the npm package and records the SHA-256 of
 // every file the package has ever shipped, across all tagged releases. It lets
 // install tell its own older file from the user's edit with certainty instead
 // of guessing: a destination whose hash appears there is the package's own file
 // and is adopted silently; anything else is the user's and is backed up.
 function loadKnownHashes() {
-  const list = path.join(PKG_DIR, ".qa-skills-known-hashes");
+  const list = path.join(PKG_DIR, ".qa-instinct-known-hashes");
   const set = new Set();
   for (const line of readPortableLines(list)) {
     const m = line.match(/^(\S+)/);
@@ -387,7 +423,7 @@ function backupDest(base, editor, rel, dest, src, knownHashes) {
   // included, is never opened (COPYFILE_EXCL); the next number is tried instead. On Windows a
   // junction or a folder at the name fails with EPERM, not EEXIST (plan 053 I10).
   const suffix = utcTimestamp();
-  let backup = `${dest}.qa-skills-backup-${suffix}`;
+  let backup = `${dest}.qa-instinct-backup-${suffix}`;
   for (let n = 1; ; n++) {
     try {
       fs.copyFileSync(dest, backup, fs.constants.COPYFILE_EXCL);
@@ -397,7 +433,7 @@ function backupDest(base, editor, rel, dest, src, knownHashes) {
         err.code === "EEXIST" || (err.code === "EPERM" && pathTaken(backup));
       if (!taken || n >= 100) throw err;
     }
-    backup = `${dest}.qa-skills-backup-${suffix}-${n}`;
+    backup = `${dest}.qa-instinct-backup-${suffix}-${n}`;
   }
 }
 
@@ -889,6 +925,7 @@ async function promptEditors() {
 
 async function cmdInit(opts) {
   const targetBase = resolveTarget(opts);
+  migrateManifest(targetBase);
   const isGlobal = opts.global;
   const editorFlag = opts.editor;
 
@@ -997,6 +1034,7 @@ function cmdUninstallInit(opts) {
     `\n${c.bold("qa-instinct")} — uninstalling from ${label(opts, editors)}\n`,
   );
 
+  migrateManifest(targetBase);
   const hadManifest = fs.existsSync(manifestFile(targetBase));
   let removed = 0,
     kept = 0;
@@ -1513,6 +1551,7 @@ function cmdUpdate(opts) {
   const isGlobal = opts.global;
   const editorFlag = opts.editor;
   const knownHashes = loadKnownHashes();
+  migrateManifest(targetBase);
   const hasManifest = fs.existsSync(manifestFile(targetBase));
 
   // With no editor named, update refreshes every editor the manifest records.
@@ -1617,7 +1656,7 @@ ${c.bold("Examples:")}
   qa-instinct uninstall               # remove claude files copied by init/update
   qa-instinct uninstall --editor all  # remove every installed editor's files
   qa-instinct update                  # refresh whatever editors the manifest records
-  qa-instinct update --global         # refresh ~/.qa-skills-manifest's install instead
+  qa-instinct update --global         # refresh ~/.qa-instinct-manifest's install instead
   qa-instinct link                    # symlink in current project
   qa-instinct link --global           # symlink in ~/.claude/
   qa-instinct unlink                  # remove symlinks from current project

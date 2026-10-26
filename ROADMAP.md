@@ -26,7 +26,7 @@ this page and `plans/README.md` disagree, the plans index is right.
   smells, test doubles and what mocking costs, characterization tests, CI preconditions, delivery
   versus deployment, feature flags, canary and A/B validity.
 - **Three installers that agree and never destroy your files**: the npm CLI, `install.sh` and
-  `install.ps1`, held to one conformance suite of 64 cases on Linux, macOS (bash 3.2) and Windows
+  `install.ps1`, held to one conformance suite of 70 cases on Linux, macOS (bash 3.2) and Windows
   (PowerShell 5.1), with the fixes from the pre-launch code audit (plans 044, 045 and 046).
 - **Six editors from one source**: Claude Code, Cursor, Windsurf, GitHub Copilot, Cline and
   Antigravity. Outside Claude Code the rules are small always-on rule files and every command,

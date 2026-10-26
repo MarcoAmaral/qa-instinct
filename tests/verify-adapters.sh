@@ -41,7 +41,7 @@ for RULE_FILE in "$CLAUDE_DIR"/rules/*.md; do
     RULES+=("${RULE_NAME%.md}")
 done
 
-# Every file the installers install, by editor. Keep in step with .qa-skills-editor-map.
+# Every file the installers install, by editor. Keep in step with .qa-instinct-editor-map.
 EXPECTED="copilot/rules/copilot-instructions.md
 universal/AGENTS.md
 universal/CLAUDE.md"

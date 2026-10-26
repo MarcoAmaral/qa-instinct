@@ -102,7 +102,7 @@ if ($content -match "Version: 1.0.0") {
 
 # The edit above stands in for a user-modified file: update must preserve it in a backup
 # rather than discarding it.
-$editBackup = Get-ChildItem -Path ".claude\commands" -Filter 'qa.md.qa-skills-backup-*' | Select-Object -First 1
+$editBackup = Get-ChildItem -Path ".claude\commands" -Filter 'qa.md.qa-instinct-backup-*' | Select-Object -First 1
 if (-not $editBackup) { throw "Update overwrote a modified file without a backup" }
 if ((Get-Content -Raw -LiteralPath $editBackup.FullName) -notmatch "Version: 1.0.0") {
     throw "Backup does not contain the modified content"
@@ -256,7 +256,7 @@ Set-Location -Path $globalCaller
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target global -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Target global (Test 7) failed with exit status $LASTEXITCODE" }
 
-$homeBackup = Get-ChildItem -Path "$env:USERPROFILE\.claude\rules" -Filter 'testing-guidelines.md.qa-skills-backup-*' | Select-Object -First 1
+$homeBackup = Get-ChildItem -Path "$env:USERPROFILE\.claude\rules" -Filter 'testing-guidelines.md.qa-instinct-backup-*' | Select-Object -First 1
 if (-not $homeBackup) { throw "Global install overwrote a colliding file without a backup" }
 if ((Get-Content -Raw -LiteralPath $homeBackup.FullName).Trim() -ne $homeContent) { throw "Global backup does not contain the original content" }
 
@@ -282,11 +282,11 @@ git init -q -b main
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 9) failed with exit status $LASTEXITCODE" }
 
-if (-not (Test-Path ".qa-skills-manifest")) { throw "Install did not write .qa-skills-manifest" }
+if (-not (Test-Path ".qa-instinct-manifest")) { throw "Install did not write .qa-instinct-manifest" }
 
 # Rewrite the manifest into install.sh's exact on-disk form: no BOM, LF line endings, and
 # forward-slash path separators.
-$mfPath = Resolve-Path ".qa-skills-manifest"
+$mfPath = Resolve-Path ".qa-instinct-manifest"
 $lines = Get-Content -LiteralPath $mfPath | ForEach-Object { $_ -replace '\\', '/' }
 $lfContent = ($lines -join "`n") + "`n"
 [System.IO.File]::WriteAllText($mfPath, $lfContent, (New-Object System.Text.UTF8Encoding($false)))
@@ -296,7 +296,7 @@ if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 9) failed with ex
 
 Write-Host "Verifying every installed file was actually removed..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw ".claude folder still exists - files installed under a foreign-platform manifest were orphaned" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest still exists after uninstall" }
+if (Test-Path ".qa-instinct-manifest") { throw "Manifest still exists after uninstall" }
 
 Write-Host "[OK] Test 9 passed successfully! A foreign-platform manifest (no BOM, LF, forward slashes) still uninstalls cleanly." -ForegroundColor Green
 
@@ -314,11 +314,11 @@ git init -q -b main
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 10, first install) failed with exit status $LASTEXITCODE" }
-$firstInstallLines = @(Get-Content -LiteralPath ".qa-skills-manifest").Count
+$firstInstallLines = @(Get-Content -LiteralPath ".qa-instinct-manifest").Count
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 10, second install) failed with exit status $LASTEXITCODE" }
-$secondInstallLines = @(Get-Content -LiteralPath ".qa-skills-manifest").Count
+$secondInstallLines = @(Get-Content -LiteralPath ".qa-instinct-manifest").Count
 
 if ($firstInstallLines -ne $secondInstallLines) { throw "Re-installing into a path with a space duplicated manifest entries ($firstInstallLines -> $secondInstallLines lines)" }
 
@@ -326,7 +326,7 @@ powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target proj
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 10) failed with exit status $LASTEXITCODE" }
 
 if (Test-Path ".claude") { throw ".claude folder still exists in a path with a space" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest still exists after uninstall in a path with a space" }
+if (Test-Path ".qa-instinct-manifest") { throw "Manifest still exists after uninstall in a path with a space" }
 
 Write-Host "[OK] Test 10 passed successfully! A project path with a space installs and uninstalls cleanly with no duplicate manifest entries." -ForegroundColor Green
 
@@ -344,7 +344,7 @@ New-Item -ItemType Directory -Path $atomicProject -Force | Out-Null
 Set-Location -Path $atomicProject
 git init -q -b main
 
-$manifestName = ".qa-skills-manifest"
+$manifestName = ".qa-instinct-manifest"
 
 # Watch for every disk write that touches the manifest (or a temp file used to replace it)
 # during a single install, so we can tell "rewritten once per file" from "written once, atomically".
@@ -378,8 +378,8 @@ finally {
     $watcher.Dispose()
 }
 
-if (-not (Test-Path ".qa-skills-manifest")) { throw "Install did not write .qa-skills-manifest" }
-$manifestEntryCount = @(Get-Content -LiteralPath ".qa-skills-manifest").Count
+if (-not (Test-Path ".qa-instinct-manifest")) { throw "Install did not write .qa-instinct-manifest" }
+$manifestEntryCount = @(Get-Content -LiteralPath ".qa-instinct-manifest").Count
 
 # Only count events that landed on the final manifest name itself (an atomic write via a temp
 # file plus rename shows up here as exactly one such event: the rename onto the final name).
@@ -399,8 +399,8 @@ if ($finalNameEvents.Count -gt 2) {
 # some other means is a separate, not-yet-fixed concern) - so this part passes both before and
 # after the fix. It is included to document the real-world impact of the write count assertion
 # above.
-$truncatedFirstLine = (Get-Content -LiteralPath ".qa-skills-manifest")[0]
-[System.IO.File]::WriteAllText((Resolve-Path ".qa-skills-manifest"), "$truncatedFirstLine`n", (New-Object System.Text.UTF8Encoding($false)))
+$truncatedFirstLine = (Get-Content -LiteralPath ".qa-instinct-manifest")[0]
+[System.IO.File]::WriteAllText((Resolve-Path ".qa-instinct-manifest"), "$truncatedFirstLine`n", (New-Object System.Text.UTF8Encoding($false)))
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -Uninstall
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 12) failed with exit status $LASTEXITCODE" }
@@ -466,11 +466,11 @@ git init -q -b main
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 14, first install) failed with exit status $LASTEXITCODE" }
 if (-not (Test-Path ".claude\commands\qa.md")) { throw "Missing qa.md in non-ASCII project path" }
-$firstInstallLines = @(Get-Content -LiteralPath ".qa-skills-manifest").Count
+$firstInstallLines = @(Get-Content -LiteralPath ".qa-instinct-manifest").Count
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 14, second install) failed with exit status $LASTEXITCODE" }
-$secondInstallLines = @(Get-Content -LiteralPath ".qa-skills-manifest").Count
+$secondInstallLines = @(Get-Content -LiteralPath ".qa-instinct-manifest").Count
 
 if ($firstInstallLines -ne $secondInstallLines) { throw "Re-installing into a non-ASCII path duplicated manifest entries ($firstInstallLines -> $secondInstallLines lines)" }
 
@@ -478,7 +478,7 @@ powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target proj
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 14) failed with exit status $LASTEXITCODE" }
 
 if (Test-Path ".claude") { throw ".claude folder still exists in a non-ASCII path" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest still exists after uninstall in a non-ASCII path" }
+if (Test-Path ".qa-instinct-manifest") { throw "Manifest still exists after uninstall in a non-ASCII path" }
 
 Write-Host "[OK] Test 14 passed successfully! A project path with non-ASCII characters installs and uninstalls cleanly with no duplicate manifest entries." -ForegroundColor Green
 
@@ -496,11 +496,11 @@ git init -q -b main
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 15) failed with exit status $LASTEXITCODE" }
-if (-not (Test-Path ".qa-skills-manifest")) { throw "Test setup error: install did not write .qa-skills-manifest" }
+if (-not (Test-Path ".qa-instinct-manifest")) { throw "Test setup error: install did not write .qa-instinct-manifest" }
 
 # Simulate a pre-v2.3.3 install: a file the user modified after installing, and no manifest.
 Set-Content -Path ".claude\rules\testing-guidelines.md" -Value "user edited this" -Encoding utf8
-Remove-Item -LiteralPath ".qa-skills-manifest" -Force
+Remove-Item -LiteralPath ".qa-instinct-manifest" -Force
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -Uninstall
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 15) failed with exit status $LASTEXITCODE" }
@@ -539,9 +539,9 @@ $userContent = "MY OWN SECURITY POLICY - DO NOT TOUCH"
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText((Join-Path $userEditProject '.claude\rules\security-qa.md'), "$userContent`n", $utf8NoBom)
 $userHash = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
-$knownHashes = Get-Content -LiteralPath "$repoDir\.qa-skills-known-hashes" -Encoding UTF8
+$knownHashes = Get-Content -LiteralPath "$repoDir\.qa-instinct-known-hashes" -Encoding UTF8
 if ($knownHashes -match "^$userHash\s") { throw "Test setup error: the user-edit content collides with a known release hash" }
-Remove-Item -LiteralPath ".qa-skills-manifest" -Force
+Remove-Item -LiteralPath ".qa-instinct-manifest" -Force
 
 # A reinstall, not -Update: with no manifest, update adopts only files a release shipped and
 # leaves this one alone (plan 033 item 3), so only install reaches the backup path.
@@ -549,7 +549,7 @@ powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target proj
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 18, reinstall) failed with exit status $LASTEXITCODE" }
 
 Write-Host "Verifying the user's edit was backed up, not silently discarded..." -ForegroundColor Cyan
-$backup = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-skills-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
+$backup = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-instinct-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $backup) { throw "A genuinely user-edited file was adopted instead of backed up" }
 if ((Get-Content -Raw -LiteralPath $backup.FullName).Trim() -ne $userContent) { throw "Backup does not contain the user's edit" }
 if ((Get-Content -Raw ".claude\rules\security-qa.md") -notmatch "OWASP") { throw "The current release's content was not installed" }
@@ -578,13 +578,13 @@ foreach ($f in @('.claude/rules/security-qa.md', '.claude/rules/accessibility-qa
     $winPath = $f -replace '/', '\'
     [System.IO.File]::WriteAllBytes((Join-Path $fullUpgradeProject $winPath), $oldBytes)
 }
-Remove-Item -LiteralPath ".qa-skills-manifest" -Force
+Remove-Item -LiteralPath ".qa-instinct-manifest" -Force
 
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -Update
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Update (Test 19) failed with exit status $LASTEXITCODE" }
 
 Write-Host "Verifying the upgrade left no spurious backups..." -ForegroundColor Cyan
-$spurious = Get-ChildItem -Path ".claude" -Recurse -Filter '*.qa-skills-backup-*' -ErrorAction SilentlyContinue
+$spurious = Get-ChildItem -Path ".claude" -Recurse -Filter '*.qa-instinct-backup-*' -ErrorAction SilentlyContinue
 if ($spurious) { throw "The no-manifest upgrade created spurious backups: $($spurious.FullName -join ', ')" }
 if ((Get-Content -Raw ".claude\rules\security-qa.md") -notmatch "OWASP") { throw "security-qa.md was not updated to the current release" }
 
@@ -593,7 +593,7 @@ if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 19) failed with e
 
 Write-Host "Verifying uninstall left a clean tree..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw ".claude survived uninstall after a no-manifest upgrade" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest survived uninstall" }
+if (Test-Path ".qa-instinct-manifest") { throw "Manifest survived uninstall" }
 
 Write-Host "[OK] Test 19 passed successfully! The no-manifest upgrade path left no spurious backups and uninstalled to a clean tree." -ForegroundColor Green
 
@@ -660,7 +660,7 @@ if ($LASTEXITCODE -ne 0) { throw "install.ps1 -Uninstall (Test 24a) failed with 
 
 Write-Host "Verifying install.ps1 fully uninstalled a cli/qa-instinct.js install..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw "install.ps1 left .claude behind after uninstalling a cli/qa-instinct.js install" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest survived install.ps1's uninstall" }
+if (Test-Path ".qa-instinct-manifest") { throw "Manifest survived install.ps1's uninstall" }
 
 # --- 24b: install with install.ps1, uninstall with cli/qa-instinct.js ---
 $ps1ThenCliProject = Join-Path $sandboxDir "ps1-then-cli-project"
@@ -677,7 +677,7 @@ if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js uninstall (Test 24b) failed
 
 Write-Host "Verifying cli/qa-instinct.js fully uninstalled an install.ps1 install..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw "cli/qa-instinct.js left .claude behind after uninstalling an install.ps1 install" }
-if (Test-Path ".qa-skills-manifest") { throw "Manifest survived cli/qa-instinct.js's uninstall" }
+if (Test-Path ".qa-instinct-manifest") { throw "Manifest survived cli/qa-instinct.js's uninstall" }
 
 Write-Host "[OK] Test 24 passed successfully! The manifest format round-trips between cli/qa-instinct.js and install.ps1 in both directions." -ForegroundColor Green
 
@@ -700,13 +700,13 @@ if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init aborted instead of ski
 
 Write-Host "Verifying the read-only file was left untouched and not backed up..." -ForegroundColor Cyan
 if ((Get-Content -Raw ".claude\rules\code-style-qa.md").Trim() -ne $cliRoContent) { throw "cli/qa-instinct.js overwrote the read-only destination" }
-if (Get-ChildItem -Path ".claude\rules" -Filter 'code-style-qa.md.qa-skills-backup-*') { throw "A skipped read-only file should leave no backup" }
+if (Get-ChildItem -Path ".claude\rules" -Filter 'code-style-qa.md.qa-instinct-backup-*') { throw "A skipped read-only file should leave no backup" }
 
 Write-Host "Verifying the rest of the tree still installed completely..." -ForegroundColor Cyan
 foreach ($sub in @('commands', 'rules', 'skills', 'agents', 'hooks')) {
     if (-not (Test-Path ".claude\$sub")) { throw ".claude\$sub is missing - the install stopped part-way" }
 }
-if (Select-String -Path ".qa-skills-manifest" -Pattern 'code-style-qa.md' -Quiet) { throw "A skipped file must not be recorded in the manifest" }
+if (Select-String -Path ".qa-instinct-manifest" -Pattern 'code-style-qa.md' -Quiet) { throw "A skipped file must not be recorded in the manifest" }
 
 # Clear the read-only bit so the sandbox cleanup at the end can remove it.
 Set-ItemProperty -Path ".claude\rules\code-style-qa.md" -Name IsReadOnly -Value $false
@@ -740,8 +740,8 @@ $actualSkillBytes = [System.IO.File]::ReadAllBytes((Join-Path $cliEditorCursorPr
 if (Compare-Object $expectedSkillBytes $actualSkillBytes -SyncWindow 0) { throw ".cursor/skills/qa-cases/SKILL.md does not match adapters/skills/qa-cases/SKILL.md byte-for-byte" }
 
 Write-Host "Verifying the manifest records them under 'cursor', not 'claude'..." -ForegroundColor Cyan
-if ((Get-Content -Raw ".qa-skills-manifest") -notmatch [regex]::Escape("  cursor  .cursor/rules/qa-instinct.mdc")) { throw "Manifest did not record the cursor install under the 'cursor' editor" }
-if ((Get-Content -Raw ".qa-skills-manifest") -notmatch [regex]::Escape("  cursor  .cursor/skills/qa/SKILL.md")) { throw "Manifest did not record the cursor skills under the 'cursor' editor" }
+if ((Get-Content -Raw ".qa-instinct-manifest") -notmatch [regex]::Escape("  cursor  .cursor/rules/qa-instinct.mdc")) { throw "Manifest did not record the cursor install under the 'cursor' editor" }
+if ((Get-Content -Raw ".qa-instinct-manifest") -notmatch [regex]::Escape("  cursor  .cursor/skills/qa/SKILL.md")) { throw "Manifest did not record the cursor skills under the 'cursor' editor" }
 
 Write-Host "Verifying no claude tree was installed alongside it..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw "--editor cursor unexpectedly installed the claude tree too" }
@@ -771,7 +771,7 @@ $actualCopilotBytes = [System.IO.File]::ReadAllBytes((Join-Path $cliEditorCollis
 if (Compare-Object $expectedCopilotBytes $actualCopilotBytes -SyncWindow 0) { throw "The package's copilot-instructions.md was not installed" }
 
 Write-Host "Verifying the user's original content is recoverable from a backup..." -ForegroundColor Cyan
-$cliEditorBackup = Get-ChildItem -Path ".github" -Filter 'copilot-instructions.md.qa-skills-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
+$cliEditorBackup = Get-ChildItem -Path ".github" -Filter 'copilot-instructions.md.qa-instinct-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $cliEditorBackup) { throw "cli/qa-instinct.js init --editor copilot did not back up the colliding file" }
 if ((Get-Content -Raw -LiteralPath $cliEditorBackup.FullName).Trim() -ne $cliEditorUserContent) { throw "Backup does not contain the user's original content" }
 
@@ -807,8 +807,8 @@ if (-not (Test-Path ".claude\commands")) { throw "Test setup error: --editor cla
 
 Write-Host "Verifying both produced the same manifest content (modulo the recorded hash)..." -ForegroundColor Cyan
 $stripHash = { param($path) (Get-Content -Path $path) -replace '^[0-9a-f]+', '' | Sort-Object }
-$nonTtyManifest = & $stripHash (Join-Path $cliNonTtyProject ".qa-skills-manifest")
-$explicitManifest = & $stripHash (Join-Path $cliExplicitClaudeProject ".qa-skills-manifest")
+$nonTtyManifest = & $stripHash (Join-Path $cliNonTtyProject ".qa-instinct-manifest")
+$explicitManifest = & $stripHash (Join-Path $cliExplicitClaudeProject ".qa-instinct-manifest")
 if (Compare-Object $nonTtyManifest $explicitManifest) { throw "Non-TTY default manifest differs from an explicit --editor claude install" }
 
 Write-Host "[OK] Test 29 passed successfully! The non-TTY default behaves exactly like --editor claude." -ForegroundColor Green
@@ -837,7 +837,7 @@ if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 30) failed with exit status 
 # The relative escape is conformance case 005; the absolute path cannot be written as a case
 # (the sandbox path is not known in advance), so it stays here.
 foreach ($evilRel in @($victimFile)) {
-    Set-Content -Path ".qa-skills-manifest" -Value "$victimHash  claude  $evilRel" -Encoding utf8
+    Set-Content -Path ".qa-instinct-manifest" -Value "$victimHash  claude  $evilRel" -Encoding utf8
     $uninstallOutput = & powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -Uninstall 2>&1
 
     if (-not (Test-Path -LiteralPath $victimFile)) { throw "Uninstall deleted a file outside the install tree via '$evilRel'" }
@@ -868,7 +868,7 @@ Set-Location -Path $updateRefreshProject
 $oldBytes31 = Get-ReleaseFixtureBytes -RelativePath '.claude/rules/security-qa.md'
 [System.IO.File]::WriteAllBytes((Join-Path $updateRefreshProject '.claude\rules\security-qa.md'), $oldBytes31)
 $oldHash31 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
-Set-Content -Path ".qa-skills-manifest" -Value "$oldHash31  claude  .claude/rules/security-qa.md" -Encoding utf8
+Set-Content -Path ".qa-instinct-manifest" -Value "$oldHash31  claude  .claude/rules/security-qa.md" -Encoding utf8
 # The exact current-release hash, so refresh is proven precisely rather than by a substring
 # that might already appear in the older release's content too.
 $currentHash31 = (Get-FileHash -Algorithm SHA256 -LiteralPath "$repoDir\.claude\rules\security-qa.md").Hash.ToLower()
@@ -880,9 +880,9 @@ $updateText31 = $updateOutput31 | Out-String
 Write-Host "Verifying the stale-but-unmodified file was refreshed to the current release..." -ForegroundColor Cyan
 $newHash31 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
 if ($newHash31 -ne $currentHash31) { throw "update did not refresh a stale, unmodified file to the current release" }
-$refreshBackups31 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-skills-backup-*' -ErrorAction SilentlyContinue
+$refreshBackups31 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-instinct-backup-*' -ErrorAction SilentlyContinue
 if ($refreshBackups31) { throw "An unmodified file was backed up instead of refreshed in place" }
-if ((Get-Content -Raw ".qa-skills-manifest") -notmatch [regex]::Escape("$newHash31  claude  .claude/rules/security-qa.md")) { throw "The manifest was not updated to the refreshed file's new hash" }
+if ((Get-Content -Raw ".qa-instinct-manifest") -notmatch [regex]::Escape("$newHash31  claude  .claude/rules/security-qa.md")) { throw "The manifest was not updated to the refreshed file's new hash" }
 if ($updateText31 -notmatch [regex]::Escape("Refreshed .claude/rules/security-qa.md")) { throw "update did not report the file as refreshed. Output was: $updateText31" }
 
 Set-Location -Path $repoDir
@@ -904,12 +904,12 @@ Set-Location -Path $updateBackupProject
 $installBytes32 = Get-ReleaseFixtureBytes -RelativePath '.claude/rules/security-qa.md'
 [System.IO.File]::WriteAllBytes((Join-Path $updateBackupProject '.claude\rules\security-qa.md'), $installBytes32)
 $installHash32 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
-Set-Content -Path ".qa-skills-manifest" -Value "$installHash32  claude  .claude/rules/security-qa.md" -Encoding utf8
+Set-Content -Path ".qa-instinct-manifest" -Value "$installHash32  claude  .claude/rules/security-qa.md" -Encoding utf8
 
 $userContent32 = "MY OWN SECURITY POLICY - DO NOT TOUCH"
 Set-Content -Path ".claude\rules\security-qa.md" -Value $userContent32 -Encoding utf8
 $userHash32 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
-$knownHashes32 = Get-Content -LiteralPath "$repoDir\.qa-skills-known-hashes" -Encoding UTF8
+$knownHashes32 = Get-Content -LiteralPath "$repoDir\.qa-instinct-known-hashes" -Encoding UTF8
 if ($knownHashes32 -match "^$userHash32\s") { throw "Test setup error: the user-edit content collides with a known release hash" }
 $currentHash32 = (Get-FileHash -Algorithm SHA256 -LiteralPath "$repoDir\.claude\rules\security-qa.md").Hash.ToLower()
 
@@ -918,7 +918,7 @@ if ($LASTEXITCODE -ne 0) { throw "qa-instinct update (Test 32) failed with exit 
 $updateText32 = $updateOutput32 | Out-String
 
 Write-Host "Verifying the user's edit was backed up, not silently discarded..." -ForegroundColor Cyan
-$backup32 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-skills-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
+$backup32 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-instinct-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $backup32) { throw "update did not back up a user-modified file" }
 if ((Get-Content -Raw -LiteralPath $backup32.FullName).Trim() -ne $userContent32) { throw "Backup does not contain the user's edit" }
 $afterHash32 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
@@ -948,7 +948,7 @@ Set-Content -Path ".claude\rules\deprecated-rule-2.md" -Value "an old rule, late
 $dep2InstallHash33 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\deprecated-rule-2.md").Hash.ToLower()
 Add-Content -Path ".claude\rules\deprecated-rule-2.md" -Value "the user's own addition" -Encoding utf8
 
-Set-Content -Path ".qa-skills-manifest" -Value @(
+Set-Content -Path ".qa-instinct-manifest" -Value @(
     "$depHash33  claude  .claude/rules/deprecated-rule.md",
     "$dep2InstallHash33  claude  .claude/rules/deprecated-rule-2.md"
 ) -Encoding utf8
@@ -959,8 +959,8 @@ $updateText33 = $updateOutput33 | Out-String
 
 Write-Host "Verifying the unmodified no-longer-shipped file was removed..." -ForegroundColor Cyan
 if (Test-Path ".claude\rules\deprecated-rule.md") { throw "update left an unmodified, no-longer-shipped file in place" }
-if (Test-Path ".qa-skills-manifest") {
-    if ((Get-Content -Raw ".qa-skills-manifest") -match [regex]::Escape("deprecated-rule.md")) { throw "The removed file's stale manifest entry survived" }
+if (Test-Path ".qa-instinct-manifest") {
+    if ((Get-Content -Raw ".qa-instinct-manifest") -match [regex]::Escape("deprecated-rule.md")) { throw "The removed file's stale manifest entry survived" }
 }
 if ($updateText33 -notmatch [regex]::Escape("Removed .claude/rules/deprecated-rule.md")) { throw "update did not report removing the dropped file. Output was: $updateText33" }
 
@@ -988,7 +988,7 @@ Set-Location -Path $updateAdoptProject
 $adoptBytes34 = Get-ReleaseFixtureBytes -RelativePath '.claude/rules/security-qa.md'
 [System.IO.File]::WriteAllBytes((Join-Path $updateAdoptProject '.claude\rules\security-qa.md'), $adoptBytes34)
 $adoptHash34 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
-$knownHashes34 = Get-Content -LiteralPath "$repoDir\.qa-skills-known-hashes" -Encoding UTF8
+$knownHashes34 = Get-Content -LiteralPath "$repoDir\.qa-instinct-known-hashes" -Encoding UTF8
 if (-not ($knownHashes34 -match "^$adoptHash34\s")) { throw "Test setup error: v2.2.0's security-qa.md hash is not in the known-hash list" }
 
 # The user's own file, sitting at another path this package also ships - update must leave it
@@ -1005,7 +1005,7 @@ $updateText34 = $updateOutput34 | Out-String
 Write-Host "Verifying the pre-manifest install was detected and adopted..." -ForegroundColor Cyan
 $afterHash34 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\security-qa.md").Hash.ToLower()
 if ($afterHash34 -ne $currentHash34) { throw "update did not adopt a pre-manifest install matching a known release" }
-$adoptBackups34 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-skills-backup-*' -ErrorAction SilentlyContinue
+$adoptBackups34 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa-instinct-backup-*' -ErrorAction SilentlyContinue
 if ($adoptBackups34) { throw "A file matching a previous release was backed up instead of adopted" }
 if ($updateText34 -notmatch [regex]::Escape("Adopted .claude/rules/security-qa.md")) { throw "update did not report adopting the pre-manifest file. Output was: $updateText34" }
 
@@ -1032,7 +1032,7 @@ $updateText35 = $updateOutput35 | Out-String
 
 Write-Host "Verifying update did not install anything when nothing was there..." -ForegroundColor Cyan
 if (Test-Path ".claude") { throw "update created .claude/ out of nothing" }
-if (Test-Path ".qa-skills-manifest") { throw "update created a manifest out of nothing" }
+if (Test-Path ".qa-instinct-manifest") { throw "update created a manifest out of nothing" }
 if ($updateText35 -notmatch 'Nothing installed') { throw "update did not honestly report that nothing is installed. Output was: $updateText35" }
 
 Set-Location -Path $repoDir
@@ -1060,7 +1060,7 @@ if ($LASTEXITCODE -ne 0) { throw "cli/qa-instinct.js init (Test 36) failed with 
 # A manifest entry naming a file this package no longer ships, at a path that escapes the
 # project tree, must never reach update's removal branch (fs.rmSync) without a refusal.
 foreach ($evilRel in @("../update-traversal-outside/victim.txt", $victimFile36)) {
-    Set-Content -Path ".qa-skills-manifest" -Value "$victimHash36  claude  $evilRel" -Encoding utf8
+    Set-Content -Path ".qa-instinct-manifest" -Value "$victimHash36  claude  $evilRel" -Encoding utf8
     $updateOutput36 = & node "$repoDir\cli\qa-instinct.js" update 2>&1
     $updateText36 = $updateOutput36 | Out-String
 
@@ -1110,7 +1110,7 @@ Write-Host "Running Test 38: Global uninstall cleans up what older versions left
 $debris38 = Join-Path $env:USERPROFILE '.clinerules'
 [System.IO.File]::WriteAllText($debris38, "OLD CLINE ADAPTER`n")
 $debrisHash38 = (Get-FileHash -LiteralPath $debris38 -Algorithm SHA256).Hash.ToLower()
-$homeManifest38 = Join-Path $env:USERPROFILE '.qa-skills-manifest'
+$homeManifest38 = Join-Path $env:USERPROFILE '.qa-instinct-manifest'
 $utf8NoBom38 = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::AppendAllText($homeManifest38, "$debrisHash38  cline  .clinerules`n", $utf8NoBom38)
 
@@ -1140,7 +1140,7 @@ Write-Host "[OK] Test 38 passed successfully! Old home-directory debris is remov
 Write-Host ""
 Write-Host "Running Test 39: Project pre-commit hook is never overwritten and respects core.hooksPath..." -ForegroundColor Yellow
 
-$hookMarker39 = 'Pre-commit hook to validate test cases in qa-skills'
+$hookMarker39 = 'Pre-commit hook to validate test cases in qa-instinct'
 
 # A repository without the global template hook an earlier test may have configured, so the
 # only pre-commit hook present is the one this test seeds.
@@ -1419,7 +1419,7 @@ function Assert-Menu42c {
     if (-not $Present -and $exists) { throw "Test 42c ($Case): $Relative should not exist under the $Where directory. Output was: $Output" }
 }
 function Get-ManifestEditors42c {
-    $manifest = Join-Path $script:menuProject42c '.qa-skills-manifest'
+    $manifest = Join-Path $script:menuProject42c '.qa-instinct-manifest'
     if (-not (Test-Path -LiteralPath $manifest)) { return '' }
     $names = foreach ($line in [System.IO.File]::ReadAllLines($manifest)) {
         if ($line -match '^[0-9a-fA-F]{64}  (\S+)  ') { $Matches[1] }
@@ -1505,7 +1505,7 @@ $subs42 = @('agents', 'commands', 'rules', 'skills', 'hooks')
 $pkg42 = Join-Path $sandboxDir 'linked-pkg-42'
 $proj42 = Join-Path $sandboxDir 'linked-project-42'
 New-Item -ItemType Directory -Path (Join-Path $pkg42 '.claude'), $proj42 -Force | Out-Null
-foreach ($item in @('cli', 'package.json', '.qa-skills-known-hashes', '.qa-skills-editor-map')) {
+foreach ($item in @('cli', 'package.json', '.qa-instinct-known-hashes', '.qa-instinct-editor-map')) {
     Copy-Item -LiteralPath (Join-Path $repoDir $item) -Destination $pkg42 -Recurse -Force
 }
 foreach ($sub in $subs42) {
@@ -1585,7 +1585,7 @@ $subs42b = @('agents', 'commands', 'rules', 'skills', 'hooks')
 function New-Package42b {
     param([string]$Path)
     New-Item -ItemType Directory -Path (Join-Path $Path '.claude') -Force | Out-Null
-    foreach ($item in @('cli', 'package.json', '.qa-skills-known-hashes', '.qa-skills-editor-map')) {
+    foreach ($item in @('cli', 'package.json', '.qa-instinct-known-hashes', '.qa-instinct-editor-map')) {
         Copy-Item -LiteralPath (Join-Path $repoDir $item) -Destination $Path -Recurse -Force
     }
     foreach ($sub in $subs42b) {
@@ -1937,7 +1937,7 @@ New-Item -ItemType Directory -Path (Join-Path $proj45 '.agents') -Force | Out-Nu
 Set-Location -Path $proj45
 $out45 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor all -NonInteractive -NoHooks 2>&1 | Out-String
 if ($LASTEXITCODE -eq 0) { throw "Test 45: install.ps1 exited 0 although .agents\skills is a file. Output was: $out45" }
-$manifest45 = Join-Path $proj45 '.qa-skills-manifest'
+$manifest45 = Join-Path $proj45 '.qa-instinct-manifest'
 if (-not (Test-Path -LiteralPath $manifest45)) { throw "Test 45: the failed run saved no manifest, orphaning every file it installed. Output was: $out45" }
 $lines45 = [System.IO.File]::ReadAllLines($manifest45)
 # Antigravity's rule files come before its skills (plan 047), so they were installed and recorded.
@@ -2006,7 +2006,7 @@ try {
     foreach ($rel in '.cline\rules\qa-instinct.md', '.windsurf\rules\qa-instinct.md', '.github\copilot-instructions.md', '.cursor\rules\qa-instinct.mdc', '.agents\skills\qa\SKILL.md', '.codeium\windsurf\skills\qa\SKILL.md', '.gemini\config\skills\qa\SKILL.md') {
         $present47[$rel] = Test-Path -LiteralPath (Join-Path $home47 $rel)
     }
-    $manifest47 = Join-Path $home47 '.qa-skills-manifest'
+    $manifest47 = Join-Path $home47 '.qa-instinct-manifest'
     $lines47 = if (Test-Path -LiteralPath $manifest47) { [System.IO.File]::ReadAllLines($manifest47) } else { @() }
     $outUn47 = powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor all -NonInteractive -NoHooks -Uninstall 2>&1 | Out-String
     $exitUn47 = $LASTEXITCODE
@@ -2025,7 +2025,7 @@ foreach ($entry in @('cline  .cline/rules/qa-instinct.md', 'copilot  .github/cop
     if (-not ($lines47 | Where-Object { $_.EndsWith("  $entry") })) { throw "Test 47: the manifest lacks '$entry'. Manifest: $($lines47 -join ' | ')" }
 }
 if ($exitUn47 -ne 0) { throw "Test 47: the uninstall exited $exitUn47. Output was: $outUn47" }
-foreach ($rel in '.cline', '.windsurf', '.github', '.cursor', '.agents', '.claude', '.qa-skills-manifest') {
+foreach ($rel in '.cline', '.windsurf', '.github', '.cursor', '.agents', '.claude', '.qa-instinct-manifest') {
     if (Test-Path -LiteralPath (Join-Path $home47 $rel)) { throw "Test 47: a project uninstall from the home folder left $rel. Output was: $outUn47" }
 }
 Write-Host "[OK] Test 47 passed successfully! From the home folder, -Target project installed and removed the project paths." -ForegroundColor Green
@@ -2094,7 +2094,7 @@ New-Item -ItemType Directory -Path (Join-Path $proj49 '.github\copilot-instructi
 [System.IO.File]::WriteAllText((Join-Path $root49 'outside-49.md'), "OUTSIDE`n")
 # Two tampered entries: one outside the project, one that climbs back into it to the user's file.
 $zeros49 = '0' * 64
-[System.IO.File]::WriteAllText((Join-Path $proj49 '.qa-skills-manifest'), "$zeros49  claude  ../outside-49.md`n$zeros49  claude  .cursor/../notes.md`n")
+[System.IO.File]::WriteAllText((Join-Path $proj49 '.qa-instinct-manifest'), "$zeros49  claude  ../outside-49.md`n$zeros49  claude  .cursor/../notes.md`n")
 $savedPath49 = $env:PATH
 $env:PATH = "$bin49;$env:PATH"
 Set-Location -Path $proj49
@@ -2108,7 +2108,7 @@ if ($exit49 -ne 0) { throw "Test 49: the install exited $exit49. Output was: $ou
 $subject49 = (git -C $proj49 log -1 --format=%s) | Out-String
 if ($subject49 -notmatch 'Add/update QA skill') { throw "Test 49: the installer made no commit. Output was: $out49" }
 $committed49 = @(git -C $proj49 -c core.quotepath=false show --name-only --format= HEAD | Where-Object { $_ })
-foreach ($rel in '.claude/commands/qa.md', '.cursor/rules/qa-instinct.mdc', '.windsurf/rules/qa-instinct.md', '.github/skills/qa/SKILL.md', '.cline/rules/qa-instinct.md', '.agents/skills/qa/SKILL.md', '.qa-skills-manifest') {
+foreach ($rel in '.claude/commands/qa.md', '.cursor/rules/qa-instinct.mdc', '.windsurf/rules/qa-instinct.md', '.github/skills/qa/SKILL.md', '.cline/rules/qa-instinct.md', '.agents/skills/qa/SKILL.md', '.qa-instinct-manifest') {
     if ($committed49 -notcontains $rel) { throw "Test 49: the commit lacks $rel. It holds: $($committed49 -join ', ')" }
 }
 foreach ($rel in '.github/copilot-instructions.md/01-mine.md', 'notes.md') {
@@ -2118,14 +2118,40 @@ if ($committed49 | Where-Object { $_ -match 'outside-49' }) { throw "Test 49: th
 if ((Get-Content -Raw -LiteralPath (Join-Path $proj49 'notes.md')) -ne "edited`n") { throw "Test 49: the user's edit to notes.md changed" }
 Set-Location -Path $repoDir
 git -C $main49 worktree remove --force $proj49
-Write-Host "[OK] Test 49 passed successfully! In a worktree, the commit held the recorded files and the manifest, and none of the user's own." -ForegroundColor Green
+
+# 49b: a 4.x install committed its manifest as .qa-skills-manifest. The run moves it to the current
+# name (plan 066), and the commit it offers carries the old name's removal with it (lifecycle Test
+# 43b in bash). The old manifest holds one entry for a file that is gone, so nothing asks to overwrite.
+$proj49b = Join-Path $root49 'legacy'
+New-Item -ItemType Directory -Path $proj49b -Force | Out-Null
+git -C $proj49b -c "init.templateDir=" init -q -b main
+git -C $proj49b config user.name 'QA Tester Win'
+git -C $proj49b config user.email 'qa-win@tester.com'
+git -C $proj49b config core.autocrlf false
+[System.IO.File]::WriteAllText((Join-Path $proj49b '.qa-skills-manifest'), "$zeros49  claude  .claude/gone.md`n")
+git -C $proj49b add -- .qa-skills-manifest
+git -C $proj49b commit -q -m 'a 4.x install'
+$env:PATH = "$bin49;$env:PATH"
+Set-Location -Path $proj49b
+try {
+    # Answers: the operation menu (install), the commit offer (yes), the push offer (no).
+    $out49b = @('1', 'y', 'n') | powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NoHooks 2>&1 | Out-String
+    $exit49b = $LASTEXITCODE
+}
+finally { $env:PATH = $savedPath49; Set-Location -Path $repoDir }
+if ($exit49b -ne 0) { throw "Test 49b: the install exited $exit49b. Output was: $out49b" }
+$committed49b = @(git -C $proj49b show --name-status --no-renames --format= HEAD | Where-Object { $_ })
+if ($committed49b -notcontains "A`t.qa-instinct-manifest") { throw "Test 49b: the new manifest was not committed. The commit holds: $($committed49b -join ', '). Output was: $out49b" }
+if ($committed49b -notcontains "D`t.qa-skills-manifest") { throw "Test 49b: the old manifest's removal was not committed. The commit holds: $($committed49b -join ', ')" }
+Write-Host "[OK] Test 49 passed successfully! In a worktree, the commit held the recorded files and the manifest, and none of the user's own; a 4.x manifest's move was committed whole." -ForegroundColor Green
 Set-Location -Path $repoDir
 
 # -----------------------------------------------------------------------------
 # TEST 50: An install of release 4.0.1 moves to the native layout, one editor at a time (plan 047
 # step 6). 4.0.1 shipped no install.ps1 that this machine could run from the fixture, so the install
 # is rebuilt from tests\fixtures\release-v4.0.1\.qa-skills-editor-map, the paths 4.0.1 wrote: one
-# file per path, recorded in the manifest with its hash. Migration depends on paths and recorded
+# file per path, recorded with its hash in the manifest under 4.0.1's name, .qa-skills-manifest, which
+# every run moves to the current name (plan 066). Migration depends on paths and recorded
 # hashes, not on the adapter text, so the text is a stand-in. Update must remove each old file it
 # no longer ships, saying so, add the editor's rules and skills, and leave nothing on uninstall;
 # uninstall straight from 4.0.1 must leave nothing either. tests/test-lifecycle.sh Test 63 runs
@@ -2142,7 +2168,7 @@ foreach ($line in [System.IO.File]::ReadAllLines((Join-Path $repoDir 'tests\fixt
     $map401[$parts[0]] = @{ project = $parts[2]; global = $parts[3] }
 }
 $mapNow = @{}
-foreach ($line in [System.IO.File]::ReadAllLines((Join-Path $repoDir '.qa-skills-editor-map'))) {
+foreach ($line in [System.IO.File]::ReadAllLines((Join-Path $repoDir '.qa-instinct-editor-map'))) {
     if (-not $line) { continue }
     $parts = $line -split "`t"
     $mapNow[$parts[0]] = $parts[3]
@@ -2198,7 +2224,7 @@ foreach ($ed in @('cursor', 'windsurf', 'copilot', 'cline', 'antigravity')) {
         if ($rel -in @('project/.github/copilot-instructions.md', 'project/.agents/skills/qa/SKILL.md')) { continue }
         if (Test-Path -LiteralPath (Join-Path $root50 ($rel -replace '/', '\'))) { throw "Test 50: update left 4.0.1's $rel" }
         $scope = ($rel -split '/', 2)[0]; $path = ($rel -split '/', 2)[1]
-        $mf = Join-Path (Join-Path $root50 $scope) '.qa-skills-manifest'
+        $mf = Join-Path (Join-Path $root50 $scope) '.qa-instinct-manifest'
         if ((Test-Path -LiteralPath $mf) -and ([System.IO.File]::ReadAllLines($mf) | Where-Object { $_.EndsWith("  $path") })) { throw "Test 50: update still records 4.0.1's $rel" }
     }
     $skills50 = Join-Path (Join-Path $root50 'project') ($mapNow[$ed] -replace '/', '\')
@@ -2207,7 +2233,10 @@ foreach ($ed in @('cursor', 'windsurf', 'copilot', 'cline', 'antigravity')) {
         $dest = Join-Path $skills50 $rel
         if (-not (Test-Path -LiteralPath $dest) -or (Get-FileHash -LiteralPath $dest).Hash -ne (Get-FileHash -LiteralPath $f.FullName).Hash) { throw "Test 50: update did not install $ed's skill file $rel" }
     }
-    if (Get-ChildItem -LiteralPath $root50 -Recurse -Force -Filter '*.qa-skills-backup-*') { throw "Test 50: update of 4.0.1's $ed install made a backup" }
+    if (Get-ChildItem -LiteralPath $root50 -Recurse -Force -Filter '*.qa-instinct-backup-*') { throw "Test 50: update of 4.0.1's $ed install made a backup" }
+    foreach ($scope in @('project', 'home')) {
+        if (Test-Path -LiteralPath (Join-Path (Join-Path $root50 $scope) '.qa-skills-manifest')) { throw "Test 50: update left 4.0.1's $scope manifest under its old name" }
+    }
 
     $null = Invoke-Current50 'Uninstall' $ed $root50
     $left50 = Get-Left50 $root50
@@ -2261,7 +2290,7 @@ if (([regex]::Matches($out51, [regex]::Escape('Nothing was installed: every dest
 if ($out51 -match 'Installation successful!|Next steps') { throw "Test 51: install.ps1 reported success with nothing written. Output was: $out51" }
 $written51 = @(Get-ChildItem -LiteralPath $shared51 -Recurse -Force -File)
 if ($written51.Count -gt 0) { throw "Test 51: install.ps1 wrote through a junction: $($written51.FullName -join ', ')" }
-if (Test-Path -LiteralPath (Join-Path $proj51 '.qa-skills-manifest')) { throw "Test 51: install.ps1 recorded something although nothing was written" }
+if (Test-Path -LiteralPath (Join-Path $proj51 '.qa-instinct-manifest')) { throw "Test 51: install.ps1 recorded something although nothing was written" }
 Get-ChildItem -LiteralPath (Join-Path $proj51 '.claude\hooks') -File | ForEach-Object { $_.IsReadOnly = $false }
 # Remove the junctions themselves: Remove-Item -Recurse on Windows PowerShell 5.1 follows them.
 foreach ($rel in '.claude\commands', '.claude\rules', '.claude\skills', '.claude\agents', '.cursor\rules', '.cursor\skills') { [System.IO.Directory]::Delete((Join-Path $proj51 $rel), $false) }
@@ -2336,14 +2365,14 @@ foreach ($kind in $kinds52) {
     # A backup: the user's file collides with the package's, and its backup name is taken.
     $dest = Join-Path $dir 'security-qa.md'
     [System.IO.File]::WriteAllText($dest, "THE USER'S OWN RULES`n", $utf8NoBom52)
-    New-Plant52 "$dest.qa-skills-backup-$stamp52" $kind
+    New-Plant52 "$dest.qa-instinct-backup-$stamp52" $kind
     $backup = Backup-Destination $dir 'claude' 'security-qa.md' $dest (Join-Path $repoDir '.claude\rules\security-qa.md')
-    Assert-Plant52 "$dest.qa-skills-backup-$stamp52" $kind 'backup'
-    if (-not $backup -or $backup.Path -ne "$dest.qa-skills-backup-$stamp52-1") { throw "Test 52: the backup over a $kind at its name went to '$($backup.Path)', expected the next name" }
+    Assert-Plant52 "$dest.qa-instinct-backup-$stamp52" $kind 'backup'
+    if (-not $backup -or $backup.Path -ne "$dest.qa-instinct-backup-$stamp52-1") { throw "Test 52: the backup over a $kind at its name went to '$($backup.Path)', expected the next name" }
     if ([System.IO.File]::ReadAllText($backup.Path) -ne "THE USER'S OWN RULES`n") { throw "Test 52: the backup over a $kind at its name holds the wrong content" }
 
     # The manifest's temp file.
-    $mf = Join-Path $dir '.qa-skills-manifest'
+    $mf = Join-Path $dir '.qa-instinct-manifest'
     $script:tempNames52 = @('planted')
     New-Plant52 "$mf.tmp-planted" $kind
     Set-ManifestLines $mf @('0000000000000000000000000000000000000000000000000000000000000000  claude  .claude/rules/security-qa.md')
@@ -2360,9 +2389,9 @@ if ($symlinks52) {
     [System.IO.File]::WriteAllText($theirs, "THE USER'S OWN RULES`n", $utf8NoBom52)
     $dest = Join-Path $dir 'security-qa.md'
     New-Item -ItemType SymbolicLink -Path $dest -Target $theirs | Out-Null
-    New-Plant52 "$dest.qa-skills-backup-$stamp52.link-target" 'symlink'
+    New-Plant52 "$dest.qa-instinct-backup-$stamp52.link-target" 'symlink'
     $out52 = Install-File $dir 'claude' (Join-Path $repoDir '.claude\rules\security-qa.md') $dest 6>&1 | Out-String
-    Assert-Plant52 "$dest.qa-skills-backup-$stamp52.link-target" 'symlink' '.link-target'
+    Assert-Plant52 "$dest.qa-instinct-backup-$stamp52.link-target" 'symlink' '.link-target'
     if (Test-IsLink $dest) { throw "Test 52: the symlinked destination was not replaced" }
     if ([System.IO.File]::ReadAllText($theirs) -ne "THE USER'S OWN RULES`n") { throw "Test 52: install.ps1 wrote through the symlinked destination" }
 }
@@ -2376,14 +2405,14 @@ $clock52 = Join-Path $root52 'date.js'
 [System.IO.File]::WriteAllText($clock52, "const RealDate = Date;`nconst PINNED = RealDate.UTC(2026, 9, 19, 5, 2, 0);`nglobal.Date = class extends RealDate {`n  constructor(...args) { if (args.length === 0) super(PINNED); else super(...args); }`n  static now() { return PINNED; }`n};`n", $utf8NoBom52)
 $cliDest52 = Join-Path $cliDir52 '.claude\rules\security-qa.md'
 [System.IO.File]::WriteAllText($cliDest52, "THE USER'S OWN RULES`n", $utf8NoBom52)
-New-Plant52 "$cliDest52.qa-skills-backup-$stamp52" 'junction'
+New-Plant52 "$cliDest52.qa-instinct-backup-$stamp52" 'junction'
 Set-Location -Path $cliDir52
 $savedPreference52 = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
 try { $outCli52 = node --require $clock52 "$repoDir\cli\qa-instinct.js" init --editor claude 2>&1 | Out-String; $exitCli52 = $LASTEXITCODE }
 finally { $ErrorActionPreference = $savedPreference52; Set-Location -Path $repoDir }
-Assert-Plant52 "$cliDest52.qa-skills-backup-$stamp52" 'junction' "CLI's backup"
+Assert-Plant52 "$cliDest52.qa-instinct-backup-$stamp52" 'junction' "CLI's backup"
 if ($exitCli52 -ne 0) { throw "Test 52: the CLI exited $exitCli52 over a junction at its backup name. Output was: $outCli52" }
-if (-not (Test-Path -LiteralPath "$cliDest52.qa-skills-backup-$stamp52-1") -or [System.IO.File]::ReadAllText("$cliDest52.qa-skills-backup-$stamp52-1") -ne "THE USER'S OWN RULES`n") { throw "Test 52: the CLI did not back up the user's file to the next name. Output was: $outCli52" }
+if (-not (Test-Path -LiteralPath "$cliDest52.qa-instinct-backup-$stamp52-1") -or [System.IO.File]::ReadAllText("$cliDest52.qa-instinct-backup-$stamp52-1") -ne "THE USER'S OWN RULES`n") { throw "Test 52: the CLI did not back up the user's file to the next name. Output was: $outCli52" }
 
 # Remove the links themselves: Remove-Item -Recurse on Windows PowerShell 5.1 follows junctions.
 foreach ($j in @(Get-ChildItem -LiteralPath $root52 -Recurse -Force | Where-Object { $_.LinkType })) {
@@ -2421,12 +2450,12 @@ function Assert-JunctionDest53([string]$Project, [string]$Rel, [string]$Folder, 
     if (-not $item -or -not $item.LinkType) { throw "Test 53: $Who removed or replaced the junction at $Rel. Output was: $Out" }
     if ([System.IO.File]::ReadAllText((Join-Path $Folder 'mine.md')) -ne "MY OWN NOTES`n") { throw "Test 53: $Who changed the user's file behind $Rel. Output was: $Out" }
     if (@(Get-ChildItem -LiteralPath $Folder -Force).Count -ne 1) { throw "Test 53: $Who wrote into the folder behind $Rel. Output was: $Out" }
-    if (@(Get-ChildItem -LiteralPath (Split-Path -Parent $link) -Force -Filter "$(Split-Path -Leaf $link).qa-skills-backup-*").Count -ne 0) { throw "Test 53: $Who backed up $Rel. Output was: $Out" }
-    $mf = Join-Path $Project '.qa-skills-manifest'
+    if (@(Get-ChildItem -LiteralPath (Split-Path -Parent $link) -Force -Filter "$(Split-Path -Leaf $link).qa-instinct-backup-*").Count -ne 0) { throw "Test 53: $Who backed up $Rel. Output was: $Out" }
+    $mf = Join-Path $Project '.qa-instinct-manifest'
     if ((Test-Path -LiteralPath $mf) -and (@(Get-Content -LiteralPath $mf | Where-Object { $_ -like "*  $Rel" -or $_ -like ("*  " + ($Rel -replace '\\', '/')) }).Count -ne 0)) { throw "Test 53: $Who recorded $Rel. Output was: $Out" }
 }
 function Assert-Recorded53([string]$Project, [string]$Rel, [string]$Who, [string]$Out) {
-    $mf = Join-Path $Project '.qa-skills-manifest'
+    $mf = Join-Path $Project '.qa-instinct-manifest'
     if (-not (Test-Path -LiteralPath $mf) -or @(Get-Content -LiteralPath $mf | Where-Object { $_ -like "*  $Rel" }).Count -ne 1) { throw "Test 53: $Who did not install and record $Rel. Output was: $Out" }
 }
 

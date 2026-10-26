@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit hook to validate test cases in qa-skills
+# Pre-commit hook to validate test cases in qa-instinct
 
 SCRIPT_DIR="$(git rev-parse --show-toplevel)"
 VALIDATOR="$SCRIPT_DIR/.claude/hooks/validate-tc-format.sh"
