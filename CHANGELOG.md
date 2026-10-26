@@ -14,6 +14,24 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ---
 
+## [4.3.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.2.1...v4.3.0) (2026-10-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **installers:** an install made by 5.x records itself in .qa-instinct-manifest, which a 4.x CLI does not read: update with qa-instinct 5 or later. QA_SKILLS_DEBUG is now QA_INSTINCT_DEBUG.
+
+### Features
+
+* **installers:** rename the internal qa-skills names to qa-instinct ([c2604f9](https://github.com/MarcoAmaral/qa-instinct/commit/c2604f9f560a749b840b29ba1405ef5c299dfc7b))
+* present the package as a Senior QA Engineer ([c397034](https://github.com/MarcoAmaral/qa-instinct/commit/c397034c14d9345a9f474c8126e0d5aaed1ca8e0))
+* present the package as a Senior QA Engineer ([6cff708](https://github.com/MarcoAmaral/qa-instinct/commit/6cff7080b75bc268f94210b2c852e1fbd6b07eb7))
+
+
+### Documentation
+
+* release the internal-name rename as 4.3.0 ([42a4296](https://github.com/MarcoAmaral/qa-instinct/commit/42a4296ec88e6b3fc6cb32fc5ceeccab238b245d))
+
 ## [4.2.1](https://github.com/MarcoAmaral/qa-instinct/compare/v4.2.0...v4.2.1) (2026-10-25)
 
 ### Miscellaneous Chores

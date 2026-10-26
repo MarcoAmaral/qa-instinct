@@ -1,6 +1,6 @@
 {
   "name": "qa-instinct",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "description": "Senior QA Engineer commands, skills and agents grounded in software testing standards. This plugin does not include the rules under .claude/rules/; use `npx qa-instinct init` for the complete install.",
   "author": {
     "name": "Marco Amaral",
