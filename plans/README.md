@@ -78,7 +78,7 @@ chained-prompt command).
 | 063 | `install.sh --update` on macOS leaves a tail of one editor's skills wrong (issue #3) | P1 | M | 016, 033, 047 | DONE (PR #5, branch `fix/macos-update-tail`; cause: `prune_unshipped` read a cut `editor_files` list on macOS bash 3.2; lists now read whole and checked by an end line; lifecycle Test 71; 0 of 300 macOS runs failed) |
 | 064 | Keep the two installers' git hook texts identical, and pin every hook a release wrote | P3 | M | 016, 026 | DONE (branch `refactor/hook-template`, PR to be opened; parity test and every release's hooks pinned; `install.ps1` project hook now ends in a newline) |
 | 065 | Rename to QA Instinct, publish it, and remove the old npm package | P1 | M | 020 | DONE (PR #8, branch `feat/qa-instinct-rename`; PR #11 the changelog header; release PR #10, 4.2.0 published to npm as `qa-instinct` on 2026-10-25; demo re-recorded) |
-| 066 | Rename the installers' internal `qa-skills` names, migrating every existing install | P2 | L | 009-012, 016, 064, 065 | IN REVIEW (branch `feat/qa-instinct-internal-names`; local suites green, PowerShell in CI; release 5.0.0) |
+| 066 | Rename the installers' internal `qa-skills` names, migrating every existing install | P2 | L | 009-012, 016, 064, 065 | IN REVIEW (PR #16 merged, CI green on Linux, Windows and macOS; releases as 4.3.0 by Marco's decision, 2026-10-26) |
 
 ¹ These SHAs changed on 2026-09-14, when an AI co-author trailer was removed
 from two commit messages before opening PR #11. File contents are unchanged.

@@ -115,3 +115,11 @@ installed" against it: that is breaking, and `decisions/name.md` option C priced
   `current/` and `global-fresh/fenced-qa-instinct.lf.nl` hold the new text. Lifecycle Tests 72 and
   73 pass on it.
 - **Not run locally**: the PowerShell suites (no `pwsh` on this machine); CI runs them on Windows.
+
+## Note, 2026-10-26: released as 4.3.0, not 5.0.0
+
+Marco decided after PR #16 merged: keep the series continuous and release 4.3.0, as plan 065 did
+for its rename. A `Release-As: 4.3.0` footer sets the version. The incompatibility "Version" above
+describes is unchanged: a CLI older than 4.3.0 does not read `.qa-instinct-manifest`, and the
+changelog's breaking-change note says so. Rejected: 5.0.0, the semantic-versioning answer (see
+"Version").

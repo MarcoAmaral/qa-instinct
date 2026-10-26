@@ -388,7 +388,7 @@ for a global install).
   changed is kept, and reported. Backups are never removed.
 - Keep `.qa-instinct-manifest` for as long as the package is installed; deleting it makes uninstall
   fall back to removing only files whose content still matches the package's current copy.
-- **An install made before 5.0** recorded itself in `.qa-skills-manifest`. The next `init`, `update`
+- **An install made before 4.3** recorded itself in `.qa-skills-manifest`. The next `init`, `update`
   or `uninstall` moves it to `.qa-instinct-manifest`, keeping every entry, and removes the old file;
   commit both changes. Backups named `.qa-skills-backup-*` are kept like any other backup.
 - **A read-only file is left alone**, on install and on uninstall alike. Marking a file read-only
