@@ -74,7 +74,7 @@ body:
     id: output
     attributes:
       label: Output
-      description: Everything the installer printed. Set `QA_SKILLS_DEBUG=1` for a trace line per manifest entry (`install.sh`, `install.ps1`).
+      description: Everything the installer printed. Set `QA_INSTINCT_DEBUG=1` for a trace line per manifest entry (`install.sh`, `install.ps1`).
       render: text
     validations:
       required: true

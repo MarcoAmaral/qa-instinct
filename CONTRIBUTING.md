@@ -118,7 +118,7 @@ If you are modifying the shell scripts or adapter generation logic:
 If you are modifying an installer (`install.sh`, `install.ps1` or `cli/qa-instinct.js`), also:
 
 1. Read the file-safety contracts in `CLAUDE.md` first. All three installers share the
-   `.qa-skills-manifest` and `.qa-skills-known-hashes` formats, and the suites round-trip a
+   `.qa-instinct-manifest` and `.qa-instinct-known-hashes` formats, and the suites round-trip a
    file written by one and read by another — changing one in isolation will break the others.
 2. Keep `install.sh` compatible with **bash 3.2**, which is what macOS ships. `declare -A` and
    other bash 4 features will pass locally on Linux and fail on the macOS CI job.
@@ -258,7 +258,7 @@ it, so cite the version or commit with the anchor.
    `README.md` giving the prompt, the date, the package version, the editor and model, and honest
    limits. [`examples/README.md`](examples/README.md) shows the shape and which commands have one.
 4. **An editor's install path.** An editor the package does not support yet, or a path an editor has
-   moved. Bring the link to the editor's own documentation. Paths live in `.qa-skills-editor-map`,
+   moved. Bring the link to the editor's own documentation. Paths live in `.qa-instinct-editor-map`,
    which all three installers read; a new editor also needs its adapter in both generators, and
    either change starts with a failing conformance case (section 8).
 
