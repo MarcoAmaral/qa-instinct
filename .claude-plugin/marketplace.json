@@ -3,7 +3,7 @@
   "owner": {
     "name": "Marco Amaral"
   },
-  "description": "QA Instinct: QA Analyst and QA Engineer commands, skills and agents for Claude Code.",
+  "description": "QA Instinct: Senior QA Engineer commands, skills and agents for Claude Code.",
   "plugins": [
     {
       "name": "qa-instinct",

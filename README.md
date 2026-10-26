@@ -5,7 +5,7 @@
 <h1 align="center">QA Instinct</h1>
 
 <p align="center">
-  Built by Marco Amaral — Senior QA skills for any AI coding assistant
+  Built by Marco Amaral — Senior QA Engineer skills for any AI coding assistant
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
 
 *QA Instinct is a senior QA engineer's instincts, loaded into your AI assistant before the first prompt.*
 
-QA Instinct is a plug-and-play skill package that gives AI coding assistants (Claude Code, Cursor, Windsurf, Copilot, Cline, Gemini) the expertise of a **Senior QA Analyst and QA Engineer**. It ships as a set of modular rules, slash commands, auto-loaded skills, and four subagents (a code reviewer and the three stages of a test-design pipeline) — all grounded in the **ISTQB CTFL v4.0** syllabus and modern test engineering practices. Instead of prompting your AI with long, custom instructions every time, you install this once and get structured test case generation, defect reports, BDD scenarios, Playwright/Vitest scaffolding, risk analysis, TDD workflows, and more — all following industry standards out of the box.
+QA Instinct is a plug-and-play skill package that gives AI coding assistants (Claude Code, Cursor, Windsurf, Copilot, Cline, Gemini) the expertise of a **Senior QA Engineer**. It ships as a set of modular rules, slash commands, auto-loaded skills, and four subagents (a code reviewer and the three stages of a test-design pipeline) — all grounded in the **ISTQB CTFL v4.0** syllabus and modern test engineering practices. Instead of prompting your AI with long, custom instructions every time, you install this once and get structured test case generation, defect reports, BDD scenarios, Playwright/Vitest scaffolding, risk analysis, TDD workflows, and more — all following industry standards out of the box.
 
 ---
 
@@ -37,7 +37,7 @@ QA Instinct is a plug-and-play skill package that gives AI coding assistants (Cl
 
 As a QA professional, I found myself repeating the same detailed prompts every time I wanted AI help with testing tasks: "follow ISTQB standards", "use the AAA pattern", "apply Boundary Value Analysis", "use Page Object Model", "tag tests with @smoke @p0"... Every new conversation started from zero.
 
-I wanted a solution where the AI **already knows** how a Senior QA works — the standards, the patterns, the templates, the techniques — so I could focus on the actual testing problem instead of re-teaching fundamentals every session.
+I wanted a solution where the AI **already knows** how a Senior QA Engineer works — the standards, the patterns, the templates, the techniques — so I could focus on the actual testing problem instead of re-teaching fundamentals every session.
 
 QA Instinct solves this by encoding years of QA expertise into a portable, installable package. Install it once, and every AI conversation starts with a QA engineer's brain already loaded.
 
@@ -305,15 +305,15 @@ measures):
 
 | Editor | Always-on files | Largest | All | Documented limit |
 | --- | --- | --- | --- | --- |
-| Windsurf | 10 | 7,887 characters | 23,243 characters | 12,000 characters per rule file |
+| Windsurf | 10 | 7,887 characters | 23,235 characters | 12,000 characters per rule file |
 | Cursor | 10 | 126 lines | 415 lines | "under 500 lines" per rule |
 | Copilot | 1 | 393 lines | 393 lines | "about 1,000 lines" per file |
-| Antigravity | 10 | 7,906 bytes | 23,368 bytes (23,283 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
-| Cline | 10 | 7,860 characters | 22,973 characters | none stated |
-| `AGENTS.md` | 1 | 24,383 bytes | 24,383 bytes | Codex reads 32 KiB |
+| Antigravity | 10 | 7,906 bytes | 23,360 bytes (23,275 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
+| Cline | 10 | 7,860 characters | 22,965 characters | none stated |
+| `AGENTS.md` | 1 | 24,362 bytes | 24,362 bytes | Codex reads 32 KiB |
 
 The 24 skills hold 51 files; their names and descriptions, all that is in context before one is
-used, come to 7,802 characters (about 1,950 tokens at 4 characters a token).
+used, come to 7,790 characters (about 1,950 tokens at 4 characters a token).
 
 **Three notes on the editor layout.** Cursor, Windsurf, Copilot and Cline also read other tools'
 skill folders (`.agents/skills/`, `.claude/skills/`), so with two editors installed in one project
@@ -628,7 +628,7 @@ ISTQB® is a registered trademark of the International Software Testing Qualific
 
 ## Author
 
-**Marco Amaral** — Senior QA Analyst
+**Marco Amaral** — Senior QA Engineer
 
 - GitHub: [github.com/MarcoAmaral](https://github.com/MarcoAmaral)
 - npm: [@marcoamaral](https://www.npmjs.com/~marcoamaral)

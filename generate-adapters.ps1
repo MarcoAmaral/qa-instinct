@@ -221,7 +221,7 @@ function Get-IndexBody {
     $lines = @(
         '# QA Instinct',
         '',
-        'QA Instinct, QA Analyst and QA Engineer guidance based on ISTQB CTFL v4.0, is installed here.',
+        'QA Instinct, Senior QA Engineer guidance based on ISTQB CTFL v4.0, is installed here.',
         $rulesAre,
         'Everything else is an Agent Skill of the same name, loaded when its description matches the',
         "task, or when you $invoke.",
@@ -281,7 +281,7 @@ Write-Utf8 (Join-Path $OutDir 'copilot\rules\copilot-instructions.md') (Get-Rule
 # AGENTS.md and CLAUDE.md, copied by hand: the header, the index and the rules, no IDE
 # frontmatter. The skills are adapters/skills/, copied by hand beside them.
 $UniversalHeader = (@(
-    "<!-- QA Instinct $EmDash Senior QA Analyst + QA Engineer (ISTQB CTFL v4.0)",
+    "<!-- QA Instinct $EmDash Senior QA Engineer (ISTQB CTFL v4.0)",
     '     Universal adapter: no IDE-specific frontmatter. The rules are below; every command, skill',
     "     and agent is an Agent Skill in the package's adapters/skills/ folder.",
     '     Compatible with: Claude Code (CLAUDE.md / --agents-file), Codex, Devin,',

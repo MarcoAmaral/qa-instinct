@@ -240,7 +240,7 @@ index_body() {   # key
     done
     echo "# QA Instinct"
     echo ""
-    echo "QA Instinct, QA Analyst and QA Engineer guidance based on ISTQB CTFL v4.0, is installed here."
+    echo "QA Instinct, Senior QA Engineer guidance based on ISTQB CTFL v4.0, is installed here."
     echo "$RULES_ARE"
     echo "Everything else is an Agent Skill of the same name, loaded when its description matches the"
     echo "task, or when you $INVOKE."
@@ -308,7 +308,7 @@ mkdir -p "$OUT_DIR/universal"
 for U in AGENTS CLAUDE; do
     {
         cat << 'UNIVERSAL_HEADER'
-<!-- QA Instinct — Senior QA Analyst + QA Engineer (ISTQB CTFL v4.0)
+<!-- QA Instinct — Senior QA Engineer (ISTQB CTFL v4.0)
      Universal adapter: no IDE-specific frontmatter. The rules are below; every command, skill
      and agent is an Agent Skill in the package's adapters/skills/ folder.
      Compatible with: Claude Code (CLAUDE.md / --agents-file), Codex, Devin,
