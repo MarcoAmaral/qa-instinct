@@ -2,14 +2,24 @@
 
 One page for newcomers: what the package ships, what comes next, what it will not do, and how to
 suggest something. It is written by hand from [`plans/README.md`](plans/README.md), last on
-2026-10-20. The detailed record lives in [`plans/`](plans/): every numbered plan, why it was
+2026-10-26. The detailed record lives in [`plans/`](plans/): every numbered plan, why it was
 needed, the pull requests that carried it, and the approaches that were rejected and why. Where
 this page and `plans/README.md` disagree, the plans index is right.
 
-## What 4.1.0 Ships
+## What 4.3.0 Ships
 
-4.1.0 is the first public release. Versions up to 4.0.1 were developed in a private repository;
-[`CHANGELOG.md`](CHANGELOG.md) keeps their history.
+4.1.0 was the first public release. Versions up to 4.0.1 were developed in a private repository;
+[`CHANGELOG.md`](CHANGELOG.md) keeps their history. Since 4.1.0:
+
+- **The name QA Instinct** (4.2.0, plan 065): npm package and command `qa-instinct`, repository
+  `MarcoAmaral/qa-instinct`.
+- **One Senior QA Engineer persona** (4.3.0): commands and skills speak as a Senior QA Engineer;
+  `/qa` keeps the analysis and engineering split as two kinds of work.
+- **`qa-instinct` names for the installers' own files** (4.3.0, plan 066): `.qa-instinct-manifest`
+  and `.qa-instinct-backup-*`. The next run of any installer moves a 4.x `.qa-skills-manifest`
+  to the new name, keeping every entry.
+
+And from 4.1.0:
 
 - **The `/qa` router and ten commands** for test cases, defect reports, BDD, automation, TDD,
   refinement, code review, static review of requirements, traceability and the multi-agent
