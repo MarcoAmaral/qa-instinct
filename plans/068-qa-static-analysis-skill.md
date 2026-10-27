@@ -119,3 +119,35 @@ or pasted text. The skill reads the cited code before judging each finding and p
 Plan 048's tasks do not include static analysis; no case, grader or digest changes. Condition D
 loads the plugin, so the new skill is present in D's runs. It is listed among the skills the model
 can see, which adds about 400 characters of skill description to D's context.
+
+## Outcome (2026-10-27)
+
+- **Done**: steps 2-5. The skill (7.4 KB) and its reference, the `/qa` routes, the pointers from
+  `test-tools.md` and `testing-in-delivery.md`, README (coverage table, skill list, 25 Agent Skills,
+  sizes), ROADMAP and `llms.txt`. `npm test`, lint, markdownlint and `tests/verify-adapters.sh`
+  pass.
+- **Step 1, evals: written, not run.** Two cases, `qa-static-analysis-triage` (the skill named) and
+  `qa-static-analysis-plain-request` (plain words), committed before the skill (`e86d191`) so the
+  "before" round can run at that commit. On this machine Claude Code is 2.1.224, where
+  `claude plugin eval` prints "currently in early access" and runs nothing (no cost). Both rounds
+  are left to Marco, on a Claude Code where the command works (plan 037 ran it on 2.1.291):
+
+  ```bash
+  git switch --detach e86d191
+  claude plugin eval . --case 'qa-static-analysis*' --max-cost-usd 2.4 --no-publish \
+    --json evals/results/2026-10-27-static-analysis-before.json
+  git switch feat/qa-static-analysis-skill
+  claude plugin eval . --case 'qa-static-analysis*' --max-cost-usd 2.4 --no-publish \
+    --json evals/results/2026-10-27-static-analysis-after.json
+  ```
+
+- **Stand-in check, not an eval**: one `claude -p --model sonnet --plugin-dir <checkout>` run of
+  the plain-request prompt (US$0.59; Marco's own configuration loaded too, so not isolated). The
+  reply used the skill and got five of the six planted findings as the graders expect. It ranked
+  the test-only finding "fix now", following the skill's sentence that test-only code "still
+  deserves a fix"; that sentence now gives it a low priority unless the code reaches something
+  shared. Not re-run after the change.
+- **Tool details checked on 2026-10-27**: ESLint inline descriptions and bulk suppressions,
+  `nosemgrep` and `.semgrepignore`, Semgrep `--baseline-commit`, `npm audit` flags. CodeQL's
+  inline suppression is from its 2.12.0 changelog and secondary sources, and the reference says to
+  check it before relying on it.
