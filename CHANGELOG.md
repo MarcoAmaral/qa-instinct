@@ -19,7 +19,6 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ### Features
 
-* **plugin:** ship the rules as the qa-rules skill ([2833678](https://github.com/MarcoAmaral/qa-instinct/commit/2833678fa87e9b366f16c26afc2a5d419c9820cb))
 * **plugin:** ship the rules as the qa-rules skill ([ffeea4b](https://github.com/MarcoAmaral/qa-instinct/commit/ffeea4b102c0b17ca705736855179586be72bb9e))
 
 ## [4.3.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.2.1...v4.3.0) (2026-10-26)
