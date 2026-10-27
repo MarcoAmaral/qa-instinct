@@ -7,6 +7,26 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: the Extension arm's after-run checks differ, from plugin auto-updates
+
+- **What the methodology says.** `RUNBOOK.md` section 4 compares `claude plugin list`,
+  `claude plugin marketplace list` and the checksums in `sha-before.txt` with their state before the
+  first run, to show the collection left the user's Claude Code setup as it found it.
+- **What happened.** On the Extension arm, run from the SWARE distribution, the marketplace list
+  is the same; `settings.json` matches its checksum; `installed_plugins.json` and
+  `known_marketplaces.json` do not, and the plugin list differs only in `context7`, `github` and
+  `playwright@claude-plugins-official`, version `465f09344424` before. `installed_plugins.json`
+  dates the change: the official marketplace auto-updated those three plugins on 2026-10-26 at
+  01:08 UTC, during the collection, and again on 2026-10-27 at 20:24 UTC, after it (now
+  `f8c5e7a1dcb7`); `known_marketplaces.json` changed with each refresh. `github` is installed at
+  project scope, so its enabled or disabled status depends on the folder the check runs from.
+- **What was done.** Nothing to undo. Every run used a temporary home with no user plugins, and
+  `claude plugin eval .` loads the package from the checkout, so neither the updates nor these
+  plugins reach a generation. No plugin or marketplace the benchmark touches is in the lists.
+- **Why it matters.** The check is evidence of isolation; here its differences come from Claude
+  Code's own update schedule, not from the collection. A later arm should save the before state
+  just before its first task and compare right after its last, as close together as it can.
+
 ## 2026-10-27: the Extension arm's outputs hold model-invented `example.com` addresses
 
 - **What the methodology says.** `RUNBOOK.md` section 3: any address the redaction `grep` prints
