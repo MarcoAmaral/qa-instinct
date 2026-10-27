@@ -7,6 +7,20 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: the Extension arm's cap is raised to US$260
+
+- **What was recorded.** The entry of 2026-10-25 raised the Extension arm's cap on
+  `claude-fable-5-1` to US$230, and the collection starts no task when what is left would not
+  cover the largest task so far.
+- **What happened.** Eight tasks cost US$207.19. After them US$22.81 was left, less than the
+  largest task, US$43.12, so the collection did not start the ninth, `bdd-loyalty-points`.
+- **What was done.** Marco raised the cap to US$260 on 2026-10-27 so that check lets
+  `bdd-loyalty-points` run. The run is still on the subscription only, with extra usage off, and
+  the benchmark files are otherwise unchanged; the eight collected tasks are unchanged.
+- **Why it matters.** The cap bounds usage, not results, and the last task is still collected
+  whole. As in the entries of 2026-10-23 and 2026-10-25, the figures are list prices as the tool
+  reports them; the run counts against a subscription's usage limits.
+
 ## 2026-10-25: the Extension arm's cap is raised to US$230
 
 - **What was recorded.** The entry of 2026-10-23 capped the Extension arm on `claude-fable-5-1`
