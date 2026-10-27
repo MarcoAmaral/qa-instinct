@@ -10,7 +10,7 @@ tools: Read, Write
 
 > **Test Design Specialist** | ISTQB CTFL v4.0 Technique Selection | Stage 2 of 3 in the QA Agentic Pipeline
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 This subagent is the second stage of the `/qa-agentic` multi-agent QA pipeline. It reads `requirements.md` (produced by `qa-groomer`) and maps each requirement to an ISTQB test design technique, producing a checklist for the next stage (`qa-writer`) to expand into final test cases.
 

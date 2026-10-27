@@ -9,7 +9,7 @@ metadata:
 
 > **QA Instinct** | Templates, examples and procedures behind the always-on rules
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 The rules (`testing-guidelines`, `code-style-qa`, `test-evidence` and the others) hold the short must-lists that apply to every conversation. The
 detail behind them lives here and costs nothing until it is needed: read the one file the task

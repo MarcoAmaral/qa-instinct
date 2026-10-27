@@ -131,6 +131,10 @@ If you add, rename or remove an agent under `.claude/agents/`, list it in
 `tests/plugin/verify-plugin.sh` fails CI when the two drift apart. Commands and skills need no
 change, because the plugin points at their folders.
 
+The plugin cannot ship rules, so it carries the rules as the generated `qa-rules` skill, committed
+under `plugin/skills/qa-rules/` (plan 067). After changing a rule, run `./generate-adapters.sh` and
+commit `plugin/` with it; `tests/plugin/verify-plugin.sh` fails CI when the copy is stale.
+
 CI runs the suites on Linux, Windows and macOS. A change that passes locally is not done until
 all three are green.
 

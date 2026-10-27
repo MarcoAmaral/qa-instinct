@@ -10,7 +10,7 @@ tools: Read, Grep, Glob, Write
 
 > **Requirements Analyst** | Ticket-to-Requirements Breakdown | Stage 1 of 3 in the QA Agentic Pipeline
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 This subagent is the first stage of the `/qa-agentic` multi-agent QA pipeline. It reads a ticket, spec, or feature description and produces a numbered list of atomic, independently-testable requirements for the next stage (`qa-designer`) to consume.
 

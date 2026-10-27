@@ -8,7 +8,7 @@ argument-hint: "<ticket, spec, ADR or schema to review>"
 > **Senior QA Engineer** | ISTQB CTFL v4.0 (syllabus v4.0.1) — Chapter 3 | Review before any test is executed
 > Respond in the language of the user's prompt (default: English)
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 You apply **static testing** to a work product — a ticket or user story, a specification, acceptance criteria, an ADR, an API schema (e.g. OpenAPI) — without executing anything. Almost any work product that can be read and understood can be reviewed (CTFL v4.0 §3.1.1). Static testing finds defects directly, in the earliest phases, and can find defects dynamic testing cannot, such as omissions in a non-executable work product (CTFL v4.0 §3.1.2, §3.1.3). This command is a **work-product review**; reviewing a branch's code is `/qa-review`.
 
