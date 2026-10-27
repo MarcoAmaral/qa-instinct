@@ -89,9 +89,9 @@ Deferred until someone needs them (decided by Marco, 2026-10-20):
 - A project QA-principles file the commands check their output against (plan 024, C4b).
 - A checklist form of `/qa-static`'s findings (plan 024, N2).
 
-A declared gap, with no work planned (decided by Marco, 2026-10-20): **tool-based static
-analysis**, the one CTFL v4.0.1 topic the README lists as not yet covered (§3.1, §6.1). The package
-names static analysis tools but does not teach running one or triaging its findings.
+**Tool-based static analysis**, a declared gap from 2026-10-20 (§3.1, §6.1), was reopened by Marco
+on 2026-10-27: plan 068 adds the `qa-static-analysis` skill, which triages what a linter or scanner
+reports.
 
 ## Out of Scope
 

@@ -164,7 +164,7 @@ none of them. If you use both the plugin and `init`, the commands appear twice.
 npx skills add MarcoAmaral/qa-instinct
 ```
 
-This installs the eight skills (`qa-plan`, `qa-explore`, `qa-reference`, `qa-migrate`, `qa-api`, `qa-flaky`, `qa-release`, `qa-a11y`) and nothing else: no
+This installs the nine skills (`qa-plan`, `qa-explore`, `qa-reference`, `qa-migrate`, `qa-api`, `qa-flaky`, `qa-static-analysis`, `qa-release`, `qa-a11y`) and nothing else: no
 commands, agents or rules.
 
 For everything, including the rules, and an update and uninstall that never touch your own files,
@@ -221,7 +221,7 @@ QA Instinct is modular — only the relevant module loads per task, saving token
 
 | Command | What it does | Size |
 | --- | --- | --- |
-| `/qa` | Smart router — infers intent and dispatches to the right module | ~14KB |
+| `/qa` | Smart router — infers intent and dispatches to the right module | ~15KB |
 | `/qa-cases` | Generate structured test cases (`TC-CODE-NNN` format with ISTQB techniques) | ~18KB |
 | `/qa-automate` | Scaffold Playwright E2E, Vitest unit tests, POM, CI/CD pipelines | ~7KB |
 | `/qa-bdd` | Generate BDD/Gherkin scenarios (Given/When/Then) with step definitions | ~13KB |
@@ -319,15 +319,15 @@ measures):
 
 | Editor | Always-on files | Largest | All | Documented limit |
 | --- | --- | --- | --- | --- |
-| Windsurf | 10 | 7,887 characters | 23,235 characters | 12,000 characters per rule file |
+| Windsurf | 10 | 7,887 characters | 23,257 characters | 12,000 characters per rule file |
 | Cursor | 10 | 126 lines | 415 lines | "under 500 lines" per rule |
 | Copilot | 1 | 393 lines | 393 lines | "about 1,000 lines" per file |
-| Antigravity | 10 | 7,906 bytes | 23,360 bytes (23,275 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
-| Cline | 10 | 7,860 characters | 22,965 characters | none stated |
-| `AGENTS.md` | 1 | 24,362 bytes | 24,362 bytes | Codex reads 32 KiB |
+| Antigravity | 10 | 7,906 bytes | 23,382 bytes (23,297 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
+| Cline | 10 | 7,860 characters | 22,987 characters | none stated |
+| `AGENTS.md` | 1 | 24,384 bytes | 24,384 bytes | Codex reads 32 KiB |
 
-The 24 skills hold 51 files; their names and descriptions, all that is in context before one is
-used, come to 7,816 characters (about 1,950 tokens at 4 characters a token).
+The 25 skills hold 53 files; their names and descriptions, all that is in context before one is
+used, come to 8,344 characters (about 2,090 tokens at 4 characters a token).
 
 **Three notes on the editor layout.** Cursor, Windsurf, Copilot and Cline also read other tools'
 skill folders (`.agents/skills/`, `.claude/skills/`), so with two editors installed in one project
@@ -565,7 +565,7 @@ the [A11Y.md efficacy benchmark](https://github.com/fecarrico/A11Y.md/tree/main/
 | --- | --- | --- |
 | 1. Fundamentals | The 7 testing principles; testing vs QA; errors, defects, failures and root causes; roles and independence of testing | — |
 | 2. SDLC | TDD/ATDD/BDD; test levels and test types; confirmation, regression and maintenance testing; DevOps and shift-left practices; retrospectives and process improvement | — |
-| 3. Static Testing | Code review by an AI agent, testability and ambiguity checks on requirements; the review process, review types, roles and success factors (`/qa-static`) | Tool-based static analysis |
+| 3. Static Testing | Code review by an AI agent, testability and ambiguity checks on requirements; the review process, review types, roles and success factors (`/qa-static`); triage of what static analysis tools report (`qa-static-analysis`) | — |
 | 4. Test Design | EP, BVA, decision tables, state transition, with their coverage items; white-box testing and statement/branch coverage; checklist-based testing; the 3 Cs and acceptance-criteria formats | — |
 | 5. Managing | Planning, risk-based testing (5×5 likelihood × impact), estimation techniques, entry and exit criteria, monitoring, control and completion, configuration management, defect management; test case prioritisation strategies; the testing quadrants | — |
 | 6. Tools | Tool categories, benefits and risks of test automation | — |
@@ -573,8 +573,8 @@ the [A11Y.md efficacy benchmark](https://github.com/fecarrico/A11Y.md/tree/main/
 Package additions beyond the syllabus: automation ROI scoring and flaky-test handling.
 
 The gaps are tracked in `plans/README.md` §"Backlog — audit after 4.0.0". Tool-based static
-analysis stays a declared gap (decided by Marco, 2026-10-20): the package names the tools but does
-not teach running one.
+analysis, a declared gap from 2026-10-20, is covered by the `qa-static-analysis` skill since plan
+068: it triages what a tool reports; choosing a tool stays in the tools reference.
 
 ### Supported Frameworks & Tools
 
