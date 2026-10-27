@@ -33,8 +33,8 @@ chained-prompt command).
 | 016 | One conformance suite for three installers | P0 | L | 009-013, #78 | DONE (items 1-5 #82; item 6 #89, #93; follow-ups #92, #93) |
 | 017 | Recognise the package's own files whatever their line endings | P2 | M | #84, #82 | DONE (#88, 2.8.0; item 2 decided 2026-10-08) |
 | 018 | Ship the MIT license the package already claims | P1 | S | — | DONE (#101, 2.9.0) |
-| 019 | Get qa-skills ready for its public launch | P0 | XL | 018 | IN PROGRESS (phases 1-7, 9-11 done in 3.0.0; 13 done before launch by plans 023 and 039-042; 12 drafted; 8 after launch) |
-| 020 | Rename to Bem-te-vi and move to a fresh public repository | P0 | M | 019 phases 2-4, #104 | IN PROGRESS (part A #105, 3.0.0; part B, the public repo, last) |
+| 019 | Get qa-skills ready for its public launch | P0 | XL | 018 | ~~IN PROGRESS~~ DONE except phase 12 (2026-10-26: phase 8, the launch, done with 4.1.0 on 2026-10-22; phases 1-7, 9-11 done in 3.0.0; 13 done before launch by plans 023 and 039-042; 12, the directory submissions, drafted and left to Marco) |
+| 020 | Rename to Bem-te-vi and move to a fresh public repository | P0 | M | 019 phases 2-4, #104 | ~~IN PROGRESS~~ DONE except step 7 (2026-10-26: part A #105, 3.0.0; part B, the public repository, launched with 4.1.0 on 2026-10-22, since renamed by plan 065; step 7, archiving the private repository, left to Marco) |
 | 021 | A context diet for the always-loaded rules | P1 | L | 019 phase 9 | DONE (#111, 3.0.0) |
 | 022 | Plugin marketplace and Agent Skills installs | P1 | M | 019 phase 10, 020 | DONE (#109, 3.0.0) |
 | 023 | The `qa-migrate` skill (Cypress / Selenium to Playwright) | P2 | L | 019 phase 13 | DONE (skill, worked example and Selenium check in one PR, before launch at Marco's call; uninstall fix found on the way) |
