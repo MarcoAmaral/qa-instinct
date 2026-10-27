@@ -7,6 +7,8 @@
 #   - every path the manifest names (commands, skills, agents) exists inside the repository
 #   - the manifest's agent list equals .claude/agents/*.md (the platform takes files, not a
 #     directory, so a new or removed agent must be mirrored in plugin.json)
+#   - plugin/skills/qa-rules (the rules, plan 067) is listed, has one reference per rule, and equals
+#     the generators' adapters/skills/qa-rules when adapters/ is generated
 #   - plugin.json "version" equals package.json "version" (Release Please bumps both)
 #   - when the `claude` CLI is installed, `claude plugin validate .` passes
 #
@@ -87,6 +89,34 @@ if [ "$listed" = "$ondisk" ]; then
 else
   fail "agent list drifted from .claude/agents/*.md"
   diff <(echo "$listed") <(echo "$ondisk") | sed 's/^/      /'
+fi
+
+# The rules, as the qa-rules skill (plan 067): listed, one reference per rule, and the generators'
+# own output. The copy under plugin/ is committed; adapters/ is not, so without a generated
+# adapters/ the comparison is skipped (CI generates it first).
+QA_RULES="$ROOT/plugin/skills/qa-rules"
+if json_get "$PLUGIN" 'd.skills || []' | grep -qx './plugin/skills/'; then
+  pass "plugin.json lists ./plugin/skills/"
+else
+  fail "plugin.json does not list ./plugin/skills/ (the qa-rules skill)"
+fi
+refs_listed="$(cd "$QA_RULES/references" 2>/dev/null && for f in *.md; do [ -e "$f" ] && echo "$f"; done | sort)"
+rules_ondisk="$(cd "$ROOT/.claude/rules" && for f in *.md; do [ -e "$f" ] && echo "$f"; done | sort)"
+if [ -f "$QA_RULES/SKILL.md" ] && [ "$refs_listed" = "$rules_ondisk" ]; then
+  pass "plugin/skills/qa-rules has one reference per .claude/rules/*.md"
+else
+  fail "plugin/skills/qa-rules drifted from .claude/rules/*.md (run ./generate-adapters.sh)"
+  diff <(echo "$refs_listed") <(echo "$rules_ondisk") | sed 's/^/      /'
+fi
+if [ -d "$ROOT/adapters/skills/qa-rules" ]; then
+  if out="$(diff -r "$ROOT/adapters/skills/qa-rules" "$QA_RULES" 2>&1)"; then
+    pass "plugin/skills/qa-rules equals adapters/skills/qa-rules"
+  else
+    fail "plugin/skills/qa-rules differs from adapters/skills/qa-rules (run ./generate-adapters.sh and commit plugin/)"
+    printf '%s\n' "$out" | sed 's/^/      /'
+  fi
+else
+  echo "  - adapters/ not generated: skipping the comparison with adapters/skills/qa-rules"
 fi
 
 # Versions agree

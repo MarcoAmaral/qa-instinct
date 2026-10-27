@@ -153,10 +153,10 @@ qa-instinct uninstall
 ```
 
 This installs the commands, skills and agents under the plugin's prefix (`/qa-instinct:qa-cases`,
-`/qa-instinct:qa-bdd`, …). **It does not install the rules**: Claude Code plugins cannot ship rules,
-so the rules a command names are not in context. A command, skill or agent that names a rule then
-goes on without it and says at the end of its reply which rule it could not apply. If you use both
-the plugin and `init`, the commands appear twice.
+`/qa-instinct:qa-bdd`, …). Claude Code plugins cannot ship rules, so the plugin carries them as the
+`qa-rules` skill: a command, skill or agent that names a rule reads it from there when it runs.
+**The rules are not always on**, as they are after `init`: a question asked without a command gets
+none of them. If you use both the plugin and `init`, the commands appear twice.
 
 **Skills only, for any agent:**
 
@@ -327,7 +327,7 @@ measures):
 | `AGENTS.md` | 1 | 24,362 bytes | 24,362 bytes | Codex reads 32 KiB |
 
 The 24 skills hold 51 files; their names and descriptions, all that is in context before one is
-used, come to 7,790 characters (about 1,950 tokens at 4 characters a token).
+used, come to 7,816 characters (about 1,950 tokens at 4 characters a token).
 
 **Three notes on the editor layout.** Cursor, Windsurf, Copilot and Cline also read other tools'
 skill folders (`.agents/skills/`, `.claude/skills/`), so with two editors installed in one project

@@ -9,7 +9,7 @@ metadata:
 
 > **Senior QA Engineer** | ISTQB CTFL v4.0 (§2.2.3, §2.3, §1.4.3, §1.4.4, §6.2) | Incremental migration with a parity gate
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 This skill is activated when a request is to move, port or switch an existing end-to-end suite to Playwright. It is a multi-session workflow: each phase leaves a file under `migration/`, so work resumes from disk, not from memory.
 

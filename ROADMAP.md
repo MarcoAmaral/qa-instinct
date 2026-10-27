@@ -80,12 +80,9 @@ The [README](README.md) explains each part, and `CHANGELOG.md` lists every chang
   conclusion.
 - **Each editor checked by hand.** The non-Claude layouts follow each editor's own documentation;
   none has yet been observed in the editor itself (plan 047, "Findings outside scope").
-- **Plugin installs without rules.** Claude Code plugins cannot ship rules, so a plugin install has
-  the commands and skills but not the rules they assume. Since plan 060 each command, skill and
-  agent that names a rule says in its reply which rule it could not apply; closing the gap itself
-  is still open.
-
-The plugin without rules waits on a decision by the maintainer before any work starts.
+- **Plugin installs without rules.** Claude Code plugins cannot ship rules. Plan 067 (option A,
+  chosen by Marco on 2026-10-26) ships them as the `qa-rules` skill, which a command reads when it
+  needs a rule; always-on rules still need `npx qa-instinct init`.
 
 Deferred until someone needs them (decided by Marco, 2026-10-20):
 

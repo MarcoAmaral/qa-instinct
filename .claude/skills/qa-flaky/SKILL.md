@@ -9,7 +9,7 @@ metadata:
 
 > **Senior QA Engineer** | ISTQB CTFL v4.0 (§1.1.2, §1.2.3, §5.5, §6.2) | A quarantine with a ledger, not a graveyard
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 The protocol is the `testing-guidelines` rule, section "Flaky Test & Failure Protocols"; this skill applies it and adds nothing that contradicts it. Every number below (the deadline, the share that triggers escalation) is the rule's: read it there, do not restate it from here.
 

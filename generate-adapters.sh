@@ -186,7 +186,7 @@ mkdir -p "$SKILLS_OUT/qa-rules/references"
 {
     echo "---"
     echo "name: qa-rules"
-    echo "description: \"QA Instinct's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install.\""
+    echo "description: \"QA Instinct's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install or the Claude Code plugin.\""
     echo "metadata:"
     echo "  id: qa-rules"
     echo "  author: Marco Amaral"
@@ -195,7 +195,7 @@ mkdir -p "$SKILLS_OUT/qa-rules/references"
     echo ""
     echo "Each rule of the package is a file in this skill's \`references\` folder. A project install"
     echo "also puts every rule in the editor's own rules folder, always on, as \`qa-instinct-<rule>\`; a"
-    echo "global install has no rules folder, so read the rule a pointer names from here."
+    echo "global install and the Claude Code plugin have none, so read the rule a pointer names from here."
     echo ""
     echo "| Rule | File |"
     echo "| --- | --- |"
@@ -206,6 +206,14 @@ mkdir -p "$SKILLS_OUT/qa-rules/references"
 for RULE in "${RULES[@]}"; do
     strip_frontmatter "$CLAUDE_DIR/rules/$RULE.md" > "$SKILLS_OUT/qa-rules/references/$RULE.md"
 done
+
+# The Claude Code plugin cannot ship rules, and installs from the repository, where adapters/ is not
+# committed: it gets this same skill from a committed copy (plan 067). Replaced whole, so a removed
+# rule leaves no reference behind.
+PLUGIN_SKILLS="$SCRIPT_DIR/plugin/skills"
+rm -rf "$PLUGIN_SKILLS/qa-rules"
+mkdir -p "$PLUGIN_SKILLS"
+cp -R "$SKILLS_OUT/qa-rules" "$PLUGIN_SKILLS/qa-rules"
 
 # The skill names, in byte order, for the index.
 SKILL_NAMES=()

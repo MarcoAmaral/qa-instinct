@@ -356,8 +356,10 @@ jobs:
         run: |
           ./generate-adapters.sh --clean --no-color
           cp -r adapters "$RUNNER_TEMP/adapters-sh"
+          cp -r plugin/skills "$RUNNER_TEMP/plugin-skills-sh"
           powershell.exe -ExecutionPolicy Bypass -File ./generate-adapters.ps1 -Clean -NoColor
           diff -r "$RUNNER_TEMP/adapters-sh" adapters
+          diff -r "$RUNNER_TEMP/plugin-skills-sh" plugin/skills
 
       - name: Run Conformance Suite (PowerShell)
         shell: powershell

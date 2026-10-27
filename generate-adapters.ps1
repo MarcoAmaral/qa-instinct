@@ -180,17 +180,26 @@ foreach ($skill in @(Get-ChildItem -LiteralPath (Join-Path $ClaudeDir 'skills') 
 
 $qaRules = New-Object System.Text.StringBuilder
 [void]$qaRules.Append("---`nname: qa-rules`n")
-[void]$qaRules.Append("description: `"QA Instinct's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install.`"`n")
+[void]$qaRules.Append("description: `"QA Instinct's QA rules, one file each: testing guidelines, code style, security, accessibility, evidence, tools, context discovery, commits and linting. Read the rule a pointer names (the <rule> rule) when this editor has not loaded the rule files, as in a global install or the Claude Code plugin.`"`n")
 [void]$qaRules.Append("metadata:`n  id: qa-rules`n  author: Marco Amaral`n---`n# QA Instinct rules`n`n")
 [void]$qaRules.Append("Each rule of the package is a file in this skill's ${Bt}references${Bt} folder. A project install`n")
 [void]$qaRules.Append("also puts every rule in the editor's own rules folder, always on, as ${Bt}qa-instinct-<rule>${Bt}; a`n")
-[void]$qaRules.Append("global install has no rules folder, so read the rule a pointer names from here.`n`n")
+[void]$qaRules.Append("global install and the Claude Code plugin have none, so read the rule a pointer names from here.`n`n")
 [void]$qaRules.Append("| Rule | File |`n| --- | --- |`n")
 foreach ($rule in $Rules) { [void]$qaRules.Append("| ${Bt}$rule${Bt} | ${Bt}references/$rule.md${Bt} |`n") }
 Write-Utf8 (Join-Path $SkillsOut 'qa-rules\SKILL.md') $qaRules.ToString()
 foreach ($rule in $Rules) {
     Write-Utf8 (Join-Path $SkillsOut "qa-rules\references\$rule.md") (Get-RuleBody $rule)
 }
+
+# The Claude Code plugin cannot ship rules, and installs from the repository, where adapters\ is not
+# committed: it gets this same skill from a committed copy (plan 067). Replaced whole, so a removed
+# rule leaves no reference behind.
+$PluginSkills = Join-Path $ScriptDir 'plugin\skills'
+$pluginQaRules = Join-Path $PluginSkills 'qa-rules'
+if (Test-Path -LiteralPath $pluginQaRules) { Remove-Item -LiteralPath $pluginQaRules -Recurse -Force }
+New-Item -ItemType Directory -Path $PluginSkills -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $SkillsOut 'qa-rules') -Destination $pluginQaRules -Recurse
 
 # The skill names, in byte order, for the index.
 $SkillNames = Get-Ordinal @(Get-ChildItem -LiteralPath $SkillsOut -Directory | ForEach-Object { $_.Name })
