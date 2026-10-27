@@ -7,6 +7,21 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: the Extension arm's outputs hold model-invented `example.com` addresses
+
+- **What the methodology says.** `RUNBOOK.md` section 3: any address the redaction `grep` prints
+  "must be one of the fixtures' reserved `.example` addresses or not be there".
+- **What happened.** The `grep` printed 17 addresses at `example.com`, all in condition C:
+  `name@example.com` in `a11y-signup-form` runs 2, 6 and 7, and `member@`, `nonmember@` and
+  `expired@example.com` in `cases-shipping-fee` run 7, where the model named its test accounts.
+  The model wrote them; no fixture or prompt holds them. `example.com` is reserved for examples by
+  RFC 2606, so no person or mailbox stands behind them.
+- **What was done.** Marco decided on 2026-10-27 to keep them as written. The outputs are
+  published as the model produced them; no output was edited and nothing was re-scored.
+- **Why it matters.** The rule exists to keep real personal data and local paths out of the
+  results; these addresses are neither. The `grep` now reads, for this arm, as "any address it
+  prints is one of the fixtures' `.example` addresses or at `example.com`".
+
 ## 2026-10-27: the Extension arm's cap is raised to US$260
 
 - **What was recorded.** The entry of 2026-10-25 raised the Extension arm's cap on
