@@ -564,7 +564,7 @@ analyses in [`benchmark/results/2026-10-28-arm-1/`](benchmark/results/2026-10-28
 methodology's blind human review of a 72-output sample is still to be done.
 
 **Extension arm: `claude-fable-5-1`, ten runs per cell.** 360 generations collected 2026-10-23 to
-2026-10-27 with `claude-fable-5-1` as agent and judge, US$248 at API list prices. It replicates the
+2026-10-27 with `claude-fable-5-1` as agent and judge, US$226 at API list prices, judge included. It replicates the
 design on a larger model and is reported on its own, never pooled with the primary arm.
 
 | Condition | Content pass, as collected | Grader defects corrected | Also without naming the technique | Package format | Judge pass | Cost per generation |
