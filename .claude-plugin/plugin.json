@@ -1,6 +1,6 @@
 {
   "name": "qa-instinct",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "Senior QA Engineer commands, skills and agents grounded in software testing standards. The rules come as the qa-rules skill, read when a command needs them; `npx qa-instinct init` installs them always on.",
   "author": {
     "name": "Marco Amaral",
