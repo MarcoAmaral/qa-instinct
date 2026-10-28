@@ -16,10 +16,9 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ## [4.5.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.4.0...v4.5.0) (2026-10-28)
 
-
 ### Features
 
-* **skills:** add the qa-static-analysis triage skill ([7b453df](https://github.com/MarcoAmaral/qa-instinct/commit/7b453df470ec0b1b31f9d9173b0488e25d987e8d))
+- **skills:** add the qa-static-analysis triage skill ([7b453df](https://github.com/MarcoAmaral/qa-instinct/commit/7b453df470ec0b1b31f9d9173b0488e25d987e8d))
 
 ## [4.4.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.3.0...v4.4.0) (2026-10-27)
 
