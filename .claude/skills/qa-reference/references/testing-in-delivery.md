@@ -37,7 +37,7 @@ A pipeline full of automated tests does not remove manual testing: testing from 
 | Review the specification as a tester, to catch ambiguity, gaps and contradictions before code exists | `/qa-static` |
 | Write test cases before the code, and run the code in a test harness while it is written | `/qa-tdd`, `/qa-bdd` |
 | Use CI, better still CD, with automated component tests submitted alongside the code | What CI requires: "CI: Preconditions" below; the pipeline: the `qa-reference` skill's `references/automation-ci.md` |
-| Run static analysis on the source before dynamic testing, or as part of the automated process | Static analysis tools in the `qa-reference` skill's `references/test-tools.md` |
+| Run static analysis on the source before dynamic testing, or as part of the automated process | Static analysis tools in the `qa-reference` skill's `references/test-tools.md`; triage of what they report: the `qa-static-analysis` skill |
 | Start non-functional testing at the component level where possible, instead of waiting for a complete system | Not covered yet as guidance; the test types table in the `qa-reference` skill's `references/testing-design.md` shows which characteristics the package covers |
 
 Shift-left costs training, effort or money early, in exchange for saving more later, and it needs the stakeholders to be convinced and committed to it.

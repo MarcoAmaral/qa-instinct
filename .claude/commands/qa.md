@@ -63,6 +63,7 @@ The rest of your testing brain is modularly organized and auto-loaded only when 
 - **Migration Skill** (`qa-migrate`): Auto-loaded when moving a Cypress or Selenium suite to Playwright — phases, command mapping, parity table.
 - **API Testing Skill** (`qa-api`): Auto-loaded when testing a REST or GraphQL API against its contract — design, conformance checks, contract strategy.
 - **Flaky Test Skill** (`qa-flaky`): Auto-loaded when tests pass and fail on the same code — detection from run history, cause classes, the quarantine ledger, the exit proof.
+- **Static Analysis Skill** (`qa-static-analysis`): Auto-loaded when triaging what a linter or scanner reports — verdict per finding, severity by product risk, suppress or baseline with a reason, a CI gate on new findings only.
 - **Release Skill** (`qa-release`): Auto-loaded when asked whether a release is ready — evaluates the existing gate and writes the go/no-go record; defines no criteria.
 - **Accessibility Audit Skill** (`qa-a11y`): Auto-loaded when asked for an accessibility or WCAG audit — scope, axe-core result triage, manual checks, findings by criterion.
 - **QA Reference Skill** (`qa-reference`): Read on demand for the templates, examples and procedures behind the rules — test design techniques and pyramid, assertion examples and Git standards, the axe-core template, the XSS payload spec, evidence capture, and test tool selection. The rules stay short so they cost little in every conversation.
@@ -105,7 +106,8 @@ When the user writes `/qa [request]`, infer intent and apply the right modular e
 | "exploratory", "charter", "SBTM", "explore"                                  | Auto-load **Exploratory Skill** (`qa-explore`)                                       |
 | "review my branch", "review PR", "re-review"                                 | Apply `/qa-review` active command (dispatches qa-engineer)                           |
 | "code review", "testability"                                                 | Invoke **Static Reviewer Agent** (`qa-engineer`)                                     |
-| "static analysis", "linter", "static analyzer"                               | Recommend a tool from the `qa-reference` skill's `references/test-tools.md`          |
+| "static analysis findings", "linter findings", "scanner report", "SARIF"     | Auto-load **Static Analysis Skill** (`qa-static-analysis`)                           |
+| "which linter", "which static analyzer", "choose a scanner"                  | Recommend a tool from the `qa-reference` skill's `references/test-tools.md`          |
 | "tags", "smoke suite", "CI/CD", "grep", "@smoke"                             | Apply **Declarative Testing Rules** (`testing-guidelines`)                           |
 | "accessibility audit", "WCAG audit", "a11y"                                  | Auto-load **Accessibility Audit Skill** (`qa-a11y`)                                  |
 | "axe template", "XSS payload", "evidence", "test tool", "design technique"   | Read the matching file in the **QA Reference Skill** (`qa-reference`)                |

@@ -16,6 +16,7 @@ To use the package, read the README, then the `/qa` router, which names the comm
 - [qa-migrate](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-migrate/SKILL.md): incremental migration of a Cypress or Selenium suite to Playwright, with a parity table.
 - [qa-api](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-api/SKILL.md): REST and GraphQL testing against the OpenAPI or GraphQL schema, and contract strategy.
 - [qa-flaky](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-flaky/SKILL.md): finding flaky tests from run history, classifying the cause, quarantine and proof of a fix.
+- [qa-static-analysis](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-static-analysis/SKILL.md): triage of what a linter or scanner reports: verdicts, suppressions, a baseline and a CI gate on new findings.
 - [qa-release](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-release/SKILL.md): a go/no-go record against the release gate the team already has.
 - [qa-a11y](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-a11y/SKILL.md): accessibility audits against WCAG 2.2 AA with axe-core and the manual checks it cannot make.
 - [qa-reference](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/SKILL.md): the index of the on-demand references below, with when to read each.
@@ -68,6 +69,7 @@ To use the package, read the README, then the `/qa` router, which names the comm
 - [security-checks](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/security-checks.md): full OWASP client-side checks, payload spec, manual checklist.
 - [context-sources](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/context-sources.md): how to read specifications, trackers and feature-area notes.
 - [test-tools](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/test-tools.md): CTFL tool categories, benefits and risks of automation.
+- [tool-formats](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-static-analysis/references/tool-formats.md): the `qa-static-analysis` skill's reference: SARIF, ESLint, Semgrep, CodeQL, tsc and npm audit report fields, suppression syntax and baselines.
 - [repo-conventions](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/repo-conventions.md): full commit and linting conventions for the installing project.
 - [written-records](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/written-records.md): the N/A spelling for empty fields and the one correction format.
 - [defect-system-info](https://raw.githubusercontent.com/MarcoAmaral/qa-instinct/main/.claude/skills/qa-reference/references/defect-system-info.md): commands that collect runtime and dependency versions for a defect report.

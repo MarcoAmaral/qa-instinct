@@ -27,6 +27,8 @@ Test tools support and facilitate many test activities (CTFL v4.0 §6.1). Name t
 
 The categories and what they support are from CTFL v4.0 §6.1; the examples are illustrative, not part of the syllabus.
 
+Once a static analysis tool has run, triaging what it reports (verdicts, suppressions, a baseline and a CI gate on new findings) is the `qa-static-analysis` skill.
+
 **Choose by activity, not by fashion.** Write down which activity is slow, error-prone or impossible by hand, then pick the category that addresses it. A tool that does not move a named activity has no justification.
 
 ---
