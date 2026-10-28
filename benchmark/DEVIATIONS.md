@@ -7,6 +7,78 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: technique naming decides the three test-case tasks in the Extension arm
+
+- **What the methodology says.** Content pass requires every `con-` grader of the task. In the
+  three test-case tasks one of them, `con-technique-named`, checks that the design technique is
+  named (`Boundary[- ]Value|\bBVA\b`, `State[- ]Transition`).
+- **What the read-through found.** In the Extension arm A, B and C apply the technique but rarely
+  name it: they pass `con-bva-values`, `con-every-fee`, `con-subtotal-boundary` and
+  `con-unlisted-invalid-transition` in 10 of 10 runs each, and write "boundary" 17 to 31 times per
+  condition in `cases-quantity`, yet pass `con-technique-named` in 0 to 2 of 10. In those three
+  tasks it is the only `con-` grader A, B and C fail, so it alone makes their content pass 0 to 2 of
+  10 against D's 10.
+- **What was done.** Nothing in the collected results changed; the grader does what its
+  description says, so it is not a defect. As a sensitivity reading, not a correction,
+  `rescore.js --set-aside con-technique-named` over the corrected verdicts (entry below) gives
+  `analysis-corrected-without-naming.md`: content pass A 68/90, B 72/90, C 72/90, D 90/90; D vs C
+  +20.0 (+12.2 to +27.8), D vs B +20.0 (+14.4 to +26.7), D vs A +24.4 (+17.8 to +31.1).
+- **Why it matters.** About half of the headline difference is naming the technique, a habit the
+  package teaches, rather than applying it. The claim still holds without it, at about a third of
+  the size. Reports of this arm give both readings.
+
+## 2026-10-27: the flaky-run-history fixture contradicts its judge rubric on the cart test
+
+- **What the methodology says.** `jdg-cause-classes` passes when the reply classifies the cart test
+  as "a test timing problem (a fixed wait instead of waiting for the result)".
+- **What the read-through found.** The fixture's failure message is "Timeout 5000ms exceeded
+  waiting for getByTestId('cart-total') to have text \"€58.00\"", a web-first assertion that already
+  retries for five seconds, so the 300 ms fixed wait cannot by itself explain the failure; the
+  evidence does not decide the cause. The judge failed D in 4 of 10 runs (2, 4, 8, 9), each of
+  which classes the cart test as unknown and names the trace as what decides it, as the `qa-flaky`
+  skill instructs, and B in 3 (7, 8, 9), which call the sleep "a smell but not the cause". A and C
+  passed 10 of 10.
+- **What was done.** The judge applied its rubric as written; nothing was re-judged or re-scored
+  (`RUNBOOK.md` section 5). Judge pass in this arm: A 20/30, B 20/30, C 22/30, D 23/30.
+- **Why it matters.** The rubric rewards the planted answer over the more careful one, which
+  penalises D and B here. The fixture and rubric are frozen for Arm 1; changing them before Arm 1
+  is collected is a new methodology version and its own entry, and is Marco's decision.
+
+## 2026-10-27: six content graders gave 44 wrong verdicts in the Extension arm
+
+- **What the methodology says.** `RUNBOOK.md` section 5: "A verdict that is wrong is a grader
+  defect: record it in `DEVIATIONS.md` with the output that showed it." A defective grader is not
+  fixed and re-scored silently; a corrected re-score is reported beside the analysis and labelled.
+- **What the read-through found.** Each verdict below was checked by reading the output; every one
+  is a failure that should have been a pass, and the reason for each is in
+  `results/2026-10-23-ext-fable-5-1/corrections.json`.
+  - `a11y-signup-form` `con-no-4-1-1` (A 4, B 9, C 1, D 4): the pattern allows a mention of 4.1.1
+    only next to the word "obsolete", so "retired in WCAG 2.2", "deprecated since 4.1.1 Parsing was
+    removed" and "4.1.1 Parsing under 2.0 and 2.1" fail. Answers that cite 4.1.1 as a current
+    failure (A 1 and 6, B 9, C 1, 5 and 6) stay failed.
+  - `a11y-signup-form` `con-limits-stated` (A 3, B 6, C 1): "nothing was verified in a browser or
+    with assistive technology" and "No browser, screen reader, or automated scanner was run" are
+    not covered. Answers that say only "source only" stay failed.
+  - `defect-gift-card` `con-severity-and-priority` (A 1, C 2): "Blocker" is not in the priority
+    values.
+  - `defect-gift-card` `con-repro-rate` (A 3, C 1): "30%" and "3 in 10" are not covered.
+  - `api-orders-contract` `con-undocumented-500` (A 3, B 2): a table row with "Only 201 and 400"
+    before the 500 is not covered.
+  - `api-orders-contract` `con-404-missing-code` (A 2, C 2): "requires `code` and `message` | Only
+    `message`" is not covered.
+
+  Totals: A 16, B 17, C 7, D 4. The patterns match the package's own wording, so the defects fall
+  mostly on A, B and C. `fmt-every-scenario-tagged`, also flagged for reading, is correct: the
+  failing scenarios have no tag.
+- **What was done.** `runs.jsonl` and `analysis.md` stay as collected. `analysis/rescore.js`
+  applies `corrections.json` and checks that each collected verdict is the one it records;
+  `analysis-corrected.md` is its output through `analyze.js` unchanged: content pass A 41/90,
+  B 43/90, C 42/90, D 90/90; D vs C +53.3 (+45.6 to +61.1), D vs B +52.2 (+45.6 to +58.9), D vs A
+  +54.4 (+45.6 to +62.2), against +55.6, +56.7 and +61.1 as collected. Every contrast still
+  "supports the claim". The patterns were not changed.
+- **Why it matters.** The conclusion does not depend on these defects. They are fixed in the
+  graders only by a new methodology version before Arm 1, with its own entry, if Marco decides so.
+
 ## 2026-10-27: the Extension arm's after-run checks differ, from plugin auto-updates
 
 - **What the methodology says.** `RUNBOOK.md` section 4 compares `claude plugin list`,

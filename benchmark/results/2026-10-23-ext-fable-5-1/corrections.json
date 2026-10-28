@@ -1,0 +1,401 @@
+{
+  "description": "Grader verdicts found wrong in the RUNBOOK section 5 read-through on 2026-10-27, each checked by reading the output. Applied only by benchmark/analysis/rescore.js for the labelled corrected re-score; runs.jsonl and analysis.md stay as collected. See DEVIATIONS.md, 2026-10-27.",
+  "corrections": [
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "A",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "A",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "A",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "A",
+      "run": 9,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "B",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "C",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "D",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "D",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "D",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "D",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer cites 4.1.1 only as removed in WCAG 2.2 or as applying under 2.0/2.1 (\"retired\", \"removed\", \"deprecated\", \"under 2.1\", \"legacy\"); the pattern accepts only the word \"obsolete\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "A",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "A",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "A",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "C",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer says what it could not check (for example \"nothing was verified in a browser or with assistive technology\", \"No browser, screen reader ... was run\"); the pattern does not cover that wording. Answers saying only \"source only\" are left failed."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-severity-and-priority",
+      "condition": "A",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "Severity and priority are both given; the priority value is \"Blocker\" or \"Release blocker\", which the pattern's value list lacks."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-severity-and-priority",
+      "condition": "C",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "Severity and priority are both given; the priority value is \"Blocker\" or \"Release blocker\", which the pattern's value list lacks."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-severity-and-priority",
+      "condition": "C",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "Severity and priority are both given; the priority value is \"Blocker\" or \"Release blocker\", which the pattern's value list lacks."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-repro-rate",
+      "condition": "A",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The observed rate is stated as \"30%\" or \"3 in 10\"; the pattern accepts only \"3/10\", \"3 of 10\" or \"3 out of 10\"."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-repro-rate",
+      "condition": "A",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The observed rate is stated as \"30%\" or \"3 in 10\"; the pattern accepts only \"3/10\", \"3 of 10\" or \"3 out of 10\"."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-repro-rate",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The observed rate is stated as \"30%\" or \"3 in 10\"; the pattern accepts only \"3/10\", \"3 of 10\" or \"3 out of 10\"."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-repro-rate",
+      "condition": "C",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The observed rate is stated as \"30%\" or \"3 in 10\"; the pattern accepts only \"3/10\", \"3 of 10\" or \"3 out of 10\"."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "A",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is set against the only documented statuses in a table row (\"Only 201 and 400 are defined ... | 500\"); the pattern needs the 500 before those words."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "A",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is set against the only documented statuses in a table row (\"Only 201 and 400 are defined ... | 500\"); the pattern needs the 500 before those words."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is set against the only documented statuses in a table row (\"Only 201 and 400 are defined ... | 500\"); the pattern needs the 500 before those words."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "B",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is set against the only documented statuses in a table row (\"Only 201 and 400 are defined ... | 500\"); the pattern needs the 500 before those words."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "B",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is set against the only documented statuses in a table row (\"Only 201 and 400 are defined ... | 500\"); the pattern needs the 500 before those words."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-404-missing-code",
+      "condition": "A",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 404 body is said to lack `code` in a table row (\"`Error` requires `code` and `message` | Only `message`\", \"Fails on `code`\"); the pattern misses that wording."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-404-missing-code",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 404 body is said to lack `code` in a table row (\"`Error` requires `code` and `message` | Only `message`\", \"Fails on `code`\"); the pattern misses that wording."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-404-missing-code",
+      "condition": "C",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 404 body is said to lack `code` in a table row (\"`Error` requires `code` and `message` | Only `message`\", \"Fails on `code`\"); the pattern misses that wording."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-404-missing-code",
+      "condition": "C",
+      "run": 9,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 404 body is said to lack `code` in a table row (\"`Error` requires `code` and `message` | Only `message`\", \"Fails on `code`\"); the pattern misses that wording."
+    }
+  ]
+}
