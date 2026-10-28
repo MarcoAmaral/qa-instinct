@@ -40,6 +40,22 @@ The pilot ran before the freeze, on the version it disclosed; what it changed is
   the cause. The Extension arm stays as collected on 1.1; its corrected re-score applies the same
   verdicts by hand. Arm 1 and the Extension arm were never to be pooled.
 
+## 2026-10-27: condition D now loads the package with the qa-rules and qa-static-analysis skills
+
+- **What the methodology says.** Condition D loads "the repository root, the plugin as published"
+  and records the files a run read beyond the expanded command.
+- **What changed.** Since plan 067 (PR #20, released in 4.4.0) the plugin lists `./plugin/skills/`,
+  which holds the `qa-rules` skill: every rule as a reference file. A D run that names a rule can now
+  read it, where before it said which rule it could not apply. Since plan 068 (PR #22) the plugin
+  also has the `qa-static-analysis` skill; no benchmark task concerns static analysis, but its name
+  and description (about 530 characters) are among the skills a D run sees.
+- **What was done.** Nothing else; Arm 1 runs D on the package as it is at collection, as the
+  methodology says. The pilot and the Extension arm (from its pinned checkout) ran without either
+  skill; two Extension-arm D runs (`flaky-run-history` runs 6 and 7) tried to read
+  `.claude/skills/qa-rules/references/testing-guidelines.md`, a path that did not exist.
+- **Why it matters.** D in Arm 1 can apply the rules a command names; D in the pilot and the
+  Extension arm could not. A difference between them may come from this as well as from the model.
+
 ## 2026-10-27: technique naming decides the three test-case tasks in the Extension arm
 
 - **What the methodology says.** Content pass requires every `con-` grader of the task. In the
