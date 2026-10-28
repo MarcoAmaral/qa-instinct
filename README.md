@@ -556,13 +556,13 @@ design on a larger model and is reported on its own, never pooled with the prima
 | Condition | Content pass, as collected | Grader defects corrected | Also without naming the technique | Package format | Judge pass | Cost per generation |
 | --- | --- | --- | --- | --- | --- | --- |
 | A, nothing added | 31 of 90 | 41 of 90 | 68 of 90 | 3 of 90 | 20 of 30 | US$0.41 |
-| B, one sentence | 35 of 90 | 43 of 90 | 72 of 90 | 5 of 90 | 20 of 30 | US$0.51 |
-| C, placebo | 36 of 90 | 42 of 90 | 72 of 90 | 3 of 90 | 22 of 30 | US$0.52 |
+| B, one sentence | 35 of 90 | 45 of 90 | 74 of 90 | 5 of 90 | 20 of 30 | US$0.51 |
+| C, placebo | 36 of 90 | 44 of 90 | 74 of 90 | 3 of 90 | 22 of 30 | US$0.52 |
 | D, QA Instinct | 86 of 90 | 90 of 90 | 90 of 90 | 90 of 90 | 23 of 30 | US$1.07 |
 
 D's content pass is higher than every other condition's in all three readings: by 56 to 61 points
-as collected, 52 to 54 with the 44 wrong grader verdicts corrected, and 20 to 24 when the check that
-the test design technique is *named* is also set aside (98.33% intervals from +12 points up). That
+as collected, 50 to 54 with the 48 wrong grader verdicts corrected, and 18 to 24 when the check that
+the test design technique is *named* is also set aside (98.33% intervals from +10 points up). That
 check is half the difference: without the package the model applies boundary values and state
 transitions but rarely names them. The LLM judge sees little difference (20 to 23 of 30), and D
 costs about twice as much per generation. The corrections and the reasons for each are in

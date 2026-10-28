@@ -56,6 +56,23 @@ The pilot ran before the freeze, on the version it disclosed; what it changed is
 - **Why it matters.** D in Arm 1 can apply the rules a command names; D in the pilot and the
   Extension arm could not. A difference between them may come from this as well as from the model.
 
+## 2026-10-27: the Extension arm's read-through missed four `con-limits-stated` verdicts
+
+- **What happened.** Testing the 1.2 patterns on the Extension arm's outputs showed four answers the
+  read-through had left failed that say what they could not check: B run 3 ("No browser, screen
+  reader, or automated scanner was run"), B run 6 (the same), C run 7 ("Nothing was tested in a
+  browser or with assistive technology") and C run 4 ("Target size is estimated", the same kind of
+  statement as A run 8, which was corrected). The read-through's search printed only the first
+  matching line of each answer, "source only", and they were left failed for it.
+- **What was done.** The four are added to `corrections.json`, with that reason, making 48
+  corrections (A 16, B 19, C 9, D 4), and both corrected analyses were generated again. Corrected:
+  content pass A 41/90, B 45/90, C 44/90, D 90/90; D vs C +51.1 (+43.3 to +58.9), D vs B +50.0
+  (+44.4 to +56.7), D vs A +54.4 (+45.6 to +62.2). Corrected without technique naming: A 68/90,
+  B 74/90, C 74/90; D vs C +17.8 (+10.0 to +25.6), D vs B +17.8 (+12.2 to +24.4), D vs A +24.4
+  (+17.8 to +31.1). These replace the figures in the two entries below, which are left as written.
+- **Why it matters.** Every reading still supports the claim; the corrected differences are about
+  two points smaller for B and C.
+
 ## 2026-10-27: technique naming decides the three test-case tasks in the Extension arm
 
 - **What the methodology says.** Content pass requires every `con-` grader of the task. In the
