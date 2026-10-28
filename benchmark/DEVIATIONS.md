@@ -7,6 +7,25 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-28: Arm 1 is collected on a Claude subscription, from the SWARE distribution
+
+- **What the methodology says.** "Cost" estimates Arm 1 at about US$13 at list prices with a US$16
+  cap, and `RUNBOOK.md` asks for Claude Code with `claude plugin eval`, "signed in with the account
+  that pays for the run".
+- **What was done.** Marco decided on 2026-10-28 to collect Arm 1 as the Extension arm was
+  collected: from the SWARE WSL distribution, where Claude Code 2.1.291 has `claude plugin eval`
+  (the MarcoWork distribution has 2.1.224, where the command is not available), signed in to the
+  Swareco Team subscription with extra usage off, on methodology 1.2 (digest
+  `7f873e1c3f2378840b6c55f4ed5f5f1ff8c137383ee3b9d39751b69a06523af7`). The `RUNBOOK.md` commands run
+  unchanged, `claude-haiku-4-5-20251001` as agent and judge, ten runs per cell, cap US$16 at the
+  list prices the tool reports. The Extension arm's usage guard applies: no task starts at 95% or
+  more of the five-hour or weekly limit, a task in flight stops at 98%, and a task stopped part-way
+  is set aside and collected again whole, as its own entry here. Results go to
+  `benchmark/results/2026-10-28-arm-1/`.
+- **Why it matters.** The cost is reported at list prices; on a subscription it counts against the
+  plan's usage limits instead of being billed. The protocol, the model and the cases are Arm 1's as
+  frozen.
+
 ## 2026-10-27: methodology 1.2, six content graders and one fixture changed before Arm 1
 
 - **What the methodology says.** "A change before full collection is a new row under 'Version
