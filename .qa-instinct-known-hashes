@@ -11,6 +11,7 @@
 0d326e6ddb4e05974fb5448ee2af4e900bbffa2cf419a8d03236d00af48b5aab  .claude/commands/qa-cases.md
 0e8a206e19bf02158d90557cb92e67761f790ba8df6371f6fb6e6e1c8f95f7fa  .claude/commands/qa-bdd.md
 0e9280008367bdee5e8652fe0b0e5169fe4b74f72cd0b7ab87832cc9611ab8f4  .claude/skills/qa-reference/references/test-tools.md
+0e9b9dd3291054db3693edca44eb475b06a9545662ea5344065552e377c9d877  .claude/agents/qa-engineer.md
 0fcbd5367956383af5233fe35ae0924788066069dd5a2c7fe546a84dd9b715ab  .claude/rules/accessibility-qa.md
 102de791654fb3287552a3ac24856114c97d553d393d2f0361499579a724c774  .claude/commands/qa-agentic.md
 1032ad46782ab430d3457ecab203f34b033505a1481410529f2de02214f2df28  .claude/skills/qa-api/SKILL.md
@@ -24,7 +25,9 @@
 1abfea8fe0e1450ee67796e1f0462de306c4955003fa919c321e7818c58bf8c1  .claude/rules/testing-guidelines.md
 1ad9c7a52046eefe6641648e58555535333801ceece21cd2c566bfbc75d94cc1  .claude/rules/test-tools.md
 1b61e42e9d240fcdd50ab024e36979d0d1f5b3c6db6628037a21c649042c724d  .claude/rules/accessibility-qa.md
+1c314b712d5b42a174b10ad5dd6a2eef4be18f919e0ed7c20087c37a11ed59e9  .claude/commands/qa-bdd.md
 1ccaa4ecd66212e202fe647c013c62d09abd3e2ded6368f583111569c9800781  .claude/commands/qa-agentic.md
+1e2f54976e7afb81b7673f3958f309f1f5e173190341a1159aab7674629db9a6  .claude/skills/qa-migrate/SKILL.md
 1e7bb54735aafda5840dc30e6dbc1a81ff790cc48c3394b22bc8d378bc98d6db  .claude/commands/qa-cases.md
 1fcb62c406f5ab17a2cf42935ae7bbd8af273d58b887a54b58bbfbe81f596f84  .claude/skills/qa-explore/SKILL.md
 21ce90e9fec46dc0f10b9e57f6957c28bc363123152e64bc0c1303e8537e8280  .claude/commands/qa-agentic.md
@@ -61,6 +64,7 @@
 40b29e2e81d2ee0bc5257a069c545a7bc75de830b4783e93dd808e873c78421f  .claude/commands/qa.md
 422916392cd36aef1531698aeb4bda4ab5a656b37bb7f26095eeb41a7a21a415  .claude/rules/testing-guidelines.md
 43a58eb77ae33ee1f277a794d72e5842cbb8967eb3614b470ddb7783b452021c  .claude/commands/qa.md
+453e13142cb998982625b37d6f221d3f607e8bb9f6166893929f62a477e919cc  .claude/commands/qa-trace.md
 4582240069e9c636925c9eeede10ffc93ea2a713e0c903aa40eb571f4dab668f  .claude/skills/qa-plan/SKILL.md
 4588824e1b42cc5fcfd0f64201f910b43167b92baf30a6d478c8ff8f4e591c2e  .claude/commands/qa-refinement.md
 45b12d8f99f4dc02e7c122a2559cca957590bbd73be22982729863ec414935bd  .claude/rules/test-tools.md
@@ -75,7 +79,9 @@
 51efb179313c6496a63de3368bd1572b19acc38ea2d7d0c4602e2b2bb79eb33c  .claude/rules/accessibility-qa.md
 52072b2e9f08133b7323aaf509beedfae20b6fb48003e167173c8716e7f0dd58  .claude/skills/qa-plan/SKILL.md
 54a7e5a1dd2df6feb43c2cdfb755dd64f1bbbdc5f16899f3277f38cce6ac1918  .claude/agents/qa-engineer.md
+552255b84ac5a30e6ba7f189ef49dbb2407ea3df808848cef0eeb4ac3d46d4e1  .claude/skills/qa-reference/SKILL.md
 553007617439b046100b006d6a53c21a8a59d3afa10778962a9252f794400b73  .claude/skills/qa-reference/references/context-sources.md
+55cbd173dd4ab16fd34d64a522fc1849459076d20eed380cfc1d52398df7d1f3  .claude/commands/qa-tdd.md
 56df0bf01bc845ebf999af200562b81dfd0f63ce5e804f5666d226d7e5790620  .claude/commands/qa-trace.md
 5738f28d1a365cbee08d48190fbd243735633fc5106081e7e9cf341a03ef9d9c  .claude/commands/qa-bdd.md
 5a708d29012a4badbb8b814648ba14c38bca9f87120370dff86f77e4912e4353  .claude/commands/qa-tdd.md
@@ -91,8 +97,10 @@
 63b7116a34ec5960bca868c7de18682f3b6e467116cf25192e795a22d3cf504f  .claude/rules/security-qa.md
 63c1bdf6cdd5b7bd7cd61f77c22f646f5161bfd73b0d3af47b4aa894f7c07c97  .claude/commands/qa-bdd.md
 66126455896190ad700f0470808038f06936db710abeb7b0f8a361eeddbef8ae  .claude/skills/qa-a11y/SKILL.md
+6619d65009347b112bc82b9bdbed4b390170919eabd74925dba2318585999feb  .claude/commands/qa-automate.md
 66fcb74a176ced800ad0ca7f85841415bd961d75da837df68fdb6b2417dafec7  .claude/skills/qa-reference/references/defect-system-info.md
 672b3f995caffe9ed77914e7a1daac90da7f438dbf34e45a22fcc37553f5b287  .claude/agents/qa-engineer.md
+680bc058f54f9938134606233fff05051e48982add9bf354016ea5e8f38f8dd3  .claude/commands/qa-agentic.md
 681ef63047ca4c074036faa029cc388548b6ac6677f11641698a90fd664fde2c  .claude/commands/qa-bdd.md
 682af936598f53d16db34e9dd83a9a79a0b74b5f47e3a38431e3155a7bd6be9b  .claude/rules/code-style-qa.md
 688b19c4971f320c4ec04089dfd089f2dc333e11f4e290d5276c5826c7e73b2f  .claude/skills/qa-reference/references/accessibility-checks.md
@@ -107,7 +115,9 @@
 7086a5ed79174f9a1f3e1aca397a0797894fdde05f8f5284f1528328524282f6  .claude/rules/code-style-qa.md
 71ca9994790f678de9b27cd202d7724f81b7bd8ea451622df4789fdc1cb7dbbf  .claude/rules/linting-standards.md
 71f2fbf31ffc6cde0f3ed0c8d1ae37a0f694fb6dde74d8d453be446f1f45d969  .claude/commands/qa.md
+7253207e5b2ae1da95290d1a9713f8f2975b32ca8dccfa1dc0d90c94b70d54e7  .claude/skills/qa-api/SKILL.md
 72a31b5332443b3f11e424c67fac1b2cc24a014cb08e3d324b854d043243a0fb  .claude/commands/qa.md
+7336674d29a97e8e5e576ef0e286c2f952ed1c39d54db0da9ad1510221fdc0b1  .claude/agents/qa-groomer.md
 737e18a713b05561260a8e8c5ee8ed3a5f7e2bd559198f3455bc119a39e3c3e8  .claude/rules/context-discovery.md
 76a4b589f9adf3ff7883c9116cb8a5f232db622abacf844f9dfcc360dda14082  .claude/commands/qa-tdd.md
 76ef13b2796dcbae8e9d356d1a5ca0784567fc704ef38bff04b9d4c492bfd2ff  .claude/commands/qa-automate.md
@@ -131,10 +141,12 @@
 90e9ccdc732d0105efe9198ef3e5b613d43acf720d8ae8d4f6019bda63429720  .claude/rules/context-discovery.md
 94ff2674379c036f3b35990d6059ef9d022193625fe7642cc94289eb9388604b  .claude/skills/qa-reference/references/repo-conventions.md
 9595ec7806f9538c1af8e5f004df4ebd6d32b896f1e7bcf79f03db215456c963  .claude/commands/qa-automate.md
+973493542f627ce1159d8050fb41720a0196722b9bf181193a2ad5ef05cc6ce2  .claude/skills/qa-release/SKILL.md
 997157ccd7d22446f280e5489f3347351598642108056db9ac425d78d4ffaec2  .claude/commands/qa-static.md
 99779b221108e41e5223100b5f787461072b0ab128197587c1d5cfc3f4b161cf  .claude/skills/qa-plan/SKILL.md
 9beebd81abacc285a11575b83282d687a667c2a4ff70a9b212a39eff6578dc24  .claude/hooks/validate-tc-format.sh
 9c9ee62bfdd46bf87adcf8760570cbe4d3af183b68f8857fc7fc04528e025e50  .claude/hooks/validate-tc-format.sh
+9edb4dc77d0b14af63a0fc45d42ab08b9d51408cb9a792df41e95947da5438b2  .claude/skills/qa-a11y/SKILL.md
 9fc85b1711e878cdd8cab8b9b1e0a1ce2e3cb72040d64f49a721a7ac1ca82c68  .claude/rules/context-discovery.md
 a1b864bac5ecd7300422849e5a28f5d8d4e12224d603a117cd2c2df39a5ae98d  .claude/commands/qa-defect.md
 a2a0a3a89756fdcd0b088ececb60ddded94c1c2ae024bd3ee0b441ee3323dcb6  .claude/rules/testing-guidelines.md
@@ -147,6 +159,7 @@ afd9e3548dbaca727bd7a286a7d35a1a287bb64903450c605d9f3a0e5e25bb3b  .claude/agents
 b072531150ad728afe65e5eafb65c0ef370ae41a9f57cfccea218ebe2b0f29ba  .claude/commands/qa.md
 b07357f02beb6b2c3d8a4029f3e647205a04ed13728faf7c0d5d1fde4308cc3f  .claude/commands/qa.md
 b0b53e05fcec56471f011fc5da0a9fcd5e5dc605542d8283f09ccb43330b5242  .claude/commands/qa-bdd.md
+b0d78f97a29b7588ace3f97cc55b96c6690989741b527a37e7ea76cd9d869198  .claude/agents/qa-designer.md
 b14a3e176ac1ea13667d2fc65540cb36ed287adcd804a20ce11939d773159926  .claude/commands/qa.md
 b4ffa03d45b38b64c2d1fea68f4885d4c01abc7e75d60ce8d00f1c621deac0fc  .claude/commands/qa-static.md
 b5eb8a025a062c6fdef75b6225b3daec44fbf0d64783557a94589e2e2ad98eda  .claude/commands/qa.md
@@ -169,6 +182,7 @@ cc97770b10f9f7150a1866cef7b0dd1b66345b3c6e0987b28ff970f7674d75df  .claude/rules/
 ce42783400470de44d1d292f3d33949a947db2c6badb9ebf148ae9d5d33c1a77  .claude/commands/qa-refinement.md
 cfdfbe7090f9144d1e1be614a62bf1efeb0ee8788080e86b1bb3d4c3ba0a8e62  .claude/hooks/check-test-evidence.sh
 d3ea5949477c05751baff4c9a967bc7ac716217963bf05d267d8ecdb890beff7  .claude/agents/qa-writer.md
+d473ccf6b7ab665722b15bd0dd028753e1767359c7674a008214dcf3823b0ad3  .claude/commands/qa-defect.md
 d474ff5a0ea2adc1379e74d9b85fa0922da53eecb1f4653deb8d717991b54f0c  .claude/agents/qa-designer.md
 d4cd85fe29d4fe4134a836e4b28788007dc3a2caa98b00ec812d7aca53af4789  .claude/rules/security-qa.md
 d53cec3d91b6a3eb575f94fcd5e2ead3bc25b4fb74124393af036011603eb916  .claude/skills/qa-explore/SKILL.md
@@ -184,6 +198,7 @@ dd8755da515896a6cc1d5f3d5aff2ff5a72c0986d45f7098b89e5d2aada2aebe  .claude/comman
 de6430c891aabead789b7f51be4fffac4fefa26bf133293ec37d228157b70a4e  .claude/skills/qa-reference/references/testing-in-delivery.md
 e0ef5d685a8acaec616b31e8ef8b2d4267598ad321750406f342dd4acec1bbb0  .claude/commands/qa-tdd.md
 e13ed50db5c9ed759d0bf177b7a4f23a91eb0368a7d0c7f665443f4e89a7795b  .claude/skills/qa-reference/references/accessibility-checks.md
+e152c4c8d2e3c9df404b78c11e2fac4374eaed9f718fa34dcce7f6e591384d93  .claude/skills/qa-flaky/SKILL.md
 e2efd08605d077108ebdf27b1af585867cad17b0780cca7a3238979b412c2825  .claude/commands/qa-tdd.md
 e2fad6d764cbdc5669e8758a88bf8c78e87695ca0fcdfd286061e67e910e5c94  .claude/commands/qa-cases.md
 e37aa1b7aa8418b48191951bd3a842f5e24a4e71fdf073c18dd56d8ff4c49297  .claude/commands/qa-tdd.md
@@ -191,6 +206,7 @@ e3d48eb6516877b82ea2a9d62b9b4bfd317ca877a05c641a41806616fd80b277  .claude/agents
 e5a105e90d9f4293d26c2ce9387e38d11ede835ed14b2817b3a0e3a5f528c943  .claude/rules/code-style-qa.md
 e60d9e3a415fc3995cf6eed44b4249eeae8d434724736f4d2f8e7493a94f29f2  .claude/skills/qa-reference/references/testing-design.md
 e75838b10d01c3de652be06740a31946a48ba930d17ff05e8a63376ccb7c0dd4  .claude/commands/qa-defect.md
+e7e5a638ed537d36148753c6ed0fb2cfd289d40ce078f7b34bef95738b943257  .claude/commands/qa-static.md
 e8a8e9903432c261ed7a228eaacf14c21a3abc7c25a9035b2b41b96016e6860f  .claude/skills/qa-reference/references/security-checks.md
 e8f55b48cfa90dd1723abafb52b34e941d39e6a45c252bde8bed2b659c4cd823  .claude/skills/qa-reference/references/test-reporting.md
 e9c8b7e6ccf0adfee99ee26c9e89cf9e425e0163b93802fcb37f3ff7e4c08aae  .claude/commands/qa-defect.md
@@ -211,7 +227,9 @@ f48e12cc1de488f1e0708ec8fa6c9bbe81da9edb96e7c90404a069ccf5a7cf09  .claude/skills
 f54f2d8e32522a87227a29a84942cb7a9c0dcb67ef5ef59cd88dc8d87fbff92d  .claude/commands/qa-cases.md
 f5ad38c3286ddc0af4aeea73f72ba423257ce36a343ca2ee004388c6de77b1ec  .claude/skills/qa-release/SKILL.md
 f66547bf3658da2999386da1fb16eeeb86f637b98acd52cd89b4f3d4c22f0d42  .claude/commands/qa-tdd.md
+f830a87ca082f64d200e5a92cd6c743d0f03db7ae62c4baedfb380ed17bc02ac  .claude/commands/qa.md
 f902eeb3348a6c11ee0610f876991fe14b9167a8e8e80950295779a54cb0f3ce  .claude/skills/qa-reference/references/evidence-capture.md
+fb326afbcd801fd31b5f57738445bba64ca6d42c2fed1464d96584ee03d97580  .claude/commands/qa-cases.md
 fbba4248d6f3d89a966ef0ac47b634899537eb80ee379cae08eecf50c7d9cf11  .claude/rules/linting-standards.md
 fd17da769b2eec321dcc832928221a2e10556fd065e8af384a3b3449e988cadd  .claude/skills/qa-explore/SKILL.md
 fdcb5b44fc3544fb14b7be147a25010e9708f091115f6a3573af4c88f0915512  .claude/skills/qa-reference/references/security-checks.md
