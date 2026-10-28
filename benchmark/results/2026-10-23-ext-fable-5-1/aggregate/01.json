@@ -1,0 +1,2862 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.291",
+  "startedAt": "2026-10-23T18:17:08.825Z",
+  "durationSeconds": 1306,
+  "costUsd": 20.3550045,
+  "partial": false,
+  "suite": {
+    "root": "<repository>",
+    "ablation": "none",
+    "modelOverride": "claude-fable-5-1",
+    "judgeModel": "claude-fable-5-1",
+    "caseFilter": "*-cases-quantity",
+    "threshold": 1,
+    "concurrency": 2,
+    "plugins": [
+      {
+        "name": "bare",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/bare-plugin"
+      },
+      {
+        "name": "writing-guide",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/control-standard"
+      },
+      {
+        "name": "bem-te-vi",
+        "version": "4.1.1",
+        "path": "<repository>"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "A-cases-quantity",
+      "dir": "benchmark/cases/A/cases-quantity",
+      "source": "prose",
+      "promptMarkdown": "Write test cases for the user story below.\n\nStory CART-12: Change the quantity of an item in the cart\n\nAs a shopper, I want to change how many of an item are in my cart, so that I buy the amount I need.\n\n- AC-1: The quantity field accepts whole numbers from 1 to 20.\n- AC-2: Setting the quantity to 0 asks \"Remove this item?\" and removes the item only when the shopper confirms.\n- AC-3: A quantity above 20 shows \"You can buy at most 20 of this item.\" and keeps the previous quantity.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-bva-values",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Boundary[- ]Value|\\bBVA\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41259,
+            "judgeCostUsd": 0,
+            "durationSeconds": 38,
+            "startedAt": "2026-10-23T18:17:09.152Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.34631,
+            "judgeCostUsd": 0,
+            "durationSeconds": 28,
+            "startedAt": "2026-10-23T18:17:09.152Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.27224075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 31,
+            "startedAt": "2026-10-23T18:17:37.095Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.35919075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 55,
+            "startedAt": "2026-10-23T18:17:47.165Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.30886075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-23T18:18:07.621Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.31089075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-23T18:18:41.667Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.31909075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-23T18:18:47.342Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.31839074999999994,
+            "judgeCostUsd": 0,
+            "durationSeconds": 39,
+            "startedAt": "2026-10-23T18:19:18.259Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.29784075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 38,
+            "startedAt": "2026-10-23T18:19:27.014Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.31979075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 41,
+            "startedAt": "2026-10-23T18:19:57.533Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5166666666666667,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "B-cases-quantity",
+      "dir": "benchmark/cases/B/cases-quantity",
+      "source": "prose",
+      "promptMarkdown": "Work as a thorough, professional QA engineer. Write test cases for the user story below.\n\nStory CART-12: Change the quantity of an item in the cart\n\nAs a shopper, I want to change how many of an item are in my cart, so that I buy the amount I need.\n\n- AC-1: The quantity field accepts whole numbers from 1 to 20.\n- AC-2: Setting the quantity to 0 asks \"Remove this item?\" and removes the item only when the shopper confirms.\n- AC-3: A quantity above 20 shows \"You can buy at most 20 of this item.\" and keeps the previous quantity.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-bva-values",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Boundary[- ]Value|\\bBVA\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.37181074999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 56,
+            "startedAt": "2026-10-23T18:20:05.329Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.47700075000000003,
+            "judgeCostUsd": 0,
+            "durationSeconds": 89,
+            "startedAt": "2026-10-23T18:20:38.751Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.40412075000000003,
+            "judgeCostUsd": 0,
+            "durationSeconds": 65,
+            "startedAt": "2026-10-23T18:21:01.615Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39521075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 61,
+            "startedAt": "2026-10-23T18:22:06.782Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.50076075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 83,
+            "startedAt": "2026-10-23T18:22:07.882Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.31831075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 48,
+            "startedAt": "2026-10-23T18:23:07.446Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.42230075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 68,
+            "startedAt": "2026-10-23T18:23:30.790Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.3490107499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 48,
+            "startedAt": "2026-10-23T18:23:55.143Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.42067075000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 64,
+            "startedAt": "2026-10-23T18:24:38.991Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39661075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 62,
+            "startedAt": "2026-10-23T18:24:42.901Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5166666666666666,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "C-cases-quantity",
+      "dir": "benchmark/cases/C/cases-quantity",
+      "source": "prose",
+      "promptMarkdown": "/writing-guide:help-articles Write test cases for the user story below.\n\nStory CART-12: Change the quantity of an item in the cart\n\nAs a shopper, I want to change how many of an item are in my cart, so that I buy the amount I need.\n\n- AC-1: The quantity field accepts whole numbers from 1 to 20.\n- AC-2: Setting the quantity to 0 asks \"Remove this item?\" and removes the item only when the shopper confirms.\n- AC-3: A quantity above 20 shows \"You can buy at most 20 of this item.\" and keeps the previous quantity.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-bva-values",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Boundary[- ]Value|\\bBVA\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.45142075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 45,
+            "startedAt": "2026-10-23T18:25:42.591Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41731075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 41,
+            "startedAt": "2026-10-23T18:25:44.939Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44567075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 44,
+            "startedAt": "2026-10-23T18:26:25.775Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.45707074999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 48,
+            "startedAt": "2026-10-23T18:26:27.092Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44953075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 46,
+            "startedAt": "2026-10-23T18:27:09.340Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.45747075000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 52,
+            "startedAt": "2026-10-23T18:27:15.312Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41588075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 43,
+            "startedAt": "2026-10-23T18:27:55.449Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.42112075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-23T18:28:07.564Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44248075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 43,
+            "startedAt": "2026-10-23T18:28:38.045Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.40133075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-23T18:28:47.586Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "D-cases-quantity",
+      "dir": "benchmark/cases/D/cases-quantity",
+      "source": "prose",
+      "promptMarkdown": "/bem-te-vi:qa-cases Write test cases for the user story below.\n\nStory CART-12: Change the quantity of an item in the cart\n\nAs a shopper, I want to change how many of an item are in my cart, so that I buy the amount I need.\n\n- AC-1: The quantity field accepts whole numbers from 1 to 20.\n- AC-2: Setting the quantity to 0 asks \"Remove this item?\" and removes the item only when the shopper confirms.\n- AC-3: A quantity above 20 shows \"You can buy at most 20 of this item.\" and keeps the previous quantity.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-bva-values",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Boundary[- ]Value|\\bBVA\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.9486877499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 129,
+            "startedAt": "2026-10-23T18:29:21.522Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.8411584999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 109,
+            "startedAt": "2026-10-23T18:29:24.632Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.85619975,
+            "judgeCostUsd": 0,
+            "durationSeconds": 116,
+            "startedAt": "2026-10-23T18:31:13.816Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.84999775,
+            "judgeCostUsd": 0,
+            "durationSeconds": 116,
+            "startedAt": "2026-10-23T18:31:30.532Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.8458505,
+            "judgeCostUsd": 0,
+            "durationSeconds": 112,
+            "startedAt": "2026-10-23T18:33:10.218Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.7945605,
+            "judgeCostUsd": 0,
+            "durationSeconds": 98,
+            "startedAt": "2026-10-23T18:33:26.954Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.7991485,
+            "judgeCostUsd": 0,
+            "durationSeconds": 106,
+            "startedAt": "2026-10-23T18:35:01.975Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.7461984999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 92,
+            "startedAt": "2026-10-23T18:35:05.313Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 5,
+            "costUsd": 1.083512,
+            "judgeCostUsd": 0,
+            "durationSeconds": 137,
+            "startedAt": "2026-10-23T18:36:37.094Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.90939975,
+            "judgeCostUsd": 0,
+            "durationSeconds": 122,
+            "startedAt": "2026-10-23T18:36:47.845Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-bva-values",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.])0(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])1(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])20(?![\\d.]))(?=[\\s\\S]*(?<![\\d.$])21(?![\\d.]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|(?:valid|accept\\w*|updates? to|success\\w*|saved?)[^\\n]{0,80}(?<![\\d.])(?:1|20)(?![\\d.])|(?<![\\d.])(?:1|20)(?![\\d.])[^\\n]{0,80}(?:valid|accept\\w*|success\\w*|saved)))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|Remove this item\\?))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|You can buy at most 20 of this item))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Boundary[- ]Value|\\bBVA\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 4,
+    "casesPassed": 1,
+    "overallScore": 0.6333333333333333,
+    "overallPassRate": 0.25
+  }
+}

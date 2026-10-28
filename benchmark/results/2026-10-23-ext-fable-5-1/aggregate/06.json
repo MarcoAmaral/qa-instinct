@@ -1,0 +1,2862 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.291",
+  "startedAt": "2026-10-25T22:44:25.068Z",
+  "durationSeconds": 2198,
+  "costUsd": 28.28549075,
+  "partial": false,
+  "suite": {
+    "root": "<repository>",
+    "ablation": "none",
+    "modelOverride": "claude-fable-5-1",
+    "judgeModel": "claude-fable-5-1",
+    "caseFilter": "*-api-orders-contract",
+    "threshold": 1,
+    "concurrency": 2,
+    "plugins": [
+      {
+        "name": "bare",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/bare-plugin"
+      },
+      {
+        "name": "writing-guide",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/control-standard"
+      },
+      {
+        "name": "bem-te-vi",
+        "version": "4.1.1",
+        "path": "<repository>"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "A-api-orders-contract",
+      "dir": "benchmark/cases/A/api-orders-contract",
+      "source": "prose",
+      "promptMarkdown": "Check the recorded responses below against the API's OpenAPI contract, report every mismatch, and design the tests this API needs.\n\n~~~yaml\nopenapi: 3.0.3\ninfo:\n  title: Orders API\n  version: 2.1.0\npaths:\n  /orders/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema: { type: integer, minimum: 1 }\n      responses:\n        \"200\":\n          description: The order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"404\":\n          description: No order with this id\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\n  /orders:\n    post:\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: { $ref: \"#/components/schemas/NewOrder\" }\n      responses:\n        \"201\":\n          description: Created\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"400\":\n          description: Invalid order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\ncomponents:\n  schemas:\n    NewOrder:\n      type: object\n      required: [items]\n      properties:\n        items:\n          type: array\n          minItems: 1\n          items: { type: string }\n        note: { type: string }\n    Order:\n      type: object\n      required: [id, status, total]\n      properties:\n        id: { type: integer }\n        status: { type: string, enum: [placed, paid, shipped] }\n        total: { type: number }\n        note: { type: string }\n    Error:\n      type: object\n      required: [code, message]\n      properties:\n        code: { type: string }\n        message: { type: string }\n~~~\n\nRecorded on the staging environment on 2026-10-15, deployed version 2.1.0:\n\n1. GET /orders/1042 -> 200\n   {\"id\": 1042, \"status\": \"paid\", \"total\": \"42.50\", \"note\": null}\n\n2. GET /orders/999999 -> 404\n   {\"message\": \"Order not found\"}\n\n3. POST /orders with body {\"items\": [\"sku-1\"], \"note\": \"<a string of 5,000 characters>\"} -> 500\n   {\"error\": \"value too long for type character varying(500)\"}\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-404-missing-code",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-total-type",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undeclared-length",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undocumented-500",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-contract-strategy",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "consumer[- ]driven|schema conformance",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-drift-or-defect",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "documentation drift|software defect",
+            "flags": "i",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.55367,
+            "judgeCostUsd": 0,
+            "durationSeconds": 86,
+            "startedAt": "2026-10-25T22:44:25.594Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.47657,
+            "judgeCostUsd": 0,
+            "durationSeconds": 65,
+            "startedAt": "2026-10-25T22:44:25.594Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.31527075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 53,
+            "startedAt": "2026-10-25T22:45:30.604Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.3333333333333333,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.37564074999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 64,
+            "startedAt": "2026-10-25T22:45:51.971Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.42669075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 81,
+            "startedAt": "2026-10-25T22:46:23.822Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41018075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 73,
+            "startedAt": "2026-10-25T22:46:56.238Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.47468075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 91,
+            "startedAt": "2026-10-25T22:47:44.738Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.34183074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 54,
+            "startedAt": "2026-10-25T22:48:09.475Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.43875074999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 83,
+            "startedAt": "2026-10-25T22:49:03.967Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.3333333333333333,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.48464075000000006,
+            "judgeCostUsd": 0,
+            "durationSeconds": 92,
+            "startedAt": "2026-10-25T22:49:15.852Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "B-api-orders-contract",
+      "dir": "benchmark/cases/B/api-orders-contract",
+      "source": "prose",
+      "promptMarkdown": "Work as a thorough, professional QA engineer. Check the recorded responses below against the API's OpenAPI contract, report every mismatch, and design the tests this API needs.\n\n~~~yaml\nopenapi: 3.0.3\ninfo:\n  title: Orders API\n  version: 2.1.0\npaths:\n  /orders/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema: { type: integer, minimum: 1 }\n      responses:\n        \"200\":\n          description: The order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"404\":\n          description: No order with this id\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\n  /orders:\n    post:\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: { $ref: \"#/components/schemas/NewOrder\" }\n      responses:\n        \"201\":\n          description: Created\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"400\":\n          description: Invalid order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\ncomponents:\n  schemas:\n    NewOrder:\n      type: object\n      required: [items]\n      properties:\n        items:\n          type: array\n          minItems: 1\n          items: { type: string }\n        note: { type: string }\n    Order:\n      type: object\n      required: [id, status, total]\n      properties:\n        id: { type: integer }\n        status: { type: string, enum: [placed, paid, shipped] }\n        total: { type: number }\n        note: { type: string }\n    Error:\n      type: object\n      required: [code, message]\n      properties:\n        code: { type: string }\n        message: { type: string }\n~~~\n\nRecorded on the staging environment on 2026-10-15, deployed version 2.1.0:\n\n1. GET /orders/1042 -> 200\n   {\"id\": 1042, \"status\": \"paid\", \"total\": \"42.50\", \"note\": null}\n\n2. GET /orders/999999 -> 404\n   {\"message\": \"Order not found\"}\n\n3. POST /orders with body {\"items\": [\"sku-1\"], \"note\": \"<a string of 5,000 characters>\"} -> 500\n   {\"error\": \"value too long for type character varying(500)\"}\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-404-missing-code",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-total-type",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undeclared-length",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undocumented-500",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-contract-strategy",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "consumer[- ]driven|schema conformance",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-drift-or-defect",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "documentation drift|software defect",
+            "flags": "i",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.51975075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 107,
+            "startedAt": "2026-10-25T22:50:26.876Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44992075000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 85,
+            "startedAt": "2026-10-25T22:50:47.418Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.40157075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 69,
+            "startedAt": "2026-10-25T22:52:12.372Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.49836075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 101,
+            "startedAt": "2026-10-25T22:52:14.339Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.35100075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 56,
+            "startedAt": "2026-10-25T22:53:21.285Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5049107500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 102,
+            "startedAt": "2026-10-25T22:53:55.404Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.57005075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 121,
+            "startedAt": "2026-10-25T22:54:17.732Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.43894075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 85,
+            "startedAt": "2026-10-25T22:55:37.513Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.6261607499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 129,
+            "startedAt": "2026-10-25T22:56:18.605Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.32551074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 51,
+            "startedAt": "2026-10-25T22:57:02.987Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6500000000000001,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "C-api-orders-contract",
+      "dir": "benchmark/cases/C/api-orders-contract",
+      "source": "prose",
+      "promptMarkdown": "/writing-guide:help-articles Check the recorded responses below against the API's OpenAPI contract, report every mismatch, and design the tests this API needs.\n\n~~~yaml\nopenapi: 3.0.3\ninfo:\n  title: Orders API\n  version: 2.1.0\npaths:\n  /orders/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema: { type: integer, minimum: 1 }\n      responses:\n        \"200\":\n          description: The order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"404\":\n          description: No order with this id\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\n  /orders:\n    post:\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: { $ref: \"#/components/schemas/NewOrder\" }\n      responses:\n        \"201\":\n          description: Created\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"400\":\n          description: Invalid order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\ncomponents:\n  schemas:\n    NewOrder:\n      type: object\n      required: [items]\n      properties:\n        items:\n          type: array\n          minItems: 1\n          items: { type: string }\n        note: { type: string }\n    Order:\n      type: object\n      required: [id, status, total]\n      properties:\n        id: { type: integer }\n        status: { type: string, enum: [placed, paid, shipped] }\n        total: { type: number }\n        note: { type: string }\n    Error:\n      type: object\n      required: [code, message]\n      properties:\n        code: { type: string }\n        message: { type: string }\n~~~\n\nRecorded on the staging environment on 2026-10-15, deployed version 2.1.0:\n\n1. GET /orders/1042 -> 200\n   {\"id\": 1042, \"status\": \"paid\", \"total\": \"42.50\", \"note\": null}\n\n2. GET /orders/999999 -> 404\n   {\"message\": \"Order not found\"}\n\n3. POST /orders with body {\"items\": [\"sku-1\"], \"note\": \"<a string of 5,000 characters>\"} -> 500\n   {\"error\": \"value too long for type character varying(500)\"}\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-404-missing-code",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-total-type",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undeclared-length",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undocumented-500",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-contract-strategy",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "consumer[- ]driven|schema conformance",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-drift-or-defect",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "documentation drift|software defect",
+            "flags": "i",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.6440207499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 106,
+            "startedAt": "2026-10-25T22:57:54.149Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.57576075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 84,
+            "startedAt": "2026-10-25T22:58:27.378Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.50096075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 64,
+            "startedAt": "2026-10-25T22:59:39.818Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.50756075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 62,
+            "startedAt": "2026-10-25T22:59:51.300Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.49001075000000005,
+            "judgeCostUsd": 0,
+            "durationSeconds": 60,
+            "startedAt": "2026-10-25T23:00:43.383Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.73546075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 120,
+            "startedAt": "2026-10-25T23:00:53.677Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.69734075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 107,
+            "startedAt": "2026-10-25T23:01:43.446Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.55655075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 82,
+            "startedAt": "2026-10-25T23:02:53.497Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.52991075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 74,
+            "startedAt": "2026-10-25T23:03:30.794Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.60010075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 91,
+            "startedAt": "2026-10-25T23:04:15.656Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.6333333333333334,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "D-api-orders-contract",
+      "dir": "benchmark/cases/D/api-orders-contract",
+      "source": "prose",
+      "promptMarkdown": "/bem-te-vi:qa-api Check the recorded responses below against the API's OpenAPI contract, report every mismatch, and design the tests this API needs.\n\n~~~yaml\nopenapi: 3.0.3\ninfo:\n  title: Orders API\n  version: 2.1.0\npaths:\n  /orders/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema: { type: integer, minimum: 1 }\n      responses:\n        \"200\":\n          description: The order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"404\":\n          description: No order with this id\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\n  /orders:\n    post:\n      requestBody:\n        required: true\n        content:\n          application/json:\n            schema: { $ref: \"#/components/schemas/NewOrder\" }\n      responses:\n        \"201\":\n          description: Created\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Order\" }\n        \"400\":\n          description: Invalid order\n          content:\n            application/json:\n              schema: { $ref: \"#/components/schemas/Error\" }\ncomponents:\n  schemas:\n    NewOrder:\n      type: object\n      required: [items]\n      properties:\n        items:\n          type: array\n          minItems: 1\n          items: { type: string }\n        note: { type: string }\n    Order:\n      type: object\n      required: [id, status, total]\n      properties:\n        id: { type: integer }\n        status: { type: string, enum: [placed, paid, shipped] }\n        total: { type: number }\n        note: { type: string }\n    Error:\n      type: object\n      required: [code, message]\n      properties:\n        code: { type: string }\n        message: { type: string }\n~~~\n\nRecorded on the staging environment on 2026-10-15, deployed version 2.1.0:\n\n1. GET /orders/1042 -> 200\n   {\"id\": 1042, \"status\": \"paid\", \"total\": \"42.50\", \"note\": null}\n\n2. GET /orders/999999 -> 404\n   {\"message\": \"Order not found\"}\n\n3. POST /orders with body {\"items\": [\"sku-1\"], \"note\": \"<a string of 5,000 characters>\"} -> 500\n   {\"error\": \"value too long for type character varying(500)\"}\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-404-missing-code",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-total-type",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undeclared-length",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-undocumented-500",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-contract-strategy",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "consumer[- ]driven|schema conformance",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-drift-or-defect",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "documentation drift|software defect",
+            "flags": "i",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 1.2840204999999998,
+            "judgeCostUsd": 0,
+            "durationSeconds": 188,
+            "startedAt": "2026-10-25T23:04:45.080Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 13,
+            "costUsd": 1.6055587500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 214,
+            "startedAt": "2026-10-25T23:05:46.354Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 1.291385,
+            "judgeCostUsd": 0,
+            "durationSeconds": 168,
+            "startedAt": "2026-10-25T23:07:53.281Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 1.10982625,
+            "judgeCostUsd": 0,
+            "durationSeconds": 128,
+            "startedAt": "2026-10-25T23:09:19.886Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 1.380376,
+            "judgeCostUsd": 0,
+            "durationSeconds": 190,
+            "startedAt": "2026-10-25T23:10:41.539Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 11,
+            "costUsd": 1.5185589999999998,
+            "judgeCostUsd": 0,
+            "durationSeconds": 196,
+            "startedAt": "2026-10-25T23:11:27.548Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 1.2451889999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 194,
+            "startedAt": "2026-10-25T23:13:51.655Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 1.38545675,
+            "judgeCostUsd": 0,
+            "durationSeconds": 197,
+            "startedAt": "2026-10-25T23:14:43.178Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 1.3183045,
+            "judgeCostUsd": 0,
+            "durationSeconds": 181,
+            "startedAt": "2026-10-25T23:17:05.381Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 9,
+            "costUsd": 1.325034,
+            "judgeCostUsd": 0,
+            "durationSeconds": 182,
+            "startedAt": "2026-10-25T23:18:00.573Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-404-missing-code",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)[^\\n]{0,200}(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)|(?:missing|absent|lacks|lacking|not (?:present|returned|included)|omitted|without)[^\\n]{0,200}(?:`code`|\"code\"|\\bcode (?:field|property)|\\b(?:field|property) .?code\\b)|\\bcode\\b (?:is |was )?(?:missing|absent|not (?:present|returned|included)|omitted)|\\bno\\s+(?:`code`|\\\"code\\\"|code\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-total-type",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\btotal\\b[^\\n]{0,200}\\bstring\\b|\\bstring\\b[^\\n]{0,200}\\btotal\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undeclared-length",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched maxLength|max(?:imum)? length|length limit|no (?:upper )?(?:length )?limit|unbounded",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-undocumented-500",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b500\\b[^\\n]{0,200}(?:undocumented|not documented|not declared|isn't documented|is not in|not listed|missing from|absent from|201\\b[^\\n]{0,30}\\b(?:or|and)\\b[^\\n]{0,30}\\b400\\b)|(?:undocumented|not documented|not declared|not listed)[^\\n]{0,200}\\b500\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-contract-strategy",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched consumer[- ]driven|schema conformance",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-drift-or-defect",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched documentation drift|software defect",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 4,
+    "casesPassed": 1,
+    "overallScore": 0.7208333333333333,
+    "overallPassRate": 0.25
+  }
+}

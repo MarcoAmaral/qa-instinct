@@ -549,8 +549,29 @@ and the analysis prints "underpowered" for every comparison.
 | C, placebo | 2 of 9 | 0 of 9 | US$0.034 |
 | D, QA Instinct | 8 of 9 | 7 of 9 | US$0.046 |
 
-The full collection (ten runs per cell, 360 generations, about US$13 at API prices) runs after the
-method is frozen and published. The costs are what Claude Code reports at API list prices; run
+**Extension arm: `claude-fable-5-1`, ten runs per cell.** 360 generations collected 2026-10-23 to
+2026-10-27 with `claude-fable-5-1` as agent and judge, US$248 at API list prices. It replicates the
+design on a larger model and is reported on its own, never pooled with the primary arm.
+
+| Condition | Content pass, as collected | Grader defects corrected | Also without naming the technique | Package format | Judge pass | Cost per generation |
+| --- | --- | --- | --- | --- | --- | --- |
+| A, nothing added | 31 of 90 | 41 of 90 | 68 of 90 | 3 of 90 | 20 of 30 | US$0.41 |
+| B, one sentence | 35 of 90 | 43 of 90 | 72 of 90 | 5 of 90 | 20 of 30 | US$0.51 |
+| C, placebo | 36 of 90 | 42 of 90 | 72 of 90 | 3 of 90 | 22 of 30 | US$0.52 |
+| D, QA Instinct | 86 of 90 | 90 of 90 | 90 of 90 | 90 of 90 | 23 of 30 | US$1.07 |
+
+D's content pass is higher than every other condition's in all three readings: by 56 to 61 points
+as collected, 52 to 54 with the 44 wrong grader verdicts corrected, and 20 to 24 when the check that
+the test design technique is *named* is also set aside (98.33% intervals from +12 points up). That
+check is half the difference: without the package the model applies boundary values and state
+transitions but rarely names them. The LLM judge sees little difference (20 to 23 of 30), and D
+costs about twice as much per generation. The corrections and the reasons for each are in
+[`benchmark/DEVIATIONS.md`](benchmark/DEVIATIONS.md) (2026-10-27), the outputs and all three
+analyses in
+[`benchmark/results/2026-10-23-ext-fable-5-1/`](benchmark/results/2026-10-23-ext-fable-5-1/).
+
+The primary arm (`claude-haiku-4-5-20251001`, ten runs per cell, 360 generations, about US$13 at
+API prices) is still to be collected. The costs are what Claude Code reports at API list prices; run
 on a Claude subscription, the same runs count against the plan's usage limits instead. Every pilot output, its grader verdicts and the analysis are in
 [`benchmark/results/2026-10-18-pilot/`](benchmark/results/2026-10-18-pilot/). The method follows
 the [A11Y.md efficacy benchmark](https://github.com/fecarrico/A11Y.md/tree/main/benchmark).

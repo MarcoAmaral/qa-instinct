@@ -1,0 +1,2862 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.291",
+  "startedAt": "2026-10-27T19:18:31.347Z",
+  "durationSeconds": 1226,
+  "costUsd": 18.955007000000002,
+  "partial": false,
+  "suite": {
+    "root": "<repository>",
+    "ablation": "none",
+    "modelOverride": "claude-fable-5-1",
+    "judgeModel": "claude-fable-5-1",
+    "caseFilter": "*-bdd-loyalty-points",
+    "threshold": 1,
+    "concurrency": 2,
+    "plugins": [
+      {
+        "name": "bare",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/bare-plugin"
+      },
+      {
+        "name": "writing-guide",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/control-standard"
+      },
+      {
+        "name": "bem-te-vi",
+        "version": "4.1.1",
+        "path": "<repository>"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "A-bdd-loyalty-points",
+      "dir": "benchmark/cases/A/bdd-loyalty-points",
+      "source": "prose",
+      "promptMarkdown": "Write BDD scenarios in Gherkin for the user story below.\n\nStory LOY-3: Loyalty points\n\nAs a member of the loyalty programme, I want to earn and redeem points, so that I get discounts on later orders.\n\n- AC-1: A member earns 1 point for every whole dollar of an order's subtotal ($24.99 earns 24 points).\n- AC-2: A member's tier is Basic below 500 points, Silver from 500 points and Gold from 2,000 points. Silver members get 5% off every order and Gold members 10%.\n- AC-3: Redeeming more points than the balance shows \"You don't have enough points.\" and redeems nothing.\n- AC-4: The points page should load fast.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-message-quoted",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:Then|And)\\b[^\\n]*You don.t have enough points",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-outline-examples",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Scenario Outline:[\\s\\S]*?Examples:",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-tier-boundaries",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-vague-ac-flagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-scenario-tagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?![ \\t]*@)[^\\n]*\\n[ \\t]*Scenario(?: Outline)?:",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-feature-header",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+            "flags": "im",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.4043,
+            "judgeCostUsd": 0,
+            "durationSeconds": 38,
+            "startedAt": "2026-10-27T19:18:31.851Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.48824999999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 59,
+            "startedAt": "2026-10-27T19:18:31.852Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.30497075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 47,
+            "startedAt": "2026-10-27T19:19:09.515Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.29596075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-27T19:19:30.868Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.31186075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 41,
+            "startedAt": "2026-10-27T19:19:56.379Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.29806075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 36,
+            "startedAt": "2026-10-27T19:20:08.104Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.38032075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 54,
+            "startedAt": "2026-10-27T19:20:37.354Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.25541075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 25,
+            "startedAt": "2026-10-27T19:20:43.887Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.28555074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 34,
+            "startedAt": "2026-10-27T19:21:09.199Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.31976075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 41,
+            "startedAt": "2026-10-27T19:21:31.600Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.8166666666666668,
+        "passRate": 0.2
+      }
+    },
+    {
+      "name": "B-bdd-loyalty-points",
+      "dir": "benchmark/cases/B/bdd-loyalty-points",
+      "source": "prose",
+      "promptMarkdown": "Work as a thorough, professional QA engineer. Write BDD scenarios in Gherkin for the user story below.\n\nStory LOY-3: Loyalty points\n\nAs a member of the loyalty programme, I want to earn and redeem points, so that I get discounts on later orders.\n\n- AC-1: A member earns 1 point for every whole dollar of an order's subtotal ($24.99 earns 24 points).\n- AC-2: A member's tier is Basic below 500 points, Silver from 500 points and Gold from 2,000 points. Silver members get 5% off every order and Gold members 10%.\n- AC-3: Redeeming more points than the balance shows \"You don't have enough points.\" and redeems nothing.\n- AC-4: The points page should load fast.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-message-quoted",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:Then|And)\\b[^\\n]*You don.t have enough points",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-outline-examples",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Scenario Outline:[\\s\\S]*?Examples:",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-tier-boundaries",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-vague-ac-flagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-scenario-tagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?![ \\t]*@)[^\\n]*\\n[ \\t]*Scenario(?: Outline)?:",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-feature-header",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+            "flags": "im",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.50133075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 89,
+            "startedAt": "2026-10-27T19:21:43.359Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.48973075000000005,
+            "judgeCostUsd": 0,
+            "durationSeconds": 83,
+            "startedAt": "2026-10-27T19:22:12.892Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.40762075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 69,
+            "startedAt": "2026-10-27T19:23:11.894Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5475807500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 87,
+            "startedAt": "2026-10-27T19:23:36.033Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.44574075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 61,
+            "startedAt": "2026-10-27T19:24:21.131Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.42702075000000006,
+            "judgeCostUsd": 0,
+            "durationSeconds": 62,
+            "startedAt": "2026-10-27T19:25:03.199Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.44417075000000006,
+            "judgeCostUsd": 0,
+            "durationSeconds": 72,
+            "startedAt": "2026-10-27T19:25:21.789Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.56224075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 100,
+            "startedAt": "2026-10-27T19:26:05.644Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5235507500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 90,
+            "startedAt": "2026-10-27T19:26:34.287Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.47585075000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 75,
+            "startedAt": "2026-10-27T19:27:45.439Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.9166666666666666,
+        "passRate": 0.5
+      }
+    },
+    {
+      "name": "C-bdd-loyalty-points",
+      "dir": "benchmark/cases/C/bdd-loyalty-points",
+      "source": "prose",
+      "promptMarkdown": "/writing-guide:help-articles Write BDD scenarios in Gherkin for the user story below.\n\nStory LOY-3: Loyalty points\n\nAs a member of the loyalty programme, I want to earn and redeem points, so that I get discounts on later orders.\n\n- AC-1: A member earns 1 point for every whole dollar of an order's subtotal ($24.99 earns 24 points).\n- AC-2: A member's tier is Basic below 500 points, Silver from 500 points and Gold from 2,000 points. Silver members get 5% off every order and Gold members 10%.\n- AC-3: Redeeming more points than the balance shows \"You don't have enough points.\" and redeems nothing.\n- AC-4: The points page should load fast.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-message-quoted",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:Then|And)\\b[^\\n]*You don.t have enough points",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-outline-examples",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Scenario Outline:[\\s\\S]*?Examples:",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-tier-boundaries",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-vague-ac-flagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-scenario-tagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?![ \\t]*@)[^\\n]*\\n[ \\t]*Scenario(?: Outline)?:",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-feature-header",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+            "flags": "im",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.45636075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 50,
+            "startedAt": "2026-10-27T19:28:04.002Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.43072075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 45,
+            "startedAt": "2026-10-27T19:28:53.966Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.40226075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-27T19:29:00.520Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.46009075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 51,
+            "startedAt": "2026-10-27T19:29:37.998Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.41872075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-27T19:29:38.625Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.57382075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 76,
+            "startedAt": "2026-10-27T19:30:18.440Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41377074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-27T19:30:28.642Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.40672074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 36,
+            "startedAt": "2026-10-27T19:31:08.604Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41847075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 41,
+            "startedAt": "2026-10-27T19:31:34.082Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5035607500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 61,
+            "startedAt": "2026-10-27T19:31:45.084Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.8833333333333332,
+        "passRate": 0.3
+      }
+    },
+    {
+      "name": "D-bdd-loyalty-points",
+      "dir": "benchmark/cases/D/bdd-loyalty-points",
+      "source": "prose",
+      "promptMarkdown": "/bem-te-vi:qa-bdd Write BDD scenarios in Gherkin for the user story below.\n\nStory LOY-3: Loyalty points\n\nAs a member of the loyalty programme, I want to earn and redeem points, so that I get discounts on later orders.\n\n- AC-1: A member earns 1 point for every whole dollar of an order's subtotal ($24.99 earns 24 points).\n- AC-2: A member's tier is Basic below 500 points, Silver from 500 points and Gold from 2,000 points. Silver members get 5% off every order and Gold members 10%.\n- AC-3: Redeeming more points than the balance shows \"You don't have enough points.\" and redeems nothing.\n- AC-4: The points page should load fast.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-message-quoted",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:Then|And)\\b[^\\n]*You don.t have enough points",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-outline-examples",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Scenario Outline:[\\s\\S]*?Examples:",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-tier-boundaries",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-vague-ac-flagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-scenario-tagged",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?![ \\t]*@)[^\\n]*\\n[ \\t]*Scenario(?: Outline)?:",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-feature-header",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+            "flags": "im",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.563904,
+            "judgeCostUsd": 0,
+            "durationSeconds": 58,
+            "startedAt": "2026-10-27T19:32:15.390Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.60182325,
+            "judgeCostUsd": 0,
+            "durationSeconds": 71,
+            "startedAt": "2026-10-27T19:32:46.115Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.572816,
+            "judgeCostUsd": 0,
+            "durationSeconds": 62,
+            "startedAt": "2026-10-27T19:33:13.552Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.5713125,
+            "judgeCostUsd": 0,
+            "durationSeconds": 63,
+            "startedAt": "2026-10-27T19:33:57.194Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.58950525,
+            "judgeCostUsd": 0,
+            "durationSeconds": 65,
+            "startedAt": "2026-10-27T19:34:15.388Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.55916525,
+            "judgeCostUsd": 0,
+            "durationSeconds": 58,
+            "startedAt": "2026-10-27T19:34:59.962Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.62709525,
+            "judgeCostUsd": 0,
+            "durationSeconds": 70,
+            "startedAt": "2026-10-27T19:35:19.933Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.594294,
+            "judgeCostUsd": 0,
+            "durationSeconds": 65,
+            "startedAt": "2026-10-27T19:35:57.683Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.97542525,
+            "judgeCostUsd": 0,
+            "durationSeconds": 148,
+            "startedAt": "2026-10-27T19:36:29.597Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.64588525,
+            "judgeCostUsd": 0,
+            "durationSeconds": 78,
+            "startedAt": "2026-10-27T19:37:02.792Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-message-quoted",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:Then|And)\\b[^\\n]*You don.t have enough points",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-outline-examples",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Scenario Outline:[\\s\\S]*?Examples:",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-tier-boundaries",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?<![\\d.,])499(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])500(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])1,?999(?![\\d.,]))(?=[\\s\\S]*(?<![\\d.,])2,?000(?![\\d.,]))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-vague-ac-flagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:\\bAC[- ]?0?4\\b|\\bfast\\b|loads? quickly)[\\s\\S]{0,400}?(?:measurable|vague|ambiguous|testable|not specific|not specified|unspecified|undefined|subjective|no (?:threshold|target|metric)|clarif|interpret|assum)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-scenario-tagged",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-feature-header",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^[ \\t]*(?:#+[ \\t]*)?Feature:[^\\n]*\\n(?:[^\\n]*\\n){0,3}?[ \\t]*As an?\\b[^\\n]*\\n[ \\t]*I want\\b[^\\n]*\\n[ \\t]*So that\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 4,
+    "casesPassed": 1,
+    "overallScore": 0.9041666666666667,
+    "overallPassRate": 0.5
+  }
+}

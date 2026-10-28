@@ -7,6 +7,143 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: technique naming decides the three test-case tasks in the Extension arm
+
+- **What the methodology says.** Content pass requires every `con-` grader of the task. In the
+  three test-case tasks one of them, `con-technique-named`, checks that the design technique is
+  named (`Boundary[- ]Value|\bBVA\b`, `State[- ]Transition`).
+- **What the read-through found.** In the Extension arm A, B and C apply the technique but rarely
+  name it: they pass `con-bva-values`, `con-every-fee`, `con-subtotal-boundary` and
+  `con-unlisted-invalid-transition` in 10 of 10 runs each, and write "boundary" 17 to 31 times per
+  condition in `cases-quantity`, yet pass `con-technique-named` in 0 to 2 of 10. In those three
+  tasks it is the only `con-` grader A, B and C fail, so it alone makes their content pass 0 to 2 of
+  10 against D's 10.
+- **What was done.** Nothing in the collected results changed; the grader does what its
+  description says, so it is not a defect. As a sensitivity reading, not a correction,
+  `rescore.js --set-aside con-technique-named` over the corrected verdicts (entry below) gives
+  `analysis-corrected-without-naming.md`: content pass A 68/90, B 72/90, C 72/90, D 90/90; D vs C
+  +20.0 (+12.2 to +27.8), D vs B +20.0 (+14.4 to +26.7), D vs A +24.4 (+17.8 to +31.1).
+- **Why it matters.** About half of the headline difference is naming the technique, a habit the
+  package teaches, rather than applying it. The claim still holds without it, at about a third of
+  the size. Reports of this arm give both readings.
+
+## 2026-10-27: the flaky-run-history fixture contradicts its judge rubric on the cart test
+
+- **What the methodology says.** `jdg-cause-classes` passes when the reply classifies the cart test
+  as "a test timing problem (a fixed wait instead of waiting for the result)".
+- **What the read-through found.** The fixture's failure message is "Timeout 5000ms exceeded
+  waiting for getByTestId('cart-total') to have text \"€58.00\"", a web-first assertion that already
+  retries for five seconds, so the 300 ms fixed wait cannot by itself explain the failure; the
+  evidence does not decide the cause. The judge failed D in 4 of 10 runs (2, 4, 8, 9), each of
+  which classes the cart test as unknown and names the trace as what decides it, as the `qa-flaky`
+  skill instructs, and B in 3 (7, 8, 9), which call the sleep "a smell but not the cause". A and C
+  passed 10 of 10.
+- **What was done.** The judge applied its rubric as written; nothing was re-judged or re-scored
+  (`RUNBOOK.md` section 5). Judge pass in this arm: A 20/30, B 20/30, C 22/30, D 23/30.
+- **Why it matters.** The rubric rewards the planted answer over the more careful one, which
+  penalises D and B here. The fixture and rubric are frozen for Arm 1; changing them before Arm 1
+  is collected is a new methodology version and its own entry, and is Marco's decision.
+
+## 2026-10-27: six content graders gave 44 wrong verdicts in the Extension arm
+
+- **What the methodology says.** `RUNBOOK.md` section 5: "A verdict that is wrong is a grader
+  defect: record it in `DEVIATIONS.md` with the output that showed it." A defective grader is not
+  fixed and re-scored silently; a corrected re-score is reported beside the analysis and labelled.
+- **What the read-through found.** Each verdict below was checked by reading the output; every one
+  is a failure that should have been a pass, and the reason for each is in
+  `results/2026-10-23-ext-fable-5-1/corrections.json`.
+  - `a11y-signup-form` `con-no-4-1-1` (A 4, B 9, C 1, D 4): the pattern allows a mention of 4.1.1
+    only next to the word "obsolete", so "retired in WCAG 2.2", "deprecated since 4.1.1 Parsing was
+    removed" and "4.1.1 Parsing under 2.0 and 2.1" fail. Answers that cite 4.1.1 as a current
+    failure (A 1 and 6, B 9, C 1, 5 and 6) stay failed.
+  - `a11y-signup-form` `con-limits-stated` (A 3, B 6, C 1): "nothing was verified in a browser or
+    with assistive technology" and "No browser, screen reader, or automated scanner was run" are
+    not covered. Answers that say only "source only" stay failed.
+  - `defect-gift-card` `con-severity-and-priority` (A 1, C 2): "Blocker" is not in the priority
+    values.
+  - `defect-gift-card` `con-repro-rate` (A 3, C 1): "30%" and "3 in 10" are not covered.
+  - `api-orders-contract` `con-undocumented-500` (A 3, B 2): a table row with "Only 201 and 400"
+    before the 500 is not covered.
+  - `api-orders-contract` `con-404-missing-code` (A 2, C 2): "requires `code` and `message` | Only
+    `message`" is not covered.
+
+  Totals: A 16, B 17, C 7, D 4. The patterns match the package's own wording, so the defects fall
+  mostly on A, B and C. `fmt-every-scenario-tagged`, also flagged for reading, is correct: the
+  failing scenarios have no tag.
+- **What was done.** `runs.jsonl` and `analysis.md` stay as collected. `analysis/rescore.js`
+  applies `corrections.json` and checks that each collected verdict is the one it records;
+  `analysis-corrected.md` is its output through `analyze.js` unchanged: content pass A 41/90,
+  B 43/90, C 42/90, D 90/90; D vs C +53.3 (+45.6 to +61.1), D vs B +52.2 (+45.6 to +58.9), D vs A
+  +54.4 (+45.6 to +62.2), against +55.6, +56.7 and +61.1 as collected. Every contrast still
+  "supports the claim". The patterns were not changed.
+- **Why it matters.** The conclusion does not depend on these defects. They are fixed in the
+  graders only by a new methodology version before Arm 1, with its own entry, if Marco decides so.
+
+## 2026-10-27: the Extension arm's after-run checks differ, from plugin auto-updates
+
+- **What the methodology says.** `RUNBOOK.md` section 4 compares `claude plugin list`,
+  `claude plugin marketplace list` and the checksums in `sha-before.txt` with their state before the
+  first run, to show the collection left the user's Claude Code setup as it found it.
+- **What happened.** On the Extension arm, run from the SWARE distribution, the marketplace list
+  is the same; `settings.json` matches its checksum; `installed_plugins.json` and
+  `known_marketplaces.json` do not, and the plugin list differs only in `context7`, `github` and
+  `playwright@claude-plugins-official`, version `465f09344424` before. `installed_plugins.json`
+  dates the change: the official marketplace auto-updated those three plugins on 2026-10-26 at
+  01:08 UTC, during the collection, and again on 2026-10-27 at 20:24 UTC, after it (now
+  `f8c5e7a1dcb7`); `known_marketplaces.json` changed with each refresh. `github` is installed at
+  project scope, so its enabled or disabled status depends on the folder the check runs from.
+- **What was done.** Nothing to undo. Every run used a temporary home with no user plugins, and
+  `claude plugin eval .` loads the package from the checkout, so neither the updates nor these
+  plugins reach a generation. No plugin or marketplace the benchmark touches is in the lists.
+- **Why it matters.** The check is evidence of isolation; here its differences come from Claude
+  Code's own update schedule, not from the collection. A later arm should save the before state
+  just before its first task and compare right after its last, as close together as it can.
+
+## 2026-10-27: the Extension arm's outputs hold model-invented `example.com` addresses
+
+- **What the methodology says.** `RUNBOOK.md` section 3: any address the redaction `grep` prints
+  "must be one of the fixtures' reserved `.example` addresses or not be there".
+- **What happened.** The `grep` printed 17 addresses at `example.com`, all in condition C:
+  `name@example.com` in `a11y-signup-form` runs 2, 6 and 7, and `member@`, `nonmember@` and
+  `expired@example.com` in `cases-shipping-fee` run 7, where the model named its test accounts.
+  The model wrote them; no fixture or prompt holds them. `example.com` is reserved for examples by
+  RFC 2606, so no person or mailbox stands behind them.
+- **What was done.** Marco decided on 2026-10-27 to keep them as written. The outputs are
+  published as the model produced them; no output was edited and nothing was re-scored.
+- **Why it matters.** The rule exists to keep real personal data and local paths out of the
+  results; these addresses are neither. The `grep` now reads, for this arm, as "any address it
+  prints is one of the fixtures' `.example` addresses or at `example.com`".
+
+## 2026-10-27: the Extension arm's cap is raised to US$260
+
+- **What was recorded.** The entry of 2026-10-25 raised the Extension arm's cap on
+  `claude-fable-5-1` to US$230, and the collection starts no task when what is left would not
+  cover the largest task so far.
+- **What happened.** Eight tasks cost US$207.19. After them US$22.81 was left, less than the
+  largest task, US$43.12, so the collection did not start the ninth, `bdd-loyalty-points`.
+- **What was done.** Marco raised the cap to US$260 on 2026-10-27 so that check lets
+  `bdd-loyalty-points` run. The run is still on the subscription only, with extra usage off, and
+  the benchmark files are otherwise unchanged; the eight collected tasks are unchanged.
+- **Why it matters.** The cap bounds usage, not results, and the last task is still collected
+  whole. As in the entries of 2026-10-23 and 2026-10-25, the figures are list prices as the tool
+  reports them; the run counts against a subscription's usage limits.
+
+## 2026-10-25: the Extension arm's cap is raised to US$230
+
+- **What was recorded.** The entry of 2026-10-23 capped the Extension arm on `claude-fable-5-1`
+  at US$161, 1.25 times an estimate of US$128.8 drawn from the pilot's token mix, and the
+  collection starts no task when what is left would not cover the largest task so far.
+- **What happened.** Five tasks cost US$122.07: US$20.36, US$18.92, US$21.58, US$18.11 and
+  US$43.12. `plan-split-payment` cost about twice the others because its replies are full test
+  plans. After it, US$38.93 was left, less than US$43.12, so the collection stopped before
+  `api-orders-contract`, as designed.
+- **What was done.** Marco raised the cap to US$230 on 2026-10-25, enough for the four remaining
+  tasks at about US$20 each with the largest-task margin still in force for the last one. No
+  task was cut; the five collected tasks are unchanged.
+- **Why it matters.** The cap bounds usage, not results, and every task is still collected whole.
+  As in the entry of 2026-10-23, the figures are list prices as the tool reports them; the run
+  counts against a subscription's usage limits, with extra usage off.
+
 ## 2026-10-25: the package is renamed QA Instinct, so condition D's command prefix changes
 
 - **What the methodology says.** Condition D invokes `/bem-te-vi:<command or skill>` and loads
@@ -28,6 +165,38 @@ The pilot ran before the freeze, on the version it disclosed; what it changed is
 - **Why it matters.** Arm 1 is collected after this change and sees `/qa-instinct:`. The model sees
   the command's name, so a run could differ by the name alone; the pilot and the Extension arm saw
   `/bem-te-vi:`.
+
+## 2026-10-23: an Extension arm on `claude-fable-5-1`, collected before Arm 1
+
+- **What the methodology says.** "Arms": the Extension arm is "the same protocol with another
+  model (a Sonnet-class model first)", reported on its own and never pooled with Arm 1, and
+  conditional on budget. Arm 1 uses `claude-haiku-4-5-20251001` for the agent and the judge, and
+  `RUNBOOK.md` section 2 names that model in both flags. "Cost" estimates Arm 1 at about US$13 with
+  a US$16 cap.
+- **What was done.** Marco decided on 2026-10-23 to collect an Extension arm on
+  `claude-fable-5-1` for the agent and the judge, before Arm 1 and with no Sonnet-class arm first.
+  It is Arm 1's design unchanged: 9 tasks x 4 conditions x 10 runs = 360 generations, 120 of them
+  judged, collected with the `RUNBOOK.md` commands from a clean checkout of `a7ab7ab`, with only
+  `--model` and `--judge-model` changed. Results go to
+  `benchmark/results/2026-10-23-ext-fable-5-1/`. Claude Code 2.1.291 ran in another WSL
+  distribution from the one that holds the checkout, signed in with a claude.ai Team subscription,
+  not the pilot's account, with extra usage off; the run is bounded by that plan's usage limits.
+- **Cost.** At list prices `claude-fable-5-1` costs US$10 / US$50 per million input / output
+  tokens, against US$1 / US$5 for `claude-haiku-4-5-20251001`, ten times as much. On the pilot's
+  token mix the arm is estimated at US$128.8 (generations US$118.4, judge US$10.3) and capped at
+  US$161, Arm 1's margin of 1.25. The model always thinks, so the estimate is a lower bound; the
+  cap cuts whole tasks, as in Arm 1.
+- **Usage guard.** Before each task the collection reads the plan's usage meter and starts no task
+  once the five-hour or weekly figure reaches 95%; a task in flight is stopped at 98%. A task
+  stopped part-way is discarded and collected again whole in a new invocation, and that is a new
+  entry here. Collection does not resume on its own after a limit resets.
+- **What did not change.** `PROMPTS.md`, the fixtures, the graders, the placebo and the analysis.
+  `node benchmark/build.js --check` passes with the frozen digest,
+  `d6a8856973913d63de3ba6039802606028be17feb51704b91b9a457650116e1c`.
+- **Why it matters.** This arm answers none of Arm 1's confirmatory questions, and Arm 1 is still
+  to be collected as frozen. Its judge is `claude-fable-5-1`, so its judge verdicts do not compare
+  with Arm 1's. It replicates on a larger model, which "Known limitations" names as the remedy for
+  "One model in the primary arm, and a small one".
 
 ## 2026-10-20: condition D's files name their author and say which rule they could not apply
 
