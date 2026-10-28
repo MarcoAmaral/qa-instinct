@@ -538,16 +538,30 @@ criterion covered, the right boundary values, the seeded defects found, and so o
 regular expressions that were tested on correct and wrong sample answers before any paid run.
 Following the package's own format is reported separately, because D wins it by construction.
 
-**Pilot, not results.** One generation per task and condition (36 in all), run on 2026-10-18 with
-`claude-haiku-4-5-20251001` to prove the harness works. One run per cell supports no conclusion,
-and the analysis prints "underpowered" for every comparison.
+**Primary arm: `claude-haiku-4-5-20251001`, ten runs per cell.** 360 generations collected on
+2026-10-28 with `claude-haiku-4-5-20251001` as agent and judge, US$12.91 at API list prices, judge
+included. It ran on methodology 1.2, which fixed the graders and the fixture the Extension arm
+(below) showed to be wrong.
 
-| Condition | Content pass (pilot) | Package format (pilot) | Cost per generation (API prices) |
-| --- | --- | --- | --- |
-| A, nothing added | 3 of 9 | 0 of 9 | US$0.025 |
-| B, one sentence | 4 of 9 | 0 of 9 | US$0.027 |
-| C, placebo | 2 of 9 | 0 of 9 | US$0.034 |
-| D, QA Instinct | 8 of 9 | 7 of 9 | US$0.046 |
+| Condition | Content pass, as collected | Grader defects corrected | Also without naming the technique | Package format | Judge pass | Cost per generation |
+| --- | --- | --- | --- | --- | --- | --- |
+| A, nothing added | 16 of 90 | 21 of 90 | 47 of 90 | 2 of 90 | 18 of 30 | US$0.027 |
+| B, one sentence | 26 of 90 | 30 of 90 | 54 of 90 | 3 of 90 | 20 of 30 | US$0.029 |
+| C, placebo | 16 of 90 | 22 of 90 | 43 of 90 | 0 of 90 | 13 of 30 | US$0.035 |
+| D, QA Instinct | 63 of 90 | 71 of 90 | 72 of 90 | 78 of 90 | 27 of 30 | US$0.052 |
+
+D's content pass is higher than every other condition's in all three readings: by 41 to 52 points
+as collected, 46 to 56 with the 44 wrong grader verdicts corrected, and 20 to 32 when the check that
+the test design technique is *named* is also set aside (98.33% intervals from +9 points up). In that
+last reading D leads in four tasks (the accessibility audit, the defect report, the test plan and
+the BDD scenarios) and not in the other five, the three test-case tasks among them. One more check rewards what the package
+tells the model: without it this model audits against WCAG 2.1, not 2.2, though here that changes
+no verdict. The LLM judge agrees with the direction (18, 20 and 13 of 30 against D's 27), and failed
+four flaky-test answers that match its rubric, three of them D's. D costs about twice as much per
+generation. The corrections, the judge's errors and the reasons for each are in
+[`benchmark/DEVIATIONS.md`](benchmark/DEVIATIONS.md) (2026-10-28), the outputs and all three
+analyses in [`benchmark/results/2026-10-28-arm-1/`](benchmark/results/2026-10-28-arm-1/). The
+methodology's blind human review of a 72-output sample is still to be done.
 
 **Extension arm: `claude-fable-5-1`, ten runs per cell.** 360 generations collected 2026-10-23 to
 2026-10-27 with `claude-fable-5-1` as agent and judge, US$248 at API list prices. It replicates the
@@ -570,10 +584,20 @@ costs about twice as much per generation. The corrections and the reasons for ea
 analyses in
 [`benchmark/results/2026-10-23-ext-fable-5-1/`](benchmark/results/2026-10-23-ext-fable-5-1/).
 
-The primary arm (`claude-haiku-4-5-20251001`, ten runs per cell, 360 generations, about US$13 at
-API prices) is still to be collected, on methodology 1.2, which fixes the graders and the fixture this
-arm showed to be wrong. The costs are what Claude Code reports at API list prices; run
-on a Claude subscription, the same runs count against the plan's usage limits instead. Every pilot output, its grader verdicts and the analysis are in
+**Pilot, not results.** One generation per task and condition (36 in all), run on 2026-10-18 with
+`claude-haiku-4-5-20251001` to prove the harness works. One run per cell supports no conclusion,
+and the analysis prints "underpowered" for every comparison.
+
+| Condition | Content pass (pilot) | Package format (pilot) | Cost per generation (API prices) |
+| --- | --- | --- | --- |
+| A, nothing added | 3 of 9 | 0 of 9 | US$0.025 |
+| B, one sentence | 4 of 9 | 0 of 9 | US$0.027 |
+| C, placebo | 2 of 9 | 0 of 9 | US$0.034 |
+| D, QA Instinct | 8 of 9 | 7 of 9 | US$0.046 |
+
+The costs are what Claude Code reports at API list prices; run on a Claude subscription, as both
+arms were, the same runs count against the plan's usage limits instead. Every pilot output, its
+grader verdicts and the analysis are in
 [`benchmark/results/2026-10-18-pilot/`](benchmark/results/2026-10-18-pilot/). The method follows
 the [A11Y.md efficacy benchmark](https://github.com/fecarrico/A11Y.md/tree/main/benchmark).
 
