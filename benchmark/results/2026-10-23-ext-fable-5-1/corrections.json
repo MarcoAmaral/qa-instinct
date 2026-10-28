@@ -396,6 +396,42 @@
       "collected": false,
       "corrected": true,
       "reason": "The 404 body is said to lack `code` in a table row (\"`Error` requires `code` and `message` | Only `message`\", \"Fails on `code`\"); the pattern misses that wording."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "Added 2026-10-27 while testing the methodology 1.2 patterns: the answer says what it could not check (\"No browser, screen reader, or automated scanner was run\", \"Nothing was tested in a browser or with assistive technology\", \"Target size is estimated\"); the first read-through printed only the first matching line, \"source only\", and missed it. See DEVIATIONS.md."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "B",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "Added 2026-10-27 while testing the methodology 1.2 patterns: the answer says what it could not check (\"No browser, screen reader, or automated scanner was run\", \"Nothing was tested in a browser or with assistive technology\", \"Target size is estimated\"); the first read-through printed only the first matching line, \"source only\", and missed it. See DEVIATIONS.md."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "C",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "Added 2026-10-27 while testing the methodology 1.2 patterns: the answer says what it could not check (\"No browser, screen reader, or automated scanner was run\", \"Nothing was tested in a browser or with assistive technology\", \"Target size is estimated\"); the first read-through printed only the first matching line, \"source only\", and missed it. See DEVIATIONS.md."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-limits-stated",
+      "condition": "C",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "Added 2026-10-27 while testing the methodology 1.2 patterns: the answer says what it could not check (\"No browser, screen reader, or automated scanner was run\", \"Nothing was tested in a browser or with assistive technology\", \"Target size is estimated\"); the first read-through printed only the first matching line, \"source only\", and missed it. See DEVIATIONS.md."
     }
   ]
 }

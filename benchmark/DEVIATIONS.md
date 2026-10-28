@@ -7,6 +7,72 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: methodology 1.2, six content graders and one fixture changed before Arm 1
+
+- **What the methodology says.** "A change before full collection is a new row under 'Version
+  history' and an entry in DEVIATIONS.md." Arm 1 has not been collected.
+- **What was done.** Marco decided on 2026-10-27 to fix, before Arm 1, the defects the Extension
+  arm's read-through found (the entries below). Version 1.2:
+  - Six content graders accept the wordings they wrongly failed, and only those; every earlier
+    alternative is kept as written. `con-no-4-1-1` also allows a mention that calls 4.1.1 retired or
+    deprecated, says it was removed, or applies it only under WCAG 2.0 or 2.1 ("removed" counts only
+    next to 2.2 or as "was removed", because "Focus outline removed" in a nearby row passed a real
+    failure). `con-limits-stated` adds statements that nothing was verified in a browser or with
+    assistive technology, that no browser or screen reader was run, or that a result is estimated or
+    needs confirmation. `con-severity-and-priority` adds the priority value "Blocker".
+    `con-repro-rate` adds "3 in 10" and "30%". `con-undocumented-500` adds "only 201 and 400"
+    before the 500. `con-404-missing-code` adds a 404 line with "only `message`" or "fails on
+    `code`". `con-no-4-1-1`'s description says what is now allowed, in the grader and in the table.
+  - `fixtures/flaky-run-history/run-history.md`: the cart test's failure is now "expect(received).toBe
+    (expected). Expected: "€58.00". Received: "€29.00"", from a single `textContent()` read after
+    `page.waitForTimeout(300)`. The old message, a 5-second web-first timeout, did not support the
+    rubric's "fixed wait" cause. `jdg-cause-classes` is unchanged.
+- **How the graders were checked.** Before any new run, each changed pattern was run with
+  `build.js`'s own evaluator on every Extension-arm output of its task (240 outputs). Each one now
+  gives exactly the verdicts the read-through set by hand, the 48 in `corrections.json` included,
+  and changes no other verdict. The grader samples pass (131 of 131).
+- **Frozen again.** `cases.sha256` was
+  `354463545355b8aad70e03354a407fcd610ea6364a7e0f8675b703bae53cf6dd` and is now
+  `7f873e1c3f2378840b6c55f4ed5f5f1ff8c137383ee3b9d39751b69a06523af7`. The placebo is 106.7% of the
+  14,514-byte mean file D loads (106.5% of 14,550 before; D's files lost one parenthesis, plan 067).
+- **Why it matters.** Arm 1 is collected on 1.2, so its content pass is not depressed for A, B and
+  C by wording the old patterns missed, and its flaky judge verdict rests on evidence that decides
+  the cause. The Extension arm stays as collected on 1.1; its corrected re-score applies the same
+  verdicts by hand. Arm 1 and the Extension arm were never to be pooled.
+
+## 2026-10-27: condition D now loads the package with the qa-rules and qa-static-analysis skills
+
+- **What the methodology says.** Condition D loads "the repository root, the plugin as published"
+  and records the files a run read beyond the expanded command.
+- **What changed.** Since plan 067 (PR #20, released in 4.4.0) the plugin lists `./plugin/skills/`,
+  which holds the `qa-rules` skill: every rule as a reference file. A D run that names a rule can now
+  read it, where before it said which rule it could not apply. Since plan 068 (PR #22) the plugin
+  also has the `qa-static-analysis` skill; no benchmark task concerns static analysis, but its name
+  and description (about 530 characters) are among the skills a D run sees.
+- **What was done.** Nothing else; Arm 1 runs D on the package as it is at collection, as the
+  methodology says. The pilot and the Extension arm (from its pinned checkout) ran without either
+  skill; two Extension-arm D runs (`flaky-run-history` runs 6 and 7) tried to read
+  `.claude/skills/qa-rules/references/testing-guidelines.md`, a path that did not exist.
+- **Why it matters.** D in Arm 1 can apply the rules a command names; D in the pilot and the
+  Extension arm could not. A difference between them may come from this as well as from the model.
+
+## 2026-10-27: the Extension arm's read-through missed four `con-limits-stated` verdicts
+
+- **What happened.** Testing the 1.2 patterns on the Extension arm's outputs showed four answers the
+  read-through had left failed that say what they could not check: B run 3 ("No browser, screen
+  reader, or automated scanner was run"), B run 6 (the same), C run 7 ("Nothing was tested in a
+  browser or with assistive technology") and C run 4 ("Target size is estimated", the same kind of
+  statement as A run 8, which was corrected). The read-through's search printed only the first
+  matching line of each answer, "source only", and they were left failed for it.
+- **What was done.** The four are added to `corrections.json`, with that reason, making 48
+  corrections (A 16, B 19, C 9, D 4), and both corrected analyses were generated again. Corrected:
+  content pass A 41/90, B 45/90, C 44/90, D 90/90; D vs C +51.1 (+43.3 to +58.9), D vs B +50.0
+  (+44.4 to +56.7), D vs A +54.4 (+45.6 to +62.2). Corrected without technique naming: A 68/90,
+  B 74/90, C 74/90; D vs C +17.8 (+10.0 to +25.6), D vs B +17.8 (+12.2 to +24.4), D vs A +24.4
+  (+17.8 to +31.1). These replace the figures in the two entries below, which are left as written.
+- **Why it matters.** Every reading still supports the claim; the corrected differences are about
+  two points smaller for B and C.
+
 ## 2026-10-27: technique naming decides the three test-case tasks in the Extension arm
 
 - **What the methodology says.** Content pass requires every `con-` grader of the task. In the
