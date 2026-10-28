@@ -1,0 +1,4682 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.291",
+  "startedAt": "2026-10-26T01:23:14.087Z",
+  "durationSeconds": 2438,
+  "costUsd": 29.33794375,
+  "partial": false,
+  "suite": {
+    "root": "<repository>",
+    "ablation": "none",
+    "modelOverride": "claude-fable-5-1",
+    "judgeModel": "claude-fable-5-1",
+    "caseFilter": "*-a11y-signup-form",
+    "threshold": 1,
+    "concurrency": 2,
+    "plugins": [
+      {
+        "name": "bare",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/bare-plugin"
+      },
+      {
+        "name": "writing-guide",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/control-standard"
+      },
+      {
+        "name": "bem-te-vi",
+        "version": "4.1.1",
+        "path": "<repository>"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "A-a11y-signup-form",
+      "dir": "benchmark/cases/A/a11y-signup-form",
+      "source": "prose",
+      "promptMarkdown": "Audit the accessibility of the sign-up page below. You have its source only; you cannot open it in a browser.\n\n~~~html\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Sign up</title>\n  <style>\n    body { font-family: sans-serif; color: #222; background: #fff; }\n    .btn { display: inline-block; padding: 4px 8px; background: #0a58ca; color: #fff; }\n    :focus { outline: none; }\n    .hint { color: #595959; font-size: 0.9rem; }\n  </style>\n</head>\n<body>\n  <img src=\"/img/logo-2024-final.png\">\n  <h1>Create your account</h1>\n  <form id=\"signup\">\n    <input type=\"email\" placeholder=\"Email\" id=\"email\">\n    <input type=\"password\" placeholder=\"Password\" id=\"email\">\n    <p class=\"hint\">At least 8 characters.</p>\n    <label><input type=\"checkbox\" id=\"terms\"> I accept the terms</label>\n    <a href=\"/terms\" tabindex=\"3\">Read the terms</a>\n    <div class=\"btn\" onclick=\"submitForm()\">Create account</div>\n  </form>\n  <script>\n    function submitForm() { document.getElementById(\"signup\").submit(); }\n  </script>\n</body>\n</html>\n~~~\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-find-focus-visible",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.7\\b|outline",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-img-alt",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b1\\.1\\.1\\b|\\balt\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-keyboard",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-label",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-lang",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b3\\.1\\.1\\b|\\blang\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-tabindex",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.3\\b|tabindex",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-limits-stated",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-no-4-1-1",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<!obsolete[\\s\\S]{0,200})\\b4\\.1\\.1\\b(?![\\s\\S]{0,200}obsolete)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "con-wcag-2-2",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "WCAG\\s*2\\.2",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-criteria-cited",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-finding-id",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.52619,
+            "judgeCostUsd": 0,
+            "durationSeconds": 69,
+            "startedAt": "2026-10-26T01:23:14.502Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.62814,
+            "judgeCostUsd": 0,
+            "durationSeconds": 95,
+            "startedAt": "2026-10-26T01:23:14.503Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.46593075000000006,
+            "judgeCostUsd": 0,
+            "durationSeconds": 82,
+            "startedAt": "2026-10-26T01:24:23.870Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.36106075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 60,
+            "startedAt": "2026-10-26T01:24:49.938Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39045074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 67,
+            "startedAt": "2026-10-26T01:25:45.376Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44077075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 78,
+            "startedAt": "2026-10-26T01:25:49.505Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.4186007500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 70,
+            "startedAt": "2026-10-26T01:26:51.979Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41581075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 67,
+            "startedAt": "2026-10-26T01:27:07.095Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.34206075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 50,
+            "startedAt": "2026-10-26T01:28:02.065Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.46606075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 90,
+            "startedAt": "2026-10-26T01:28:14.217Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.7636363636363638,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "B-a11y-signup-form",
+      "dir": "benchmark/cases/B/a11y-signup-form",
+      "source": "prose",
+      "promptMarkdown": "Work as a thorough, professional QA engineer. Audit the accessibility of the sign-up page below. You have its source only; you cannot open it in a browser.\n\n~~~html\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Sign up</title>\n  <style>\n    body { font-family: sans-serif; color: #222; background: #fff; }\n    .btn { display: inline-block; padding: 4px 8px; background: #0a58ca; color: #fff; }\n    :focus { outline: none; }\n    .hint { color: #595959; font-size: 0.9rem; }\n  </style>\n</head>\n<body>\n  <img src=\"/img/logo-2024-final.png\">\n  <h1>Create your account</h1>\n  <form id=\"signup\">\n    <input type=\"email\" placeholder=\"Email\" id=\"email\">\n    <input type=\"password\" placeholder=\"Password\" id=\"email\">\n    <p class=\"hint\">At least 8 characters.</p>\n    <label><input type=\"checkbox\" id=\"terms\"> I accept the terms</label>\n    <a href=\"/terms\" tabindex=\"3\">Read the terms</a>\n    <div class=\"btn\" onclick=\"submitForm()\">Create account</div>\n  </form>\n  <script>\n    function submitForm() { document.getElementById(\"signup\").submit(); }\n  </script>\n</body>\n</html>\n~~~\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-find-focus-visible",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.7\\b|outline",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-img-alt",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b1\\.1\\.1\\b|\\balt\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-keyboard",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-label",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-lang",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b3\\.1\\.1\\b|\\blang\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-tabindex",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.3\\b|tabindex",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-limits-stated",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-no-4-1-1",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<!obsolete[\\s\\S]{0,200})\\b4\\.1\\.1\\b(?![\\s\\S]{0,200}obsolete)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "con-wcag-2-2",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "WCAG\\s*2\\.2",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-criteria-cited",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-finding-id",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5514607499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 105,
+            "startedAt": "2026-10-26T01:28:52.165Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.58905075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 118,
+            "startedAt": "2026-10-26T01:29:43.783Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.64359075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 128,
+            "startedAt": "2026-10-26T01:30:36.808Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5974407500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 119,
+            "startedAt": "2026-10-26T01:31:41.348Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5474307500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 107,
+            "startedAt": "2026-10-26T01:32:45.214Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.57038075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 113,
+            "startedAt": "2026-10-26T01:33:40.686Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.53878075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 94,
+            "startedAt": "2026-10-26T01:34:32.414Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.60765075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 126,
+            "startedAt": "2026-10-26T01:35:33.528Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5218907500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 99,
+            "startedAt": "2026-10-26T01:36:06.136Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.34307075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 51,
+            "startedAt": "2026-10-26T01:37:39.039Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.7272727272727274,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "C-a11y-signup-form",
+      "dir": "benchmark/cases/C/a11y-signup-form",
+      "source": "prose",
+      "promptMarkdown": "/writing-guide:help-articles Audit the accessibility of the sign-up page below. You have its source only; you cannot open it in a browser.\n\n~~~html\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Sign up</title>\n  <style>\n    body { font-family: sans-serif; color: #222; background: #fff; }\n    .btn { display: inline-block; padding: 4px 8px; background: #0a58ca; color: #fff; }\n    :focus { outline: none; }\n    .hint { color: #595959; font-size: 0.9rem; }\n  </style>\n</head>\n<body>\n  <img src=\"/img/logo-2024-final.png\">\n  <h1>Create your account</h1>\n  <form id=\"signup\">\n    <input type=\"email\" placeholder=\"Email\" id=\"email\">\n    <input type=\"password\" placeholder=\"Password\" id=\"email\">\n    <p class=\"hint\">At least 8 characters.</p>\n    <label><input type=\"checkbox\" id=\"terms\"> I accept the terms</label>\n    <a href=\"/terms\" tabindex=\"3\">Read the terms</a>\n    <div class=\"btn\" onclick=\"submitForm()\">Create account</div>\n  </form>\n  <script>\n    function submitForm() { document.getElementById(\"signup\").submit(); }\n  </script>\n</body>\n</html>\n~~~\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-find-focus-visible",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.7\\b|outline",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-img-alt",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b1\\.1\\.1\\b|\\balt\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-keyboard",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-label",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-lang",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b3\\.1\\.1\\b|\\blang\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-tabindex",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.3\\b|tabindex",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-limits-stated",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-no-4-1-1",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<!obsolete[\\s\\S]{0,200})\\b4\\.1\\.1\\b(?![\\s\\S]{0,200}obsolete)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "con-wcag-2-2",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "WCAG\\s*2\\.2",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-criteria-cited",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-finding-id",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5454545454545454,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.45552075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 58,
+            "startedAt": "2026-10-26T01:37:45.516Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.54677075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 72,
+            "startedAt": "2026-10-26T01:38:30.194Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.6568207500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 106,
+            "startedAt": "2026-10-26T01:38:43.692Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.58353075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 88,
+            "startedAt": "2026-10-26T01:39:42.315Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.58522075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 85,
+            "startedAt": "2026-10-26T01:40:29.666Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.58672075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 88,
+            "startedAt": "2026-10-26T01:41:09.896Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7272727272727273,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.55337075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 74,
+            "startedAt": "2026-10-26T01:41:54.431Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.59607075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 88,
+            "startedAt": "2026-10-26T01:42:38.052Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.57375075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 87,
+            "startedAt": "2026-10-26T01:43:08.836Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8181818181818182,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.60955075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 89,
+            "startedAt": "2026-10-26T01:44:06.430Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.8,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "D-a11y-signup-form",
+      "dir": "benchmark/cases/D/a11y-signup-form",
+      "source": "prose",
+      "promptMarkdown": "/bem-te-vi:qa-a11y Audit the accessibility of the sign-up page below. You have its source only; you cannot open it in a browser.\n\n~~~html\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <title>Sign up</title>\n  <style>\n    body { font-family: sans-serif; color: #222; background: #fff; }\n    .btn { display: inline-block; padding: 4px 8px; background: #0a58ca; color: #fff; }\n    :focus { outline: none; }\n    .hint { color: #595959; font-size: 0.9rem; }\n  </style>\n</head>\n<body>\n  <img src=\"/img/logo-2024-final.png\">\n  <h1>Create your account</h1>\n  <form id=\"signup\">\n    <input type=\"email\" placeholder=\"Email\" id=\"email\">\n    <input type=\"password\" placeholder=\"Password\" id=\"email\">\n    <p class=\"hint\">At least 8 characters.</p>\n    <label><input type=\"checkbox\" id=\"terms\"> I accept the terms</label>\n    <a href=\"/terms\" tabindex=\"3\">Read the terms</a>\n    <div class=\"btn\" onclick=\"submitForm()\">Create account</div>\n  </form>\n  <script>\n    function submitForm() { document.getElementById(\"signup\").submit(); }\n  </script>\n</body>\n</html>\n~~~\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-find-focus-visible",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.7\\b|outline",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-img-alt",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b1\\.1\\.1\\b|\\balt\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-keyboard",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-label",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-lang",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b3\\.1\\.1\\b|\\blang\\b",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-find-tabindex",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\b2\\.4\\.3\\b|tabindex",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-limits-stated",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-no-4-1-1",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<!obsolete[\\s\\S]{0,200})\\b4\\.1\\.1\\b(?![\\s\\S]{0,200}obsolete)",
+            "flags": "i",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "con-wcag-2-2",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "WCAG\\s*2\\.2",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-criteria-cited",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-finding-id",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "\\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+            "flags": "",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 8,
+            "costUsd": 1.1955432499999998,
+            "judgeCostUsd": 0,
+            "durationSeconds": 155,
+            "startedAt": "2026-10-26T01:44:35.420Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 12,
+            "costUsd": 1.2079832499999998,
+            "judgeCostUsd": 0,
+            "durationSeconds": 196,
+            "startedAt": "2026-10-26T01:45:35.752Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 7,
+            "costUsd": 1.1619504999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 204,
+            "startedAt": "2026-10-26T01:47:10.091Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 1.3215145000000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 190,
+            "startedAt": "2026-10-26T01:48:51.953Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 14,
+            "costUsd": 1.5826517499999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 239,
+            "startedAt": "2026-10-26T01:50:33.798Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.9090909090909091,
+            "passed": false,
+            "turns": 13,
+            "costUsd": 1.67876275,
+            "judgeCostUsd": 0,
+            "durationSeconds": 280,
+            "startedAt": "2026-10-26T01:52:01.872Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 14,
+            "costUsd": 1.4501772499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 257,
+            "startedAt": "2026-10-26T01:54:32.793Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 12,
+            "costUsd": 1.2132334999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 204,
+            "startedAt": "2026-10-26T01:56:42.118Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 10,
+            "costUsd": 1.2667147500000002,
+            "judgeCostUsd": 0,
+            "durationSeconds": 210,
+            "startedAt": "2026-10-26T01:58:50.284Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 17,
+            "costUsd": 1.5462612500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 226,
+            "startedAt": "2026-10-26T02:00:05.745Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-find-focus-visible",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.7\\b|outline",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-img-alt",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b1\\.1\\.1\\b|\\balt\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-keyboard",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.1\\.1\\b|keyboard[^\\n]{0,160}(?:div|submit|activat|Create account|Enter|Space)|(?:div|Create account)[^\\n]{0,200}keyboard",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-label",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b|unlabell?ed|(?:no|missing|without|lacks?|lacking)[^\\n]{0,60}label|placeholder[^\\n]{0,100}(?:label|not a substitute|instead)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-lang",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b3\\.1\\.1\\b|\\blang\\b",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-find-tabindex",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\b2\\.4\\.3\\b|tabindex",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-limits-stated",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched not checked|could not (?:be )?checked|cannot (?:be )?(?:checked|confirmed|decided|determined) (?:from|without)|needs? (?:a )?(?:manual|browser|person)|requires? (?:a )?(?:manual|browser|running|screen reader)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-no-4-1-1",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-wcag-2-2",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched WCAG\\s*2\\.2",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-criteria-cited",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*\\b1\\.1\\.1\\b)(?=[\\s\\S]*\\b3\\.1\\.1\\b)(?=[\\s\\S]*\\b(?:1\\.3\\.1|3\\.3\\.2|4\\.1\\.2)\\b)(?=[\\s\\S]*\\b2\\.1\\.1\\b)(?=[\\s\\S]*\\b2\\.4\\.3\\b)(?=[\\s\\S]*\\b2\\.4\\.7\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-finding-id",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched \\bA11Y-[A-Z0-9]+-[0-9]{3}\\b",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.9636363636363636,
+        "passRate": 0.6
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 4,
+    "casesPassed": 0,
+    "overallScore": 0.8136363636363637,
+    "overallPassRate": 0.15
+  }
+}

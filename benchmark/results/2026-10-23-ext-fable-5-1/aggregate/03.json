@@ -1,0 +1,3226 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.291",
+  "startedAt": "2026-10-24T21:22:00.659Z",
+  "durationSeconds": 1407,
+  "costUsd": 21.57526575,
+  "partial": false,
+  "suite": {
+    "root": "<repository>",
+    "ablation": "none",
+    "modelOverride": "claude-fable-5-1",
+    "judgeModel": "claude-fable-5-1",
+    "caseFilter": "*-cases-shipping-fee",
+    "threshold": 1,
+    "concurrency": 2,
+    "plugins": [
+      {
+        "name": "bare",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/bare-plugin"
+      },
+      {
+        "name": "writing-guide",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/control-standard"
+      },
+      {
+        "name": "bem-te-vi",
+        "version": "4.1.1",
+        "path": "<repository>"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "A-cases-shipping-fee",
+      "dir": "benchmark/cases/A/cases-shipping-fee",
+      "source": "prose",
+      "promptMarkdown": "Write test cases for the user story below.\n\nStory SHIP-9: Shipping fee at checkout\n\nAs a shopper, I want to see the right shipping fee at checkout, so that I know what I will pay.\n\n- AC-1: Standard shipping is free when the order subtotal is $50.00 or more; otherwise it costs $5.99.\n- AC-2: Members get free standard shipping at any subtotal.\n- AC-3: Express shipping costs $12.99, except for members, who pay $7.99 for express at any subtotal.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-fee",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-subtotal-boundary",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Decision[- ]Table",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.42103,
+            "judgeCostUsd": 0,
+            "durationSeconds": 39,
+            "startedAt": "2026-10-24T21:22:01.104Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.38992,
+            "judgeCostUsd": 0,
+            "durationSeconds": 36,
+            "startedAt": "2026-10-24T21:22:01.105Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.34299075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 44,
+            "startedAt": "2026-10-24T21:22:37.111Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.32254075000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 42,
+            "startedAt": "2026-10-24T21:22:39.685Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.29339075000000003,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-24T21:23:21.298Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7142857142857143,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.33504075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 43,
+            "startedAt": "2026-10-24T21:23:22.090Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.32879075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 42,
+            "startedAt": "2026-10-24T21:23:57.868Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.33638075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 43,
+            "startedAt": "2026-10-24T21:24:05.400Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.7142857142857143,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.29388074999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 35,
+            "startedAt": "2026-10-24T21:24:39.550Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.30513075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 36,
+            "startedAt": "2026-10-24T21:24:48.366Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5999999999999999,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "B-cases-shipping-fee",
+      "dir": "benchmark/cases/B/cases-shipping-fee",
+      "source": "prose",
+      "promptMarkdown": "Work as a thorough, professional QA engineer. Write test cases for the user story below.\n\nStory SHIP-9: Shipping fee at checkout\n\nAs a shopper, I want to see the right shipping fee at checkout, so that I know what I will pay.\n\n- AC-1: Standard shipping is free when the order subtotal is $50.00 or more; otherwise it costs $5.99.\n- AC-2: Members get free standard shipping at any subtotal.\n- AC-3: Express shipping costs $12.99, except for members, who pay $7.99 for express at any subtotal.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-fee",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-subtotal-boundary",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Decision[- ]Table",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39811075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 60,
+            "startedAt": "2026-10-24T21:25:14.366Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.47356075000000003,
+            "judgeCostUsd": 0,
+            "durationSeconds": 74,
+            "startedAt": "2026-10-24T21:25:24.141Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39556075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 63,
+            "startedAt": "2026-10-24T21:26:14.209Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.37470075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 57,
+            "startedAt": "2026-10-24T21:26:38.013Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.63952075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 122,
+            "startedAt": "2026-10-24T21:27:16.788Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39061075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 57,
+            "startedAt": "2026-10-24T21:27:34.917Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44034075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 68,
+            "startedAt": "2026-10-24T21:28:31.825Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.48592075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 80,
+            "startedAt": "2026-10-24T21:29:18.881Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.36791075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 55,
+            "startedAt": "2026-10-24T21:29:39.358Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.5508107499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 90,
+            "startedAt": "2026-10-24T21:30:34.043Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5714285714285713,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "C-cases-shipping-fee",
+      "dir": "benchmark/cases/C/cases-shipping-fee",
+      "source": "prose",
+      "promptMarkdown": "/writing-guide:help-articles Write test cases for the user story below.\n\nStory SHIP-9: Shipping fee at checkout\n\nAs a shopper, I want to see the right shipping fee at checkout, so that I know what I will pay.\n\n- AC-1: Standard shipping is free when the order subtotal is $50.00 or more; otherwise it costs $5.99.\n- AC-2: Members get free standard shipping at any subtotal.\n- AC-3: Express shipping costs $12.99, except for members, who pay $7.99 for express at any subtotal.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-fee",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-subtotal-boundary",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Decision[- ]Table",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.45418075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 46,
+            "startedAt": "2026-10-24T21:30:38.730Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44155074999999994,
+            "judgeCostUsd": 0,
+            "durationSeconds": 42,
+            "startedAt": "2026-10-24T21:31:24.720Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.39500075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 33,
+            "startedAt": "2026-10-24T21:32:03.723Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41400075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 38,
+            "startedAt": "2026-10-24T21:32:06.458Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41171074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-24T21:32:36.489Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41979075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 42,
+            "startedAt": "2026-10-24T21:32:44.502Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.41835074999999994,
+            "judgeCostUsd": 0,
+            "durationSeconds": 39,
+            "startedAt": "2026-10-24T21:33:13.130Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.43230075,
+            "judgeCostUsd": 0,
+            "durationSeconds": 41,
+            "startedAt": "2026-10-24T21:33:26.529Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.44446074999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 45,
+            "startedAt": "2026-10-24T21:33:52.621Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5714285714285714,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.43095074999999994,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-24T21:34:07.725Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5714285714285713,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "D-cases-shipping-fee",
+      "dir": "benchmark/cases/D/cases-shipping-fee",
+      "source": "prose",
+      "promptMarkdown": "/bem-te-vi:qa-cases Write test cases for the user story below.\n\nStory SHIP-9: Shipping fee at checkout\n\nAs a shopper, I want to see the right shipping fee at checkout, so that I know what I will pay.\n\n- AC-1: Standard shipping is free when the order subtotal is $50.00 or more; otherwise it costs $5.99.\n- AC-2: Members get free standard shipping at any subtotal.\n- AC-3: Express shipping costs $12.99, except for members, who pay $7.99 for express at any subtotal.\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-every-fee",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-subtotal-boundary",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+            "flags": "",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "Decision[- ]Table",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 1.0087865,
+            "judgeCostUsd": 0,
+            "durationSeconds": 148,
+            "startedAt": "2026-10-24T21:34:37.537Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.8487264999999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 109,
+            "startedAt": "2026-10-24T21:34:47.489Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 5,
+            "costUsd": 1.0986725,
+            "judgeCostUsd": 0,
+            "durationSeconds": 144,
+            "startedAt": "2026-10-24T21:36:36.392Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.7469445,
+            "judgeCostUsd": 0,
+            "durationSeconds": 90,
+            "startedAt": "2026-10-24T21:37:05.626Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.9786057499999998,
+            "judgeCostUsd": 0,
+            "durationSeconds": 141,
+            "startedAt": "2026-10-24T21:38:35.446Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 5,
+            "costUsd": 1.048481,
+            "judgeCostUsd": 0,
+            "durationSeconds": 128,
+            "startedAt": "2026-10-24T21:39:00.651Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 7,
+            "costUsd": 1.0712315,
+            "judgeCostUsd": 0,
+            "durationSeconds": 136,
+            "startedAt": "2026-10-24T21:40:56.920Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 2,
+            "costUsd": 0.7751265,
+            "judgeCostUsd": 0,
+            "durationSeconds": 92,
+            "startedAt": "2026-10-24T21:41:08.720Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.9032642499999999,
+            "judgeCostUsd": 0,
+            "durationSeconds": 122,
+            "startedAt": "2026-10-24T21:42:40.479Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 3,
+            "costUsd": 0.9469857500000001,
+            "judgeCostUsd": 0,
+            "durationSeconds": 134,
+            "startedAt": "2026-10-24T21:43:13.350Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|5\\.99))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|(?<!non-)(?<!non )(?<!not a )\\bmember[\\s\\S]{0,200}?(?:\\bfree\\b|\\$0(?:\\.00)?(?![\\d.]))))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|12\\.99[\\s\\S]{0,400}?7\\.99|7\\.99[\\s\\S]{0,400}?12\\.99|express[\\s\\S]{0,200}?7\\.99))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-every-fee",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*5\\.99)(?=[\\s\\S]*12\\.99)(?=[\\s\\S]*7\\.99)(?=[\\s\\S]*(?:\\$0\\.00|\\$0\\b|\\bfree\\b))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-subtotal-boundary",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*49\\.99)(?=[\\s\\S]*\\b50\\.00\\b)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched Decision[- ]Table",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 1,
+        "passRate": 1
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 4,
+    "casesPassed": 1,
+    "overallScore": 0.6857142857142856,
+    "overallPassRate": 0.25
+  }
+}
