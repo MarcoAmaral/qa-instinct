@@ -14,6 +14,7 @@
 | --- | --- | --- |
 | 1.0 | 2026-10-18 | First version, written before any benchmark data. The pilot ran on it (see "Pilot disclosure"). |
 | 1.1 | 2026-10-25 | The package was renamed QA Instinct (plan 065): condition D invokes `/qa-instinct:<command or skill>`, and the case digest is frozen again. Nothing else changed; the pilot's disclosure keeps the commands it ran. See DEVIATIONS.md, 2026-10-25. |
+| 1.2 | 2026-10-27 | Before Arm 1, from the Extension arm's read-through: six content graders accept the wordings they wrongly failed (`con-no-4-1-1`, `con-limits-stated`, `con-severity-and-priority`, `con-repro-rate`, `con-undocumented-500`, `con-404-missing-code`), and the flaky-run-history fixture's cart failure is a single non-retrying read after a fixed wait, so its evidence supports the judge rubric. Condition D also loads the package as it now is, with the `qa-rules` skill (plan 067) and the `qa-static-analysis` skill (plan 068). The case digest is frozen again. See DEVIATIONS.md, 2026-10-27. |
 
 ## Credit
 
@@ -165,7 +166,7 @@ The graders, per task (each file under [`graders/`](graders/) holds the pattern 
 | a11y-signup-form | `con-find-lang` | The missing page language is found (3.1.1, or the missing `lang`). |
 | a11y-signup-form | `con-find-tabindex` | The positive `tabindex` is found (2.4.3, or by naming it). |
 | a11y-signup-form | `con-limits-stated` | The audit says what it could not check from the source alone. |
-| a11y-signup-form | `con-no-4-1-1` | The duplicate id is not reported under 4.1.1 Parsing, which WCAG 2.2 made obsolete; a mention that says it is obsolete is allowed. |
+| a11y-signup-form | `con-no-4-1-1` | The duplicate id is not reported under 4.1.1 Parsing, which WCAG 2.2 made obsolete; a mention that says it is obsolete, retired or deprecated, or that applies it only under WCAG 2.0 or 2.1, is allowed. |
 | a11y-signup-form | `con-wcag-2-2` | The audit names WCAG 2.2 as the standard. |
 | a11y-signup-form | `fmt-criteria-cited` | Every seeded barrier is reported under its WCAG criterion number (1.1.1, 3.1.1, 1.3.1 or 3.3.2 or 4.1.2, 2.1.1, 2.4.3, 2.4.7), as the package's findings format requires. |
 | a11y-signup-form | `fmt-finding-id` | Findings carry the package's `A11Y-<PAGE>-NNN` identifiers. |

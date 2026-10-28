@@ -7,6 +7,39 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-27: methodology 1.2, six content graders and one fixture changed before Arm 1
+
+- **What the methodology says.** "A change before full collection is a new row under 'Version
+  history' and an entry in DEVIATIONS.md." Arm 1 has not been collected.
+- **What was done.** Marco decided on 2026-10-27 to fix, before Arm 1, the defects the Extension
+  arm's read-through found (the entries below). Version 1.2:
+  - Six content graders accept the wordings they wrongly failed, and only those; every earlier
+    alternative is kept as written. `con-no-4-1-1` also allows a mention that calls 4.1.1 retired or
+    deprecated, says it was removed, or applies it only under WCAG 2.0 or 2.1 ("removed" counts only
+    next to 2.2 or as "was removed", because "Focus outline removed" in a nearby row passed a real
+    failure). `con-limits-stated` adds statements that nothing was verified in a browser or with
+    assistive technology, that no browser or screen reader was run, or that a result is estimated or
+    needs confirmation. `con-severity-and-priority` adds the priority value "Blocker".
+    `con-repro-rate` adds "3 in 10" and "30%". `con-undocumented-500` adds "only 201 and 400"
+    before the 500. `con-404-missing-code` adds a 404 line with "only `message`" or "fails on
+    `code`". `con-no-4-1-1`'s description says what is now allowed, in the grader and in the table.
+  - `fixtures/flaky-run-history/run-history.md`: the cart test's failure is now "expect(received).toBe
+    (expected). Expected: "€58.00". Received: "€29.00"", from a single `textContent()` read after
+    `page.waitForTimeout(300)`. The old message, a 5-second web-first timeout, did not support the
+    rubric's "fixed wait" cause. `jdg-cause-classes` is unchanged.
+- **How the graders were checked.** Before any new run, each changed pattern was run with
+  `build.js`'s own evaluator on every Extension-arm output of its task (240 outputs). Each one now
+  gives exactly the verdicts the read-through set by hand, the 48 in `corrections.json` included,
+  and changes no other verdict. The grader samples pass (131 of 131).
+- **Frozen again.** `cases.sha256` was
+  `354463545355b8aad70e03354a407fcd610ea6364a7e0f8675b703bae53cf6dd` and is now
+  `7f873e1c3f2378840b6c55f4ed5f5f1ff8c137383ee3b9d39751b69a06523af7`. The placebo is 106.7% of the
+  14,514-byte mean file D loads (106.5% of 14,550 before; D's files lost one parenthesis, plan 067).
+- **Why it matters.** Arm 1 is collected on 1.2, so its content pass is not depressed for A, B and
+  C by wording the old patterns missed, and its flaky judge verdict rests on evidence that decides
+  the cause. The Extension arm stays as collected on 1.1; its corrected re-score applies the same
+  verdicts by hand. Arm 1 and the Extension arm were never to be pooled.
+
 ## 2026-10-27: technique naming decides the three test-case tasks in the Extension arm
 
 - **What the methodology says.** Content pass requires every `con-` grader of the task. In the

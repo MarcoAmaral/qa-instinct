@@ -571,7 +571,8 @@ analyses in
 [`benchmark/results/2026-10-23-ext-fable-5-1/`](benchmark/results/2026-10-23-ext-fable-5-1/).
 
 The primary arm (`claude-haiku-4-5-20251001`, ten runs per cell, 360 generations, about US$13 at
-API prices) is still to be collected. The costs are what Claude Code reports at API list prices; run
+API prices) is still to be collected, on methodology 1.2, which fixes the graders and the fixture this
+arm showed to be wrong. The costs are what Claude Code reports at API list prices; run
 on a Claude subscription, the same runs count against the plan's usage limits instead. Every pilot output, its grader verdicts and the analysis are in
 [`benchmark/results/2026-10-18-pilot/`](benchmark/results/2026-10-18-pilot/). The method follows
 the [A11Y.md efficacy benchmark](https://github.com/fecarrico/A11Y.md/tree/main/benchmark).
