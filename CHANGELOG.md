@@ -1,8 +1,8 @@
 # Changelog
 
-**Bem-te-vi** — Created by Marco Amaral
+**QA Instinct** — Created by Marco Amaral (named Bem-te-vi up to 4.1.1)
 
-All notable changes to Bem-te-vi will be documented in this file.
+All notable changes to QA Instinct will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries up to 2.2.0 were written by hand following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
@@ -13,6 +13,37 @@ Versions up to 4.0.1 were developed in a private repository. Their entries are k
 the links to that repository's commits and comparisons were removed, as they are not public.
 
 ---
+
+## [4.3.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.2.1...v4.3.0) (2026-10-26)
+
+### ⚠ BREAKING CHANGES
+
+- **installers:** an install made by 4.3.0 or later records itself in .qa-instinct-manifest, which an older CLI does not read: update with qa-instinct 4.3.0 or later. An older install's .qa-skills-manifest is moved on its next run. QA_SKILLS_DEBUG is now QA_INSTINCT_DEBUG.
+
+### Features
+
+- **installers:** rename the internal qa-skills names to qa-instinct ([c2604f9](https://github.com/MarcoAmaral/qa-instinct/commit/c2604f9f560a749b840b29ba1405ef5c299dfc7b))
+- present the package as a Senior QA Engineer ([6cff708](https://github.com/MarcoAmaral/qa-instinct/commit/6cff7080b75bc268f94210b2c852e1fbd6b07eb7))
+
+### Documentation
+
+- release the internal-name rename as 4.3.0 ([42a4296](https://github.com/MarcoAmaral/qa-instinct/commit/42a4296ec88e6b3fc6cb32fc5ceeccab238b245d))
+
+## [4.2.1](https://github.com/MarcoAmaral/qa-instinct/compare/v4.2.0...v4.2.1) (2026-10-25)
+
+### Miscellaneous Chores
+
+- release 4.2.1 ([148b37e](https://github.com/MarcoAmaral/qa-instinct/commit/148b37ea699f805eb716f1aea06ec88c1b60982b))
+
+## [4.2.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.1.1...v4.2.0) (2026-10-25)
+
+### Features
+
+- rename the package to QA Instinct ([f86fd61](https://github.com/MarcoAmaral/qa-instinct/commit/f86fd61cbe4c002bfcdd764026a307515df7c746))
+
+### Bug Fixes
+
+- write install.ps1's project git hook with its final newline ([1186445](https://github.com/MarcoAmaral/qa-instinct/commit/11864451331e707cd55d2a8bbd473765fabadb81))
 
 ## [4.1.1](https://github.com/MarcoAmaral/bem-te-vi/compare/v4.1.0...v4.1.1) (2026-10-23)
 

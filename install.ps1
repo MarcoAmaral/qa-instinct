@@ -2,10 +2,10 @@
 
 <#
 .SYNOPSIS
-    Bem-te-vi - Windows PowerShell Installer
+    QA Instinct - Windows PowerShell Installer
 
 .DESCRIPTION
-    Installs Bem-te-vi (ISTQB CTFL v4.0 QA skills: test design, BDD, Playwright, Vitest)
+    Installs QA Instinct (ISTQB CTFL v4.0 QA skills: test design, BDD, Playwright, Vitest)
     to project-level and/or global Claude Code commands directory, with optional
     multi-editor support.
 
@@ -66,7 +66,7 @@ if (($PWD.Path -eq $PSHOME) -and ($startDir -ne $PSHOME) -and ($startDir -match 
 function Write-Header {
     Write-Host ""
     Write-Host ([char]0x2554 + ([string][char]0x2550 * 52) + [char]0x2557) -ForegroundColor Cyan
-    Write-Host ([char]0x2551 + "   Bem-te-vi - Installation Script                " + [char]0x2551) -ForegroundColor Cyan
+    Write-Host ([char]0x2551 + "   QA Instinct - Installation Script                " + [char]0x2551) -ForegroundColor Cyan
     Write-Host ([char]0x2551 + "   QA skills for AI editors                       " + [char]0x2551) -ForegroundColor Cyan
     Write-Host ([char]0x255A + ([string][char]0x2550 * 52) + [char]0x255D) -ForegroundColor Cyan
     Write-Host ""
@@ -200,7 +200,7 @@ function Check-AdapterExists {
 
 # ─── Shared editor -> install-folder mapping ─────────────────────────────────
 # Single source of truth for every non-claude editor's install folders and display label - shared
-# with install.sh and cli/bem-te-vi.js. See .qa-skills-editor-map. Format: tab-separated
+# with install.sh and cli/qa-instinct.js. See .qa-instinct-editor-map. Format: tab-separated
 # "<editor>`t<project rules>`t<global rules>`t<project skills>`t<global skills>`t<label>", '-'
 # where the editor has none (plan 047). The generated rule files of adapters\<editor>\rules\ go
 # into the rules folder, and the one Agent Skills tree adapters\skills\ into the skills folder. A
@@ -209,7 +209,7 @@ function Check-AdapterExists {
 # editor installs for a target only when it has a skills folder there. `claude` is not listed: it
 # copies the raw .claude\ tree and is handled separately in Install-ForEditor / Uninstall-ForEditor.
 
-$Script:EditorMapPath = Join-Path $PSScriptRoot '.qa-skills-editor-map'
+$Script:EditorMapPath = Join-Path $PSScriptRoot '.qa-instinct-editor-map'
 $Script:EditorMapCache = $null
 
 function Get-EditorMap {
@@ -253,8 +253,10 @@ $script:UninstallRemovedRels = @()
 # Base folder -> whether it had a manifest when this run first reached it (see Uninstall-ForEditor).
 $script:UninstallHadManifest = @{}
 
-# The marker line the project hook carries; uninstall and the "is this ours?" check match on it.
-$Script:ProjectHookMarker = 'Pre-commit hook to validate test cases in qa-skills'
+# The marker line the project hook carries; uninstall and the "is this ours?" check match on it,
+# and on the line every 4.x release wrote (plan 066).
+$Script:ProjectHookMarker = 'Pre-commit hook to validate test cases in qa-instinct'
+$Script:ProjectHookOldMarker = 'Pre-commit hook to validate test cases in qa-skills'
 
 # Runs git quietly and returns its exit code and first line of output. Under
 # $ErrorActionPreference = 'Stop', Windows PowerShell 5.1 turns native stderr into a
@@ -315,7 +317,9 @@ $Script:GlobalHookBegin = '# >>> bem-te-vi global pre-commit >>>'
 $Script:GlobalHookEnd = '# <<< bem-te-vi global pre-commit <<<'
 $Script:GlobalHookOldMarker = '# Added by qa-skills global installer'
 $Script:GlobalHookOldEnd = '# GLOBAL_PRECOMMIT_APPEND'
-$Script:GlobalHookFreshHeader = '# Global pre-commit hook to validate test cases in qa-skills'
+$Script:GlobalHookFreshHeader = '# Global pre-commit hook to validate test cases in qa-instinct'
+# The header a 4.x or older release wrote; a fresh hook from before the fences starts at it.
+$Script:GlobalHookOldFreshHeader = '# Global pre-commit hook to validate test cases in qa-skills'
 
 # Matches a first line that is a sh or bash shebang, the only hooks a bash block can be appended to.
 $Script:ShShebangPattern = '^#!\s*(/\S*/)?(env\s+)?(ba)?sh(\s|$)'
@@ -360,7 +364,7 @@ function Remove-GlobalHookBlock {
         $old = $true
         $start = [array]::IndexOf($trim, $Script:GlobalHookOldMarker)
     }
-    if ($start -lt 0) { $start = [array]::IndexOf($trim, $Script:GlobalHookFreshHeader) }
+    if ($start -lt 0) { $start = [array]::IndexOf($trim, $Script:GlobalHookOldFreshHeader) }
     if ($start -lt 0) { return $null }
 
     $want = if ($old) { 'fi' } else { $Script:GlobalHookEnd }
@@ -401,7 +405,7 @@ function Register-GitHook {
         # .git/hooks entirely, so writing there would only pretend to register something.
         $hooksPathCfg = (Invoke-GitQuiet @('-C', $BaseDir, 'config', 'core.hooksPath')).Out
         if ($hooksPathCfg) {
-            Write-Info "core.hooksPath is set ($hooksPathCfg); add the bem-te-vi check to your hook manager yourself:"
+            Write-Info "core.hooksPath is set ($hooksPathCfg); add the qa-instinct check to your hook manager yourself:"
             Write-FilePath 'bash .claude/hooks/validate-tc-format.sh <file>'
             return
         }
@@ -412,7 +416,7 @@ function Register-GitHook {
             $ours = $false
             if (-not (Test-IsLink $hookFile)) {
                 $existingHook = Get-Content -LiteralPath $hookFile -Raw -ErrorAction SilentlyContinue
-                $ours = [bool]($existingHook -and $existingHook.Contains($Script:ProjectHookMarker))
+                $ours = [bool]($existingHook -and ($existingHook.Contains($Script:ProjectHookMarker) -or $existingHook.Contains($Script:ProjectHookOldMarker)))
             }
             if (-not $ours) {
                 Write-Info "Kept your existing pre-commit hook: $hookFile"
@@ -427,7 +431,7 @@ function Register-GitHook {
 
         $hookContent = @'
 #!/usr/bin/env bash
-# Pre-commit hook to validate test cases in qa-skills
+# Pre-commit hook to validate test cases in qa-instinct
 
 SCRIPT_DIR="$(git rev-parse --show-toplevel)"
 VALIDATOR="$SCRIPT_DIR/.claude/hooks/validate-tc-format.sh"
@@ -450,7 +454,7 @@ if [ -f "$VALIDATOR" ]; then
 fi
 '@
         $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-        [System.IO.File]::WriteAllText($hookFile, $hookContent, $utf8NoBom)
+        [System.IO.File]::WriteAllText($hookFile, $hookContent + "`n", $utf8NoBom)
         Write-Success "Registered project-level git pre-commit hook: $hookFile"
     }
     else {
@@ -530,7 +534,7 @@ function Purge-GitHook {
             $hookFile = Join-Path $hookDir 'pre-commit'
             if ((Test-Path -LiteralPath $hookFile -PathType Leaf) -and (-not (Test-IsLink $hookFile))) {
                 $content = Get-Content -LiteralPath $hookFile -Raw -ErrorAction SilentlyContinue
-                if ($content -and $content.Contains($Script:ProjectHookMarker)) {
+                if ($content -and ($content.Contains($Script:ProjectHookMarker) -or $content.Contains($Script:ProjectHookOldMarker))) {
                     Remove-Item -LiteralPath $hookFile -Force
                     Write-Success "Purged project-level git pre-commit hook: $hookFile"
                 }
@@ -564,7 +568,7 @@ function Purge-GitHook {
                     $remaining = @($cleanContent -split "`n" | Where-Object {
                             $t = $_.TrimEnd("`r")
                             ($t -notmatch '^\s*$') -and ($t -notmatch '^#!') -and
-                            ($t -ne $Script:GlobalHookFreshHeader) -and ($t -ne $Script:GlobalHookOldEnd)
+                            ($t -ne $Script:GlobalHookFreshHeader) -and ($t -ne $Script:GlobalHookOldFreshHeader) -and ($t -ne $Script:GlobalHookOldEnd)
                         })
                     if ($remaining.Count -eq 0) {
                         Remove-Item -LiteralPath $hookFile -Force
@@ -586,7 +590,7 @@ function Purge-GitHook {
 }
 
 # $Scope is 'Project' or 'Global', from -Target, never guessed from the folder: -Target project
-# run from the home folder is a project install, as in install.sh and cli/bem-te-vi.js.
+# run from the home folder is a project install, as in install.sh and cli/qa-instinct.js.
 function Uninstall-ForEditor {
     param(
         [string]$EditorName,
@@ -647,7 +651,7 @@ function Uninstall-ForEditor {
             # folders of plan 047 and the paths of earlier releases alike), then the folders those
             # removals left empty, never inside a linked one. With no manifest there is nothing
             # to remove: unlike Claude Code's, these destinations were never written without one,
-            # and the package's older files here are not in .qa-skills-known-hashes, so a match
+            # and the package's older files here are not in .qa-instinct-known-hashes, so a match
             # could only be a copy the user made (plan 047, review of #193).
             $entry = (Get-EditorMap)[$EditorName]
             if ($null -eq $entry) { return }
@@ -682,7 +686,7 @@ function Uninstall-ForEditor {
 }
 
 # ─── Install manifest ────────────────────────────────────────────────────────
-# Every file the installer writes is recorded in <base>\.qa-skills-manifest as
+# Every file the installer writes is recorded in <base>\.qa-instinct-manifest as
 # "<sha256>  <editor>  <path relative to base>". Uninstall removes only files whose content
 # still matches what was installed, so a project's own files are never destroyed - including
 # ones whose names collide with the package's, and files this package shipped under a
@@ -694,7 +698,9 @@ function Uninstall-ForEditor {
 # back to the platform's native separator when resolved to an actual file path.
 
 
-function Get-ManifestPath { param([string]$BaseDir) Join-Path $BaseDir '.qa-skills-manifest' }
+function Get-ManifestPath { param([string]$BaseDir) Join-Path $BaseDir '.qa-instinct-manifest' }
+# The name every 4.x release wrote the manifest under (plan 066).
+function Get-LegacyManifestPath { param([string]$BaseDir) Join-Path $BaseDir '.qa-skills-manifest' }
 
 function Get-Sha256 {
     param([string]$Path)
@@ -704,7 +710,7 @@ function Get-Sha256 {
 # The package's own file with CRLF line endings (a Windows checkout with core.autocrlf, a
 # Windows editor) is still the package's file. A file on disk therefore *matches* a hash if its
 # bytes hash to it, or its bytes with every carriage return removed do - the same rule in
-# install.sh and cli/bem-te-vi.js (plans/017). Hashes are still recorded as the raw bytes.
+# install.sh and cli/qa-instinct.js (plans/017). Hashes are still recorded as the raw bytes.
 function Get-Sha256WithoutCR {
     param([string]$Path)
     $bytes = [System.IO.File]::ReadAllBytes((Get-Item -LiteralPath $Path -Force).FullName)
@@ -821,6 +827,33 @@ function Save-ManifestBuffer {
     $script:ManifestBuffer.Remove($mf)
 }
 
+# Moves a 4.x install's manifest to the current name, the same in all three installers (plan 066),
+# once per base and before anything reads the manifest. Every entry of both files is kept; on the
+# same editor and path the current manifest's entry wins. The new manifest is written the usual
+# way, then the old name is removed: a symlink there is unlinked, never its target. A folder or an
+# unreadable file at the old name is not a manifest this run can use, so it is left and reported.
+function Move-LegacyManifest {
+    param([string]$BaseDir)
+    $old = Get-LegacyManifestPath $BaseDir
+    $name = Split-Path -Leaf $old
+    if (Test-Path -LiteralPath $old -PathType Container) { Write-Info "Kept $name - it is a directory, not a manifest"; return }
+    if (-not (Test-Path -LiteralPath $old -PathType Leaf)) { return }
+    if (Test-Unreadable $old) { Write-Info "Kept $name - it cannot be read"; return }
+    $mf = Get-ManifestPath $BaseDir
+    $lines = @(Get-ManifestLines $mf | Where-Object { ($_ -split '\s+', 3).Count -eq 3 })
+    $keys = @{}
+    foreach ($line in $lines) { $p = $line -split '\s+', 3; $keys["$($p[1])  $($p[2])"] = $true }
+    foreach ($line in Get-ManifestLines $old) {
+        $p = $line -split '\s+', 3
+        if ($p.Count -ne 3 -or $keys.ContainsKey("$($p[1])  $($p[2])")) { continue }
+        $lines += $line
+    }
+    if ($lines.Count -gt 0) { Set-ManifestLines $mf $lines }
+    elseif (Test-Path -LiteralPath $mf) { Remove-Item -LiteralPath $mf -Force }
+    # Deleting a symlink removes the link, not what it points at.
+    (Get-Item -LiteralPath $old -Force).Delete()
+}
+
 # Known-hash list: the SHA-256 of every file this package has ever shipped, across all tagged
 # releases (see generate-known-hashes.sh and plans/011-release-hash-provenance.md). Lets the
 # installer tell its own older file from the user's edit with certainty instead of guessing —
@@ -830,7 +863,7 @@ $script:KnownHashes = $null
 function Get-KnownHashes {
     if ($null -ne $script:KnownHashes) { return $script:KnownHashes }
     $script:KnownHashes = @{}
-    $path = Join-Path $PSScriptRoot '.qa-skills-known-hashes'
+    $path = Join-Path $PSScriptRoot '.qa-instinct-known-hashes'
     # Missing list (old checkout, trimmed package) is not an error: Test-KnownHash simply never
     # matches, and every differing destination falls back to today's back-up-and-warn behavior.
     if (-not (Test-Path -LiteralPath $path)) { return $script:KnownHashes }
@@ -869,7 +902,7 @@ function Backup-Destination {
         }
     }
     $suffix = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')
-    $backup = "$DestinationPath.qa-skills-backup-$suffix"
+    $backup = "$DestinationPath.qa-instinct-backup-$suffix"
     # Created exclusively, like the manifest's temp file: a name already taken, a link planted
     # there included, is never opened (CreateNew); the next number is tried instead.
     for ($n = 1; ; $n++) {
@@ -877,7 +910,7 @@ function Backup-Destination {
             return [pscustomobject]@{ Action = 'Backup'; Path = $backup }
         }
         if ($n -ge 100) { throw "could not back up $DestinationPath" }
-        $backup = "$DestinationPath.qa-skills-backup-$suffix-$n"
+        $backup = "$DestinationPath.qa-instinct-backup-$suffix-$n"
     }
 }
 
@@ -898,7 +931,7 @@ function Write-ExclusiveFile {
 }
 
 # A symlinked folder below the editor's top-level folder (.claude\rules, .agents\skills, ...) is
-# never written or deleted through: after `bem-te-vi link` those folders are the npm package's own
+# never written or deleted through: after `qa-instinct link` those folders are the npm package's own
 # files, and any other link leads outside the install tree. The top-level folder itself (.claude
 # as a link into a dotfiles repository) is followed, as the editor follows it (plan 033 item 1).
 # Returns the first such folder, relative to BaseDir with forward slashes, or $null.
@@ -924,12 +957,12 @@ function Write-LinkedDir {
     $item = Get-Item -LiteralPath (Join-Path $BaseDir ($Dir -replace '/', [string][System.IO.Path]::DirectorySeparatorChar)) -Force -ErrorAction SilentlyContinue
     $target = if ($item) { $item.Target } else { $null }
     if ($target -is [array]) { $target = $target[0] }
-    # A junction made by Node (bem-te-vi link on Windows without the symlink right) ends in '\'.
+    # A junction made by Node (qa-instinct link on Windows without the symlink right) ends in '\'.
     if ($target) { $target = $target.TrimEnd([char]92, [char]47) }
-    # A link `bem-te-vi link` made points at some package's .claude\<same name>.
+    # A link `qa-instinct link` made points at some package's .claude\<same name>.
     $name = ($Dir -split '/')[-1]
     if ($target -and ('/' + ($target -replace '\\', '/')).EndsWith("/.claude/$name", [System.StringComparison]::OrdinalIgnoreCase)) {
-        $hint = "; run 'bem-te-vi unlink' first"
+        $hint = "; run 'qa-instinct unlink' first"
     }
     Write-Info "$Action $Dir/ - it is a symbolic link; nothing was $Verb through it$hint"
 }
@@ -949,7 +982,7 @@ function Install-File {
     param([string]$BaseDir, [string]$Editor, [string]$SourcePath, [string]$DestinationPath)
     # The relative path is what the manifest records and uninstall resolves against BaseDir. A
     # destination outside BaseDir would record an entry that can never resolve, orphaning the file;
-    # that is a bug in a call site, so refuse loudly, as install.sh and cli/bem-te-vi.js do.
+    # that is a bug in a call site, so refuse loudly, as install.sh and cli/qa-instinct.js do.
     $sep = [string][System.IO.Path]::DirectorySeparatorChar
     $fullBase = [System.IO.Path]::GetFullPath($BaseDir).TrimEnd('\', '/')
     $fullDest = [System.IO.Path]::GetFullPath($DestinationPath)
@@ -1053,7 +1086,7 @@ function Install-File {
             $script:UpdateChanged++
         }
     }
-    if ($env:QA_SKILLS_DEBUG) { Write-Info "recorded $rel in $(Get-ManifestPath $BaseDir)" }
+    if ($env:QA_INSTINCT_DEBUG) { Write-Info "recorded $rel in $(Get-ManifestPath $BaseDir)" }
 }
 
 # A manifest path must stay inside the base it was recorded under. The manifest sits at the
@@ -1158,7 +1191,7 @@ function Remove-IfMatches {
 }
 
 # What a kept file at one of the locations plan 047 moved away from means for the editor, the same
-# words as install.sh and cli/bem-te-vi.js. The package never deletes it for the user:
+# words as install.sh and cli/qa-instinct.js. The package never deletes it for the user:
 # .clinerules\default-rules.md is not a path it recorded.
 function Write-OldLocationNote {
     param([string]$BaseDir, [string]$Editor, [string]$Rel)
@@ -1191,7 +1224,7 @@ function Report-UninstallResult {
 # Every @(<package file>, <destination>) pair a non-claude editor's install writes for one scope
 # (plan 047): each generated rule file of adapters\<editor>\rules\ into the rules folder, when the
 # scope has one, and every file of adapters\skills\ below the skills folder, in byte order of
-# their forward-slash paths, as install.sh and cli/bem-te-vi.js list them. None when the scope has
+# their forward-slash paths, as install.sh and cli/qa-instinct.js list them. None when the scope has
 # no skills folder. Each editor has its own folders, so uninstalling one never removes another's.
 function Get-EditorFiles {
     param([string]$EditorName, [string]$BaseDir, [string]$Scope)
@@ -1286,14 +1319,14 @@ function Install-ForEditor {
         }
         default {
             # Every other editor: its generated rule files and the Agent Skills tree, installed in
-            # the folders the shared mapping in .qa-skills-editor-map names (plan 047).
+            # the folders the shared mapping in .qa-instinct-editor-map names (plan 047).
             $entry = (Get-EditorMap)[$EditorName]
             if ($null -eq $entry) { return }
             $isGlobal = ($Scope -eq 'Global')
             $rulesRel = if ($isGlobal) { $entry.GlobalRules } else { $entry.ProjectRules }
             $skillsRel = if ($isGlobal) { $entry.GlobalSkills } else { $entry.ProjectSkills }
             # An editor with no global skills folder is skipped on a global install, exactly as
-            # install.sh and cli/bem-te-vi.js do. Up to 2.7.x this fell back to the *project* path,
+            # install.sh and cli/qa-instinct.js do. Up to 2.7.x this fell back to the *project* path,
             # and a global install's base is the home directory, so it wrote e.g.
             # %USERPROFILE%\.clinerules. Uninstall-ForEditor cleans that debris up.
             if ($skillsRel -eq '-') {
@@ -1479,6 +1512,16 @@ function Invoke-GitIntegration {
         $recorded += Join-Path $BaseDir ($parts[2] -replace '/', [string][System.IO.Path]::DirectorySeparatorChar)
     }
     $recorded += $manifest
+    # A manifest moved from its 4.x name: commit the old name's removal with it (plan 066).
+    $legacy = Get-LegacyManifestPath $BaseDir
+    $legacyRelative = $null
+    if (-not (Test-Path -LiteralPath $legacy)) {
+        $legacyFull = [System.IO.Path]::GetFullPath($legacy).Replace('\', '/')
+        if ($legacyFull.StartsWith($repoRootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $candidate = $legacyFull.Substring($repoRootFull.Length)
+            if ((Invoke-GitQuiet @('ls-files', '--error-unmatch', '--', $candidate)).Code -eq 0) { $legacyRelative = $candidate }
+        }
+    }
 
     $relativeFiles = @()
     foreach ($f in $recorded) {
@@ -1494,6 +1537,7 @@ function Invoke-GitIntegration {
     if ($relativeFiles.Count -eq 0) {
         return
     }
+    if ($legacyRelative) { $relativeFiles += $legacyRelative }
 
     Write-Host ""
     $commit = Read-YesNo -Prompt "Add to git and commit?" -Default 'n'
@@ -1522,7 +1566,7 @@ function Invoke-GitIntegration {
 }
 
 # Lists what the package ships, read from its own .claude\ at run time, so a new command, skill or
-# agent shows up here with no edit. The same block in install.sh and cli/bem-te-vi.js (plan 033 item 8).
+# agent shows up here with no edit. The same block in install.sh and cli/qa-instinct.js (plan 033 item 8).
 # Rules are counted, not named. Names are sorted ordinally, as LC_ALL=C sort and JavaScript do.
 function Write-ClaudeHint {
     $claudeSrc = Join-Path $PSScriptRoot '.claude'
@@ -1598,8 +1642,8 @@ function Main {
         $global:OPERATION = 'install'
     }
     else {
-        Write-Host "Bem-te-vi - Lifecycle Manager" -ForegroundColor Yellow
-        Write-Host "  1. Install (Fresh deployment of Bem-te-vi)  [DEFAULT]"
+        Write-Host "QA Instinct - Lifecycle Manager" -ForegroundColor Yellow
+        Write-Host "  1. Install (Fresh deployment of QA Instinct)  [DEFAULT]"
         Write-Host "  2. Update (Pull latest versions of all rules and commands)"
         Write-Host "  3. Uninstall / Remove (Purge all copied files & clean up git hooks)"
         Write-Host ""
@@ -1706,6 +1750,7 @@ function Main {
             [string]$Scope
         )
 
+        Move-LegacyManifest -BaseDir $BaseDir
         if ($global:OPERATION -eq 'uninstall') {
             Write-Info "Uninstalling from $Scope scope..."
             Write-FilePath $BaseDir
@@ -1776,11 +1821,11 @@ function Main {
         }
         elseif ($global:UninstallRemovedCount -eq 0) {
             Write-Host "[..] Nothing to uninstall." -ForegroundColor Cyan
-            Write-Host "No Bem-te-vi files were found installed."
+            Write-Host "No QA Instinct files were found installed."
         }
         else {
             Write-Success "Uninstallation successful!"
-            Write-Host "Bem-te-vi has been completely removed. Removed $($global:UninstallRemovedCount) file(s)."
+            Write-Host "QA Instinct has been completely removed. Removed $($global:UninstallRemovedCount) file(s)."
         }
     }
     elseif ($global:OPERATION -eq 'update') {
@@ -1804,7 +1849,7 @@ function Main {
             $copilotRulesHint = $rulesHint
         }
         else {
-            $rulesHint = 'bem-te-vi rules always on'
+            $rulesHint = 'qa-instinct rules always on'
             $copilotRulesHint = 'rules in .github\copilot-instructions.md'
         }
         foreach ($ed in $editors) {
@@ -1813,7 +1858,7 @@ function Main {
                 'cursor'      { Write-Host "  Cursor/Trae : $rulesHint; every command, skill and agent is a skill (/qa-cases)" }
                 'windsurf'    { Write-Host "  Windsurf    : $rulesHint; every command, skill and agent is a skill (@qa-cases)" }
                 'copilot'     { Write-Host "  Copilot     : $copilotRulesHint; every command, skill and agent is a skill (/qa-cases)" }
-                'cline'       { Write-Host "  Cline       : bem-te-vi rules always on; every command, skill and agent is a skill (/qa-cases)" }
+                'cline'       { Write-Host "  Cline       : qa-instinct rules always on; every command, skill and agent is a skill (/qa-cases)" }
                 'antigravity' {
                     Write-Host "  Antigravity : $rulesHint; every command, skill and agent is a skill (ask for qa-cases)"
                     # Antigravity's launcher in a plain WSL terminal opens a Windows window whose

@@ -7,7 +7,7 @@ metadata:
 ---
 # Skill: Session-Based Exploratory Testing & SBTM
 
-> **Senior QA Analyst** | ISTQB CTFL v4.0 | Exploratory Testing & SBTM Workflow
+> **Senior QA Engineer** | ISTQB CTFL v4.0 | Exploratory Testing & SBTM Workflow
 
 This skill is automatically activated when tasks involve exploratory testing, setting up bug bashes, executing session-based test management (SBTM), or defining test heuristic strategies.
 

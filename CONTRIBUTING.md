@@ -1,6 +1,6 @@
-# Contributing to Bem-te-vi
+# Contributing to QA Instinct
 
-First off, thank you for considering contributing to Bem-te-vi! We welcome contributions from everyone and value your feedback.
+First off, thank you for considering contributing to QA Instinct! We welcome contributions from everyone and value your feedback.
 
 **Start here.** To report a problem or send a change, read sections 7 to 10 first: the
 contributions that help most, the evidence a change needs, what will not be merged, and the steps
@@ -115,10 +115,10 @@ If you are modifying the shell scripts or adapter generation logic:
 3. Test the installation locally via `tests/test-lifecycle.sh`, and
    `tests/test-lifecycle.ps1` if you touched `install.ps1`.
 
-If you are modifying an installer (`install.sh`, `install.ps1` or `cli/bem-te-vi.js`), also:
+If you are modifying an installer (`install.sh`, `install.ps1` or `cli/qa-instinct.js`), also:
 
 1. Read the file-safety contracts in `CLAUDE.md` first. All three installers share the
-   `.qa-skills-manifest` and `.qa-skills-known-hashes` formats, and the suites round-trip a
+   `.qa-instinct-manifest` and `.qa-instinct-known-hashes` formats, and the suites round-trip a
    file written by one and read by another — changing one in isolation will break the others.
 2. Keep `install.sh` compatible with **bash 3.2**, which is what macOS ships. `declare -A` and
    other bash 4 features will pass locally on Linux and fail on the macOS CI job.
@@ -130,6 +130,10 @@ If you add, rename or remove an agent under `.claude/agents/`, list it in
 `.claude-plugin/plugin.json` too: the Claude Code plugin names each agent file individually.
 `tests/plugin/verify-plugin.sh` fails CI when the two drift apart. Commands and skills need no
 change, because the plugin points at their folders.
+
+The plugin cannot ship rules, so it carries the rules as the generated `qa-rules` skill, committed
+under `plugin/skills/qa-rules/` (plan 067). After changing a rule, run `./generate-adapters.sh` and
+commit `plugin/` with it; `tests/plugin/verify-plugin.sh` fails CI when the copy is stale.
 
 CI runs the suites on Linux, Windows and macOS. A change that passes locally is not done until
 all three are green.
@@ -153,6 +157,7 @@ repository root:
 | Run Conformance Suite | `./tests/conformance/test-runner.sh && ./tests/conformance/run.sh` |
 | Test Evidence Checker | `./tests/test-check-test-evidence.sh` |
 | Test Case Format Hook | `./tests/test-validate-tc-format.sh` |
+| Hook Text Parity | `./tests/test-hook-parity.sh` |
 | Skill and Command Frontmatter | `./tests/test-frontmatter.sh` |
 | CTFL Section Citations | `./tests/test-ctfl-citations.sh` |
 | Plan Format (Plans 038 On) | `./tests/test-plan-format.sh` |
@@ -173,8 +178,8 @@ repository root:
 
 For a quick pass before you push, `npm run lint` runs ESLint and Prettier, and `npm test` runs the
 checks in the table that take a few seconds and need only Node and bash: frontmatter, citations,
-plan format, `llms.txt`, test case contracts, both hook tests, the plugin manifests, rules size,
-reference pointers, `/qa-trace`, the changelog dedupe, Node engines, command names and sizes,
+plan format, `llms.txt`, test case contracts, both hook tests, the hook text parity check, the plugin
+manifests, rules size, reference pointers, `/qa-trace`, the changelog dedupe, Node engines, command names and sizes,
 TypeScript samples and the benchmark integrity check. It stops at the first failure. It does not run
 ShellCheck, markdownlint, the known-hash check, the adapter generator, the corpus index, the
 conformance suite or the integration tests: run those from the table when you touch what they cover.
@@ -247,23 +252,23 @@ it, so cite the version or commit with the anchor.
 1. **A wrong or missing CTFL claim.** The package cites the CTFL v4.0.1 syllabus by section so that
    each claim can be checked against it. A claim the cited section does not support, a wrong section
    number, or a topic taught without its section is the most serious content defect it can have.
-   Open a [wrong or missing CTFL claim](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=ctfl-claim.yml)
+   Open a [wrong or missing CTFL claim](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=ctfl-claim.yml)
    issue with the file, the claim quoted and the section.
 2. **A field report.** You used a command or skill on real QA work and something happened: it
    caught a defect, missed one, produced a document your team could not use, or your assistant did
    something with an instruction that surprised you. A failure, written down with the output, is
-   worth more than praise. Open a [field report](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=field-report.yml).
+   worth more than praise. Open a [field report](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=field-report.yml).
 3. **A worked example.** Real output on someone else's public software, committed unedited, with a
    `README.md` giving the prompt, the date, the package version, the editor and model, and honest
    limits. [`examples/README.md`](examples/README.md) shows the shape and which commands have one.
 4. **An editor's install path.** An editor the package does not support yet, or a path an editor has
-   moved. Bring the link to the editor's own documentation. Paths live in `.qa-skills-editor-map`,
+   moved. Bring the link to the editor's own documentation. Paths live in `.qa-instinct-editor-map`,
    which all three installers read; a new editor also needs its adapter in both generators, and
    either change starts with a failing conformance case (section 8).
 
-Installer defects are welcome too: the [installer bug](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=installer-bug.yml)
+Installer defects are welcome too: the [installer bug](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=installer-bug.yml)
 form asks for what decides whether a report reproduces. For a new skill or command, open a
-[proposal](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=proposal.yml) before
+[proposal](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=proposal.yml) before
 writing it. Security problems go to [SECURITY.md](SECURITY.md), never to a public issue.
 
 ## 8. The Evidence Bar
@@ -285,7 +290,7 @@ reads well.
 - **Installer changes start with a failing test.** A behaviour the three installers share is a
   case under `tests/conformance/cases/`, run against every installer. Write the case first, show it
   failing, and quote the failure in the pull request. Then change `install.sh`, `install.ps1` and
-  `cli/bem-te-vi.js` together, so they still behave identically, keeping the file-safety contracts
+  `cli/qa-instinct.js` together, so they still behave identically, keeping the file-safety contracts
   in `CLAUDE.md` and bash 3.2 for `install.sh` (section 4).
 - **The always-loaded rules stay small.** `.claude/rules/` loads into every conversation in an
   installed Claude Code project. `tests/test-rules-size.sh` caps the rules at 25,000 bytes and

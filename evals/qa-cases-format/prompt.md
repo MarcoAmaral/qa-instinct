@@ -12,7 +12,7 @@ max_turns: 10
 allowed_tools: [Read, Glob, Grep, Skill]
 ---
 
-/bem-te-vi:qa-cases Write exactly three test cases for the user story below. Reply with the
+/qa-instinct:qa-cases Write exactly three test cases for the user story below. Reply with the
 test-case document only, as Markdown, starting at its first line, with no introduction and no code
 fence around it.
 

@@ -1,13 +1,13 @@
 {
-  "name": "bem-te-vi",
-  "version": "4.1.1",
-  "description": "Senior QA Analyst + QA Engineer commands, skills and agents grounded in software testing standards. This plugin does not include the rules under .claude/rules/; use `npx @marcoamaral/bem-te-vi init` for the complete install.",
+  "name": "qa-instinct",
+  "version": "4.3.0",
+  "description": "Senior QA Engineer commands, skills and agents grounded in software testing standards. The rules come as the qa-rules skill, read when a command needs them; `npx qa-instinct init` installs them always on.",
   "author": {
     "name": "Marco Amaral",
     "email": "contato@marcoamaral.com"
   },
-  "homepage": "https://github.com/MarcoAmaral/bem-te-vi",
-  "repository": "https://github.com/MarcoAmaral/bem-te-vi",
+  "homepage": "https://github.com/MarcoAmaral/qa-instinct",
+  "repository": "https://github.com/MarcoAmaral/qa-instinct",
   "license": "MIT",
   "keywords": [
     "qa",
@@ -20,7 +20,8 @@
     "./.claude/commands/"
   ],
   "skills": [
-    "./.claude/skills/"
+    "./.claude/skills/",
+    "./plugin/skills/"
   ],
   "agents": [
     "./.claude/agents/qa-designer.md",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # tests/conformance/run.sh — run every conformance case against every installer
-# available on this platform: install.sh and cli/bem-te-vi.js. (install.ps1 is covered by
+# available on this platform: install.sh and cli/qa-instinct.js. (install.ps1 is covered by
 # run.ps1 on Windows.) Each guarantee the installers share is written once, as a
 # case under cases/, and is required of all of them. See plans/016.
 #
@@ -20,9 +20,10 @@ set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"
 pkg="${CONFORMANCE_PKG:-$repo}"
-# The CLI moved from bin/cli.js to cli/bem-te-vi.js after 4.0.1 (plan 051); an older package tree
-# still has it at the old path.
-cli="$pkg/cli/bem-te-vi.js"
+# The CLI moved from bin/cli.js to cli/bem-te-vi.js after 4.0.1 (plan 051), and to
+# cli/qa-instinct.js with the rename (plan 065); an older package tree still has it at an old path.
+cli="$pkg/cli/qa-instinct.js"
+[ -f "$cli" ] || cli="$pkg/cli/bem-te-vi.js"
 [ -f "$cli" ] || cli="$pkg/bin/cli.js"
 cases="${CONFORMANCE_CASES:-$here/cases}"
 filter="${1:-}"
@@ -46,6 +47,9 @@ trim() { local s="$1"; s="${s#"${s%%[![:space:]]*}"}"; printf '%s' "${s%"${s##*[
 # run.ps1 applies the same grammar, line for line (tests/conformance/test-runner.sh checks both).
 
 EDITORS="claude cursor windsurf copilot cline antigravity"
+# The manifest every installer writes, and the name a 4.x install wrote it under (plan 066).
+MANIFEST=".qa-instinct-manifest"
+LEGACY_MANIFEST=".qa-skills-manifest"
 
 # A relative path with forward slashes, no empty, '.' or '..' segment, no drive or backslash.
 safe_rel() {
@@ -115,6 +119,11 @@ check_directive() {   # key value -> 0 when well-formed
       case "$val" in *" -> "*) ;; *) return 1 ;; esac
       path_spec "$(trim "${val%% -> *}")" && path_spec "$(trim "${val#* -> }")" ;;
     seed-manifest|drop-manifest|expect-manifest|expect-no-manifest) check_manifest_args "$val" ;;
+    legacy-manifest)
+      case "$val" in
+        *" -> "*) one_of "$(trim "${val%% -> *}")" "project home" && path_spec "$(trim "${val#* -> }")" ;;
+        *) one_of "$val" "project home" ;;
+      esac ;;
     seed-dir|seed-readonly|seed-unreadable|seed-crlf|expect-file|expect-absent|expect-backup|expect-no-backup) path_spec "$val" ;;
     run|run-unknown-option) check_run_args "$val" ;;
     expect-exit) case "$val" in ''|*[!0-9]*) return 1 ;; esac ;;
@@ -235,15 +244,27 @@ run_case() {  # <case dir> <installer>
         read -r a1 a2 a3 <<< "$val"
         root="$(scope_root "$a1")" || { fail "refused $val"; continue; }
         f="$(cd "$root" && cd "$(dirname "$a3")" 2>/dev/null && pwd)/$(basename "$a3")"
-        printf '%s  %s  %s\n' "$(sha "$f")" "$a2" "$a3" >> "$root/.qa-skills-manifest" ;;
+        printf '%s  %s  %s\n' "$(sha "$f")" "$a2" "$a3" >> "$root/$MANIFEST" ;;
       drop-manifest)
         # Removes an installed file and its manifest line, as if the install predated the file.
         read -r a1 a2 a3 <<< "$val"
         root="$(scope_root "$a1")" || { fail "refused $val"; continue; }
         rm -f "$root/$a3"
-        f="$root/.qa-skills-manifest"
+        f="$root/$MANIFEST"
         manifest_without "$f" "$a2" "$a3" > "$sb/manifest.tmp"
         cat "$sb/manifest.tmp" > "$f" && rm -f "$sb/manifest.tmp" ;;
+      legacy-manifest)
+        # Renames the scope's manifest to the name a 4.x install wrote it under. With "-> <path>",
+        # the manifest moves to that path and the old name becomes a symlink to it.
+        a1="$(trim "${val%% -> *}")"
+        root="$(scope_root "$a1")" || { fail "refused $val"; continue; }
+        case "$val" in
+          *" -> "*)
+            target="$(resolve "$(trim "${val#* -> }")")" || { fail "refused $val"; continue; }
+            mkdir -p "$(dirname "$target")"
+            mv "$root/$MANIFEST" "$target" && ln -s "$target" "$root/$LEGACY_MANIFEST" ;;
+          *) mv "$root/$MANIFEST" "$root/$LEGACY_MANIFEST" ;;
+        esac || fail "no manifest to rename in $a1" ;;
       seed-dir)
         target="$(resolve "$val")" || { fail "refused $val"; continue; }
         mkdir -p "$target" ;;
@@ -311,7 +332,7 @@ run_case() {  # <case dir> <installer>
         # where the link pointed; it matches the same glob but is not a backup itself.
         target="$(resolve "$(trim "${val%% = *}")")"
         n=0; got=""; text=""
-        for f in "$target".qa-skills-backup-*; do
+        for f in "$target".qa-instinct-backup-*; do
           [ -e "$f" ] || continue
           case "$f" in *.link-target) continue ;; esac
           n=$((n + 1)); got="$(cat "$f")"; text="$(tr -d '\r' < "$f.link-target" 2>/dev/null)"
@@ -328,7 +349,7 @@ run_case() {  # <case dir> <installer>
         esac ;;
       expect-manifest|expect-no-manifest)
         read -r a1 a2 a3 <<< "$val"
-        f="$(scope_root "$a1")/.qa-skills-manifest"
+        f="$(scope_root "$a1")/$MANIFEST"
         if [ -f "$f" ] && manifest_has "$f" "$a2" "$a3"; then n=1; else n=0; fi
         if [ "$key" = expect-manifest ]; then
           [ "$n" = 1 ] || fail "manifest lacks: $val"

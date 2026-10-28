@@ -3,7 +3,7 @@
 # tagged release, so the installer can tell its own older files from the user's own work
 # instead of guessing. See plans/011-release-hash-provenance.md.
 #
-# Output: .qa-skills-known-hashes, one "<sha256>  <path>" per line, sorted and de-duplicated.
+# Output: .qa-instinct-known-hashes, one "<sha256>  <path>" per line, sorted and de-duplicated.
 # The path is informational only — a file that moved between releases is still recognized by
 # its hash. Format matches the manifest's portable rules: no BOM, LF endings, forward slashes.
 #
@@ -13,12 +13,12 @@
 #   "# state: open"              rewritten here from the tags on every run;
 #   "# state: sealed at <sha>"   written once at export, never rewritten; --check fails if it
 #                                changes after the commit that sealed it.
-# Its other "#" lines are comments and never reach .qa-skills-known-hashes.
+# Its other "#" lines are comments and never reach .qa-instinct-known-hashes.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OUT_FILE="$SCRIPT_DIR/.qa-skills-known-hashes"
+OUT_FILE="$SCRIPT_DIR/.qa-instinct-known-hashes"
 FROZEN_NAME="known-hashes-before-public.txt"
 FROZEN_FILE="$SCRIPT_DIR/$FROZEN_NAME"
 OPEN_STATE="# state: open"
@@ -105,7 +105,7 @@ case "$STATE" in
             echo "$OPEN_STATE"
             echo "# The SHA-256 of every file shipped by a tagged release of this package before its public"
             echo "# repository began, which has none of those tags. generate-known-hashes.sh merges these"
-            echo "# entries into .qa-skills-known-hashes, the only list the installers read. While the state"
+            echo "# entries into .qa-instinct-known-hashes, the only list the installers read. While the state"
             echo "# is open, the script rewrites this file from the tags; once sealed, never. See plans/032."
             cat "$TAGGED"
         } > "$FROZEN_EXPECTED"
@@ -149,7 +149,7 @@ if [ "$CHECK" = true ]; then
     check_current "$OUT_FILE" "$SORTED"
     check_current "$FROZEN_FILE" "$FROZEN_EXPECTED"
     if [ "$STALE" = true ]; then
-        echo "Run ./generate-known-hashes.sh and commit .qa-skills-known-hashes and $FROZEN_NAME." >&2
+        echo "Run ./generate-known-hashes.sh and commit .qa-instinct-known-hashes and $FROZEN_NAME." >&2
         exit 1
     fi
     echo "Known-hash list is up to date ($SUMMARY)."

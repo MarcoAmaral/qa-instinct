@@ -7,7 +7,7 @@ metadata:
 ---
 # Skill: Test Strategy, Planning & Risk Assessment
 
-> **Senior QA Analyst** | ISTQB CTFL v4.0 (Chapter 5) | Test Planning & Risk Register Workflow
+> **Senior QA Engineer** | ISTQB CTFL v4.0 (Chapter 5) | Test Planning & Risk Register Workflow
 
 This skill is automatically activated when tasks involve creating test plans, designing test strategies, performing risk assessments, or setting up quality gates.
 

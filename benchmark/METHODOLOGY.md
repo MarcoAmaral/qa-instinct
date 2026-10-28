@@ -1,4 +1,4 @@
-# Bem-te-vi efficacy benchmark: methodology
+# QA Instinct efficacy benchmark: methodology
 
 > **Status:** version 1.0, frozen from the commit that merges it into the repository. Results are
 > reported against this protocol as written; every later departure is a dated entry in
@@ -13,6 +13,7 @@
 | Version | Date | What changed and why |
 | --- | --- | --- |
 | 1.0 | 2026-10-18 | First version, written before any benchmark data. The pilot ran on it (see "Pilot disclosure"). |
+| 1.1 | 2026-10-25 | The package was renamed QA Instinct (plan 065): condition D invokes `/qa-instinct:<command or skill>`, and the case digest is frozen again. Nothing else changed; the pilot's disclosure keeps the commands it ran. See DEVIATIONS.md, 2026-10-25. |
 
 ## Credit
 
@@ -21,14 +22,14 @@ The method is borrowed from the A11Y.md efficacy benchmark by Felipe A. Carriço
 <https://fecarrico.github.io/a11ymd/en/estudo/>): a one-sentence control and a size-matched
 placebo beside the bare model, prompts frozen before collection, an analysis fixed in advance,
 blind human scoring, a deviations log, and a primary arm kept apart from an ecological one. Only the
-method is borrowed; every file in this folder was written for Bem-te-vi.
+method is borrowed; every file in this folder was written for QA Instinct.
 
 ## The question
 
-Bem-te-vi says it makes an AI assistant do better QA work. A tester deciding whether to trust that
+QA Instinct says it makes an AI assistant do better QA work. A tester deciding whether to trust that
 would ask four things, and each is a claim this benchmark tests:
 
-1. **Content.** With Bem-te-vi, does the output for a QA task contain what a competent tester would
+1. **Content.** With QA Instinct, does the output for a QA task contain what a competent tester would
    put in it (every acceptance criterion covered, the right boundary values, the seeded defects
    found, the always-failing test kept apart from the flaky ones) more often than without it?
 2. **Contract.** Does the output follow the package's own formats (the `TC-CODE-NNN` cases its hook
@@ -54,10 +55,10 @@ plugin the run loads. [`PROMPTS.md`](PROMPTS.md) holds every preamble and prompt
 | A | bare | none | [`bare-plugin/`](bare-plugin/): a manifest and nothing else |
 | B | generic | `Work as a thorough, professional QA engineer.` | [`bare-plugin/`](bare-plugin/) |
 | C | placebo | `/writing-guide:help-articles` | [`control-standard/`](control-standard/): one command, a help-article writing guide |
-| D | Bem-te-vi | `/bem-te-vi:<command or skill>` (per task, below) | the repository root, the plugin as published |
+| D | QA Instinct | `/qa-instinct:<command or skill>` (per task, below) | the repository root, the plugin as published |
 
 - **D** types what the README tells a user to type for the job: the namespaced command or skill,
-  then the request. Whether Bem-te-vi loads when it is not named is a separate question, measured by
+  then the request. Whether QA Instinct loads when it is not named is a separate question, measured by
   `evals/qa-cases-plain-request` (plan 037), and not repeated here.
 - **C** is the placebo. How it was built, why it is silent on testing, and what it cannot match are
   in [`CONTROL.md`](CONTROL.md).

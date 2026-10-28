@@ -1,7 +1,7 @@
 {
-  "name": "@marcoamaral/bem-te-vi",
-  "version": "4.1.1",
-  "description": "Senior QA Analyst + QA Engineer skills for AI editors, grounded in software testing standards",
+  "name": "qa-instinct",
+  "version": "4.3.0",
+  "description": "Senior QA Engineer skills for AI editors, grounded in software testing standards",
   "keywords": [
     "qa",
     "testing",
@@ -15,10 +15,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarcoAmaral/bem-te-vi.git"
+    "url": "git+https://github.com/MarcoAmaral/qa-instinct.git"
+  },
+  "homepage": "https://github.com/MarcoAmaral/qa-instinct#readme",
+  "bugs": {
+    "url": "https://github.com/MarcoAmaral/qa-instinct/issues"
   },
   "bin": {
-    "bem-te-vi": "./cli/bem-te-vi.js"
+    "qa-instinct": "./cli/qa-instinct.js"
   },
   "files": [
     ".claude/agents/",
@@ -30,8 +34,8 @@
     "adapters/",
     "README.md",
     "CHANGELOG.md",
-    ".qa-skills-known-hashes",
-    ".qa-skills-editor-map"
+    ".qa-instinct-known-hashes",
+    ".qa-instinct-editor-map"
   ],
   "engines": {
     "node": ">=24"
@@ -56,7 +60,7 @@
     "lint": "eslint . && prettier --check .",
     "prepare": "husky",
     "prepublishOnly": "./generate-adapters.sh --clean",
-    "test": "bash tests/test-frontmatter.sh && bash tests/test-ctfl-citations.sh && bash tests/test-plan-format.sh && bash tests/test-llms-txt.sh && bash tests/test-tc-contracts.sh && bash tests/test-validate-tc-format.sh && bash tests/test-check-test-evidence.sh && bash tests/plugin/verify-plugin.sh && bash tests/test-rules-size.sh && bash tests/test-reference-links.sh && bash tests/test-qa-trace.sh && bash tests/test-dedupe-changelog.sh && bash tests/test-node-engines.sh && bash tests/test-docs-drift.sh && bash tests/test-ts-samples.sh && node benchmark/build.js --check && node benchmark/analysis/analyze.js --self-test"
+    "test": "bash tests/test-frontmatter.sh && bash tests/test-ctfl-citations.sh && bash tests/test-plan-format.sh && bash tests/test-llms-txt.sh && bash tests/test-tc-contracts.sh && bash tests/test-validate-tc-format.sh && bash tests/test-hook-parity.sh && bash tests/test-check-test-evidence.sh && bash tests/plugin/verify-plugin.sh && bash tests/test-rules-size.sh && bash tests/test-reference-links.sh && bash tests/test-qa-trace.sh && bash tests/test-dedupe-changelog.sh && bash tests/test-node-engines.sh && bash tests/test-docs-drift.sh && bash tests/test-ts-samples.sh && node benchmark/build.js --check && node benchmark/analysis/analyze.js --self-test"
   },
   "lint-staged": {
     "*.js": [

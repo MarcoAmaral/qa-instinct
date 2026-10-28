@@ -11,7 +11,7 @@ const crypto = require("crypto");
 const PKG_DIR = path.resolve(__dirname, "..");
 const PKG_CLAUDE = path.join(PKG_DIR, ".claude");
 const ADAPTERS_DIR = path.join(PKG_DIR, "adapters");
-const EDITOR_MAP_FILE = path.join(PKG_DIR, ".qa-skills-editor-map");
+const EDITOR_MAP_FILE = path.join(PKG_DIR, ".qa-instinct-editor-map");
 
 const SUBDIRS = ["commands", "rules", "skills", "agents", "hooks"];
 
@@ -24,7 +24,7 @@ const SUBDIRS = ["commands", "rules", "skills", "agents", "hooks"];
 // has a skills folder there. A skills column may name several folders separated
 // by "," (Antigravity's App and IDE share one global folder, its CLI reads
 // another; plan 058), so `skills` is a list. Single source of truth for this mapping is
-// .qa-skills-editor-map, shared with install.sh and install.ps1 — see that
+// .qa-instinct-editor-map, shared with install.sh and install.ps1 — see that
 // file's header comment there for the on-disk format. Read once at startup
 // instead of hardcoded here, so all three installers stay in sync automatically.
 
@@ -127,7 +127,7 @@ function parseArgs(command, args) {
     if (!allowed.includes(arg)) {
       console.error(
         c.red(
-          `Error: unknown option '${arg}'. Run 'bem-te-vi help' for usage.`,
+          `Error: unknown option '${arg}'. Run 'qa-instinct help' for usage.`,
         ),
       );
       process.exit(1);
@@ -194,7 +194,7 @@ function removeEmptyDirChain(dir, stopBase) {
 }
 
 // ─── Install manifest ─────────────────────────────────────────────────────────
-// Every file this CLI writes is recorded in <base>/.qa-skills-manifest as
+// Every file this CLI writes is recorded in <base>/.qa-instinct-manifest as
 // "<sha256>  <editor>  <path relative to base>" (editor is always "claude" here).
 // This is the exact on-disk contract shared with install.sh / install.ps1: no BOM,
 // LF line endings, forward-slash paths, two spaces between fields. Reads tolerate a
@@ -202,6 +202,11 @@ function removeEmptyDirChain(dir, stopBase) {
 // by either shell installer — or an older release — still parses correctly.
 
 function manifestFile(base) {
+  return path.join(base, ".qa-instinct-manifest");
+}
+
+// The name every 4.x release wrote the manifest under (plan 066).
+function legacyManifestFile(base) {
   return path.join(base, ".qa-skills-manifest");
 }
 
@@ -325,6 +330,37 @@ function writeManifest(mf, entries) {
   fs.renameSync(tmp, mf);
 }
 
+// Moves a 4.x install's manifest to the current name, the same in all three installers (plan 066),
+// before anything reads the manifest. Every entry of both files is kept; on the same editor and
+// path the current manifest's entry wins. The new manifest is written the usual way, then the old
+// name is removed: a symlink there is unlinked, never its target. A folder or an unreadable file at
+// the old name is not a manifest this run can use, so it is left and reported.
+function migrateManifest(base) {
+  const old = legacyManifestFile(base);
+  if (!fs.existsSync(old)) return;
+  const name = path.basename(old);
+  if (fs.statSync(old).isDirectory()) {
+    console.log(
+      c.yellow(`  ! Kept ${name} — it is a directory, not a manifest`),
+    );
+    return;
+  }
+  if (isUnreadable(old)) {
+    console.log(c.yellow(`  ! Kept ${name} — it cannot be read`));
+    return;
+  }
+  const mf = manifestFile(base);
+  const entries = readPortableLines(mf).map(parseManifestLine).filter(Boolean);
+  const keys = new Set(entries.map((e) => `${e.editor}  ${e.rel}`));
+  for (const e of readPortableLines(old)
+    .map(parseManifestLine)
+    .filter(Boolean)) {
+    if (!keys.has(`${e.editor}  ${e.rel}`)) entries.push(e);
+  }
+  writeManifest(mf, entries);
+  fs.rmSync(old, { force: true });
+}
+
 function manifestRecord(base, editor, rel, hash) {
   const mf = manifestFile(base);
   const entries = readPortableLines(mf)
@@ -334,13 +370,13 @@ function manifestRecord(base, editor, rel, hash) {
   writeManifest(mf, entries);
 }
 
-// .qa-skills-known-hashes ships in the npm package and records the SHA-256 of
+// .qa-instinct-known-hashes ships in the npm package and records the SHA-256 of
 // every file the package has ever shipped, across all tagged releases. It lets
 // install tell its own older file from the user's edit with certainty instead
 // of guessing: a destination whose hash appears there is the package's own file
 // and is adopted silently; anything else is the user's and is backed up.
 function loadKnownHashes() {
-  const list = path.join(PKG_DIR, ".qa-skills-known-hashes");
+  const list = path.join(PKG_DIR, ".qa-instinct-known-hashes");
   const set = new Set();
   for (const line of readPortableLines(list)) {
     const m = line.match(/^(\S+)/);
@@ -387,7 +423,7 @@ function backupDest(base, editor, rel, dest, src, knownHashes) {
   // included, is never opened (COPYFILE_EXCL); the next number is tried instead. On Windows a
   // junction or a folder at the name fails with EPERM, not EEXIST (plan 053 I10).
   const suffix = utcTimestamp();
-  let backup = `${dest}.qa-skills-backup-${suffix}`;
+  let backup = `${dest}.qa-instinct-backup-${suffix}`;
   for (let n = 1; ; n++) {
     try {
       fs.copyFileSync(dest, backup, fs.constants.COPYFILE_EXCL);
@@ -397,12 +433,12 @@ function backupDest(base, editor, rel, dest, src, knownHashes) {
         err.code === "EEXIST" || (err.code === "EPERM" && pathTaken(backup));
       if (!taken || n >= 100) throw err;
     }
-    backup = `${dest}.qa-skills-backup-${suffix}-${n}`;
+    backup = `${dest}.qa-instinct-backup-${suffix}-${n}`;
   }
 }
 
 // A symlinked folder below the editor's top-level folder (.claude/rules, .agents/skills, ...) is
-// never written or deleted through: after `bem-te-vi link` those folders are the package's own
+// never written or deleted through: after `qa-instinct link` those folders are the package's own
 // files, and any other link leads outside the install tree. The top-level folder itself (.claude
 // as a link into a dotfiles repository) is followed, as the editor follows it (plan 033 item 1).
 // Returns the first such folder, relative to base, or null.
@@ -420,11 +456,11 @@ const reportedLinks = new Set();
 function reportLinkedDir(base, dir, action, verb) {
   if (reportedLinks.has(dir)) return;
   reportedLinks.add(dir);
-  const hint = isBemTeViLink(
+  const hint = isQaInstinctLink(
     path.join(base, ...dir.split("/")),
     path.basename(dir),
   )
-    ? "; run 'bem-te-vi unlink' first"
+    ? "; run 'qa-instinct unlink' first"
     : "";
   console.log(
     c.yellow(
@@ -691,7 +727,7 @@ function uninstallRecorded(base, editor) {
 
 // Also true for a Windows directory junction, which Node reports as a symbolic link (readlink
 // gives its target with a trailing separator, which path.resolve drops). So linkedAncestor,
-// isBemTeViLink, linkedIntoPackage and the empty-folder cleanup treat the junctions `link` makes
+// isQaInstinctLink, linkedIntoPackage and the empty-folder cleanup treat the junctions `link` makes
 // without Developer Mode exactly as symlinks: checked on Windows by lifecycle Test 42b.
 function isSymlink(p) {
   try {
@@ -702,7 +738,7 @@ function isSymlink(p) {
 }
 
 // True when dest is a symlink whose real target lies inside this package's own
-// .claude/ folder (a `bem-te-vi link`). Walking such a dest would walk the package's
+// .claude/ folder (a `qa-instinct link`). Walking such a dest would walk the package's
 // own files, so uninstall must never treat it as an installed copy.
 function linkedIntoPackage(dest) {
   try {
@@ -716,8 +752,8 @@ function linkedIntoPackage(dest) {
 }
 
 // True when dest is a symlink whose target path ends in `.claude/<sub>`: a link
-// some bem-te-vi package made, whichever package it was. Works on a dangling link.
-function isBemTeViLink(dest, sub) {
+// some qa-instinct package made, whichever package it was. Works on a dangling link.
+function isQaInstinctLink(dest, sub) {
   try {
     if (!isSymlink(dest)) return false;
     const target = path.resolve(path.dirname(dest), fs.readlinkSync(dest));
@@ -874,7 +910,7 @@ function installNonClaudeEditor(targetBase, isGlobal, editorName, knownHashes) {
 async function promptEditors() {
   const { checkbox } = require("@inquirer/prompts");
   return checkbox({
-    message: "Which editors do you want to install Bem-te-vi for?",
+    message: "Which editors do you want to install QA Instinct for?",
     required: true,
     choices: [
       { name: "Claude Code", value: "claude", checked: true },
@@ -889,6 +925,7 @@ async function promptEditors() {
 
 async function cmdInit(opts) {
   const targetBase = resolveTarget(opts);
+  migrateManifest(targetBase);
   const isGlobal = opts.global;
   const editorFlag = opts.editor;
 
@@ -904,7 +941,7 @@ async function cmdInit(opts) {
   }
 
   console.log(
-    `\n${c.bold("bem-te-vi")} — installing to ${label(opts, editors)}\n`,
+    `\n${c.bold("qa-instinct")} — installing to ${label(opts, editors)}\n`,
   );
   const knownHashes = loadKnownHashes();
 
@@ -936,7 +973,7 @@ async function cmdInit(opts) {
 function editorHint(editor, isGlobal) {
   const rules = isGlobal
     ? "skills only (a global install writes no rules)"
-    : "bem-te-vi rules always on";
+    : "qa-instinct rules always on";
   // Antigravity's launcher in a plain WSL terminal opens a Windows window whose agent cannot
   // read the folder; a WSL window works (plan 062).
   const wslTip = process.env.WSL_DISTRO_NAME
@@ -947,7 +984,7 @@ function editorHint(editor, isGlobal) {
     windsurf: `  Windsurf    : ${rules}; every command, skill and agent is a skill (@qa-cases)`,
     copilot: `  Copilot     : ${isGlobal ? rules : "rules in .github/copilot-instructions.md"}; every command, skill and agent is a skill (/qa-cases)`,
     cline:
-      "  Cline       : bem-te-vi rules always on; every command, skill and agent is a skill (/qa-cases)",
+      "  Cline       : qa-instinct rules always on; every command, skill and agent is a skill (/qa-cases)",
     antigravity: `  Antigravity : ${rules}; every command, skill and agent is a skill (ask for qa-cases)${wslTip}`,
   };
   return lines[editor];
@@ -986,7 +1023,7 @@ function cmdUninstallInit(opts) {
   const isGlobal = opts.global;
   const editorFlag = opts.editor;
   // No flag: uninstall only `claude`, matching init's own backward-compatible
-  // default — a bare `bem-te-vi uninstall` behaves exactly as it always has.
+  // default — a bare `qa-instinct uninstall` behaves exactly as it always has.
   const editors = editorFlag
     ? editorFlag === "all"
       ? ALL_EDITORS
@@ -994,9 +1031,10 @@ function cmdUninstallInit(opts) {
     : ["claude"];
 
   console.log(
-    `\n${c.bold("bem-te-vi")} — uninstalling from ${label(opts, editors)}\n`,
+    `\n${c.bold("qa-instinct")} — uninstalling from ${label(opts, editors)}\n`,
   );
 
+  migrateManifest(targetBase);
   const hadManifest = fs.existsSync(manifestFile(targetBase));
   let removed = 0,
     kept = 0;
@@ -1019,7 +1057,7 @@ function cmdUninstallInit(opts) {
         if (linkedIntoPackage(path.join(targetClaude, sub))) {
           console.log(
             c.cyan(
-              `  i Skipped ${sub}/ — it is a link to the package; run 'bem-te-vi unlink' instead`,
+              `  i Skipped ${sub}/ — it is a link to the package; run 'qa-instinct unlink' instead`,
             ),
           );
           continue;
@@ -1082,7 +1120,7 @@ function cmdUninstallInit(opts) {
 function dirLinkType(dir) {
   const probe = path.join(
     fs.existsSync(dir) ? dir : os.tmpdir(),
-    `.bem-te-vi-link-probe-${process.pid}-${crypto.randomBytes(6).toString("hex")}`,
+    `.qa-instinct-link-probe-${process.pid}-${crypto.randomBytes(6).toString("hex")}`,
   );
   const types = process.platform === "win32" ? ["dir", "junction"] : ["dir"];
   let error = null;
@@ -1106,13 +1144,13 @@ function cmdLink(opts) {
   const targetBase = resolveTarget(opts);
   const targetClaude = path.join(targetBase, ".claude");
 
-  console.log(`\n${c.bold("bem-te-vi")} — linking to ${label(opts)}\n`);
+  console.log(`\n${c.bold("qa-instinct")} — linking to ${label(opts)}\n`);
   const linkType = dirLinkType(targetBase);
   if (typeof linkType !== "string") {
     const why =
       process.platform === "win32"
-        ? `Windows allows them only with Developer Mode on or in an elevated shell, and a directory junction could not be made either (${linkType.error.code || linkType.error.message}; junctions need an NTFS drive): turn Developer Mode on and run link again, or run 'bem-te-vi init' to install copies instead.`
-        : "this system refused one (EPERM): run 'bem-te-vi init' to install copies instead.";
+        ? `Windows allows them only with Developer Mode on or in an elevated shell, and a directory junction could not be made either (${linkType.error.code || linkType.error.message}; junctions need an NTFS drive): turn Developer Mode on and run link again, or run 'qa-instinct init' to install copies instead.`
+        : "this system refused one (EPERM): run 'qa-instinct init' to install copies instead.";
     console.error(
       c.red(
         `Error: cannot create symbolic links here. ${why} Nothing was linked.`,
@@ -1136,10 +1174,10 @@ function cmdLink(opts) {
 
     if (fs.existsSync(dest) || isSymlink(dest)) {
       if (isSymlink(dest)) {
-        if (!isBemTeViLink(dest, sub)) {
+        if (!isQaInstinctLink(dest, sub)) {
           console.log(
             c.yellow(
-              `  ! Kept ${sub}/ — the link does not point to a bem-te-vi package`,
+              `  ! Kept ${sub}/ — the link does not point to a qa-instinct package`,
             ),
           );
           continue;
@@ -1148,7 +1186,7 @@ function cmdLink(opts) {
       } else {
         console.log(
           c.yellow(
-            `  ⚠ skipped ${sub}/ (already exists as a real directory — remove or rename it first; 'bem-te-vi uninstall' removes an install made with init)`,
+            `  ⚠ skipped ${sub}/ (already exists as a real directory — remove or rename it first; 'qa-instinct uninstall' removes an install made with init)`,
           ),
         );
         continue;
@@ -1168,7 +1206,7 @@ function cmdUnlink(opts) {
   const targetBase = resolveTarget(opts);
   const targetClaude = path.join(targetBase, ".claude");
 
-  console.log(`\n${c.bold("bem-te-vi")} — unlinking from ${label(opts)}\n`);
+  console.log(`\n${c.bold("qa-instinct")} — unlinking from ${label(opts)}\n`);
 
   let removed = 0;
   for (const sub of SUBDIRS) {
@@ -1189,7 +1227,7 @@ function cmdUnlink(opts) {
   }
 
   if (removed === 0) {
-    console.log(c.yellow("  No bem-te-vi symlinks found.\n"));
+    console.log(c.yellow("  No qa-instinct symlinks found.\n"));
   } else {
     console.log(`\n${c.green("Done!")}\n`);
   }
@@ -1476,7 +1514,7 @@ function printUpdateReport(report) {
   console.log("");
   if (total === 0) {
     console.log(
-      c.cyan("  i Nothing installed — run 'bem-te-vi init' first.\n"),
+      c.cyan("  i Nothing installed — run 'qa-instinct init' first.\n"),
     );
     return;
   }
@@ -1500,10 +1538,10 @@ function printUpdateReport(report) {
   if (changed > 0) {
     console.log(
       c.cyan("  Note: ") +
-        "this refreshed files from the bem-te-vi version currently running " +
+        "this refreshed files from the qa-instinct version currently running " +
         "this command — it cannot update the package itself. To pick up a " +
-        "newer release, run 'npm update -g @marcoamaral/bem-te-vi' first, " +
-        "then 'bem-te-vi update' again.\n",
+        "newer release, run 'npm update -g qa-instinct' first, " +
+        "then 'qa-instinct update' again.\n",
     );
   }
 }
@@ -1513,13 +1551,14 @@ function cmdUpdate(opts) {
   const isGlobal = opts.global;
   const editorFlag = opts.editor;
   const knownHashes = loadKnownHashes();
+  migrateManifest(targetBase);
   const hasManifest = fs.existsSync(manifestFile(targetBase));
 
   // With no editor named, update refreshes every editor the manifest records.
   const labelEditors =
     editorFlag && editorFlag !== "all" ? [editorFlag] : ALL_EDITORS;
   console.log(
-    `\n${c.bold("bem-te-vi update")} — refreshing ${label(opts, labelEditors)}\n`,
+    `\n${c.bold("qa-instinct update")} — refreshing ${label(opts, labelEditors)}\n`,
   );
 
   const report = {
@@ -1578,21 +1617,21 @@ function cmdUpdate(opts) {
 function cmdHelp(print = console.log) {
   const { version } = require("../package.json");
   print(`
-${c.bold("bem-te-vi")} v${version} — QA skills for AI editors
+${c.bold("qa-instinct")} v${version} — QA skills for AI editors
 
 ${c.bold("Usage:")}
-  bem-te-vi init      [--global] [--editor <name>]
-  bem-te-vi uninstall [--global] [--editor <name>]
-  bem-te-vi update    [--global] [--editor <name>]
-  bem-te-vi link      [--global]
-  bem-te-vi unlink    [--global]
-  bem-te-vi --version
+  qa-instinct init      [--global] [--editor <name>]
+  qa-instinct uninstall [--global] [--editor <name>]
+  qa-instinct update    [--global] [--editor <name>]
+  qa-instinct link      [--global]
+  qa-instinct unlink    [--global]
+  qa-instinct --version
 
 ${c.bold("Commands:")}
   ${c.cyan("init")}       Copy QA skills into your editor(s) (project or global)
   ${c.cyan("uninstall")}  Remove files copied by init/update, keeping anything you changed
   ${c.cyan("link")}       Symlink QA skills into .claude/ — stays up-to-date with npm updates
-  ${c.cyan("unlink")}     Remove bem-te-vi symlinks from .claude/
+  ${c.cyan("unlink")}     Remove qa-instinct symlinks from .claude/
   ${c.cyan("update")}     Refresh installed files to this package's version, add files it now ships, drop ones it no longer ships
 
 ${c.bold("Flags:")}
@@ -1606,21 +1645,21 @@ ${c.bold("Flags:")}
                     install. It never installs an editor that wasn't already
                     installed — with nothing installed, it does nothing.
                     Refreshing does not check npm for a newer release; run
-                    'npm update -g @marcoamaral/bem-te-vi' first for that.
+                    'npm update -g qa-instinct' first for that.
   ${c.cyan("--version, -v")}     Print the version and exit (alone, before any command)
 
 ${c.bold("Examples:")}
-  bem-te-vi init                    # interactive menu on a TTY, claude-only otherwise
-  bem-te-vi init --editor cursor    # copy to current project for Cursor
-  bem-te-vi init --editor all       # copy for every supported editor
-  bem-te-vi init --global           # copy to ~/.claude/ (all projects)
-  bem-te-vi uninstall               # remove claude files copied by init/update
-  bem-te-vi uninstall --editor all  # remove every installed editor's files
-  bem-te-vi update                  # refresh whatever editors the manifest records
-  bem-te-vi update --global         # refresh ~/.qa-skills-manifest's install instead
-  bem-te-vi link                    # symlink in current project
-  bem-te-vi link --global           # symlink in ~/.claude/
-  bem-te-vi unlink                  # remove symlinks from current project
+  qa-instinct init                    # interactive menu on a TTY, claude-only otherwise
+  qa-instinct init --editor cursor    # copy to current project for Cursor
+  qa-instinct init --editor all       # copy for every supported editor
+  qa-instinct init --global           # copy to ~/.claude/ (all projects)
+  qa-instinct uninstall               # remove claude files copied by init/update
+  qa-instinct uninstall --editor all  # remove every installed editor's files
+  qa-instinct update                  # refresh whatever editors the manifest records
+  qa-instinct update --global         # refresh ~/.qa-instinct-manifest's install instead
+  qa-instinct link                    # symlink in current project
+  qa-instinct link --global           # symlink in ~/.claude/
+  qa-instinct unlink                  # remove symlinks from current project
 `);
 }
 
@@ -1635,7 +1674,7 @@ const [, , command, ...args] = process.argv;
   }
   // Only as the first word: after a command it is an unknown option, refused by parseArgs.
   if (["--version", "-v"].includes(command)) {
-    console.log(`bem-te-vi ${require("../package.json").version}`);
+    console.log(`qa-instinct ${require("../package.json").version}`);
     return;
   }
   if (!Object.hasOwn(COMMAND_OPTIONS, command)) {

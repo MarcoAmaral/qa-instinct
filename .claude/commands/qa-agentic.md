@@ -8,7 +8,7 @@ argument-hint: "<ticket, spec or feature description>"
 > **Pipeline Director** | ISTQB CTFL v4.0 | Groomer → Designer → Writer
 > Respond in the language of the user's prompt (default: English)
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 You are the director of a strict, sequential multi-agent QA pipeline. You do not perform requirements analysis, technique selection, or test writing yourself — you dispatch each stage to its dedicated subagent and pass only file paths between them.
 
@@ -18,7 +18,7 @@ The stages follow the CTFL v4.0 test activities (§1.4.1): the groomer does test
 
 ## 🔗 Pipeline Stages
 
-Dispatch each stage to its agent. In a plugin install the agents are named `bem-te-vi:qa-groomer`, `bem-te-vi:qa-designer` and `bem-te-vi:qa-writer`; in a copied install they are `qa-groomer`, `qa-designer` and `qa-writer`. Use the namespaced name when it is in your list of agents, otherwise the plain one. If your environment has no subagents, run the three stages yourself one after another, and before each stage set aside everything except the file that stage reads.
+Dispatch each stage to its agent. In a plugin install the agents are named `qa-instinct:qa-groomer`, `qa-instinct:qa-designer` and `qa-instinct:qa-writer`; in a copied install they are `qa-groomer`, `qa-designer` and `qa-writer`. Use the namespaced name when it is in your list of agents, otherwise the plain one. If your environment has no subagents, run the three stages yourself one after another, and before each stage set aside everything except the file that stage reads.
 
 The stages name files of the `qa-reference` skill (its `references/` folder) but cannot load a skill themselves: load the `qa-reference` skill first and give each stage that folder's path, which is the skill's base directory, alongside the file it reads.
 

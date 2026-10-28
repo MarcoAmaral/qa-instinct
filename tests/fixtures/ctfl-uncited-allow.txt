@@ -7,13 +7,13 @@
 .claude/agents/qa-designer.md:> **Test Design Specialist** | ISTQB CTFL v4.0 Technique Selection |
 .claude/commands/qa-agentic.md:> **Pipeline Director** | ISTQB CTFL v4.0 |
 .claude/commands/qa-automate.md:> **Senior QA Engineer** | ISTQB CTFL v4.0 | Automation Expert
-.claude/commands/qa-bdd.md:> **Senior QA Analyst** | ISTQB CTFL v4.0 | BDD / ATDD Expert
-.claude/commands/qa-cases.md:> **Senior QA Analyst** | ISTQB CTFL v4.0 | Test Case Design Expert
-.claude/commands/qa-defect.md:> **Senior QA Analyst** | ISTQB CTFL v4.0 | Defect Management Expert
-.claude/commands/qa-refinement.md:> **Senior QA Analyst** | ISTQB CTFL v4.0 | Strategic Advisor
-.claude/commands/qa.md:> **Bem-te-vi** | Marco Amaral | ISTQB CTFL v4.0 |
+.claude/commands/qa-bdd.md:> **Senior QA Engineer** | ISTQB CTFL v4.0 | BDD / ATDD Expert
+.claude/commands/qa-cases.md:> **Senior QA Engineer** | ISTQB CTFL v4.0 | Test Case Design Expert
+.claude/commands/qa-defect.md:> **Senior QA Engineer** | ISTQB CTFL v4.0 | Defect Management Expert
+.claude/commands/qa-refinement.md:> **Senior QA Engineer** | ISTQB CTFL v4.0 | Strategic Advisor
+.claude/commands/qa.md:> **QA Instinct** | Marco Amaral | ISTQB CTFL v4.0 |
 .claude/rules/testing-guidelines.md:> **Aligned with ISTQB CTFL v4.0 (syllabus v4.0.1)** |
-.claude/skills/qa-explore/SKILL.md:> **Senior QA Analyst** | ISTQB CTFL v4.0 | Exploratory Testing & SBTM Workflow
+.claude/skills/qa-explore/SKILL.md:> **Senior QA Engineer** | ISTQB CTFL v4.0 | Exploratory Testing & SBTM Workflow
 
 # The router's role statement: it names the syllabus the package works to, not a claim from it.
 .claude/commands/qa.md:working to the ISTQB CTFL v4.0 syllabus, with hands-on expertise

@@ -5,10 +5,10 @@ argument-hint: "<ticket folder, spec directory or pasted ticket> [results file] 
 ---
 # QA — Traceability (Requirement → Test Case → Result)
 
-> **Senior QA Analyst** | ISTQB CTFL v4.0 (syllabus v4.0.1) — §1.4.4 | Read-only by default
+> **Senior QA Engineer** | ISTQB CTFL v4.0 (syllabus v4.0.1) — §1.4.4 | Read-only by default
 > Respond in the language of the user's prompt (default: English)
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 You build a **traceability report**: for every requirement, which test cases cover it, how each link is known, and what the last result was. Traceability between the test basis, test cases, test results and defects supports coverage evaluation, shows the impact of a change, facilitates audits and makes progress and completion reports understandable (CTFL v4.0 §1.4.4). A requirement with no test is a gap in test-basis coverage, one of the defects static testing finds cheaply (§3.1.3).
 

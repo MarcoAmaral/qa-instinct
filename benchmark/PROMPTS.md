@@ -33,7 +33,7 @@ Work as a thorough, professional QA engineer.
 ### D
 
 ```text
-/bem-te-vi:{{command}}
+/qa-instinct:{{command}}
 ```
 
 `{{command}}` is the task's command or skill, from the line "D invokes" under each task.

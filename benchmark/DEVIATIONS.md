@@ -72,6 +72,28 @@ The pilot ran before the freeze, on the version it disclosed; what it changed is
   As in the entry of 2026-10-23, the figures are list prices as the tool reports them; the run
   counts against a subscription's usage limits, with extra usage off.
 
+## 2026-10-25: the package is renamed QA Instinct, so condition D's command prefix changes
+
+- **What the methodology says.** Condition D invokes `/bem-te-vi:<command or skill>` and loads
+  "the repository root, the plugin as published" ("Conditions"); `PROMPTS.md` holds the prompt and
+  `cases.sha256` the frozen digest of the built cases. A change before full collection is a new
+  version and an entry here.
+- **What was done.** Marco renamed the package Bem-te-vi to QA Instinct on 2026-10-25
+  (`plans/065-qa-instinct-rename.md`), and the Claude Code plugin from `bem-te-vi` to
+  `qa-instinct`. `PROMPTS.md` now invokes `/qa-instinct:{{command}}`, `build.js` names its
+  temporary folder after the new name, and `METHODOLOGY.md` is version 1.1. The digest is frozen
+  again: `d6a8856973913d63de3ba6039802606028be17feb51704b91b9a457650116e1c` before,
+  `354463545355b8aad70e03354a407fcd610ea6364a7e0f8675b703bae53cf6dd` now.
+- **What did not change.** The fixtures, the graders, the placebo and the analysis; every grader
+  sample still checks as expected (131 of 131). The files D loads are the same size: their mean is
+  still 14,550 bytes and the placebo's 15,493 bytes are still 106.5% of it.
+- **The Extension arm.** The arm on `claude-fable-5-1` (entry of 2026-10-23, on its branch), four
+  of nine tasks collected under `/bem-te-vi:`, finishes from its pinned checkout of `9381269` under
+  the old prefix, so all its generations saw one command name.
+- **Why it matters.** Arm 1 is collected after this change and sees `/qa-instinct:`. The model sees
+  the command's name, so a run could differ by the name alone; the pilot and the Extension arm saw
+  `/bem-te-vi:`.
+
 ## 2026-10-23: an Extension arm on `claude-fable-5-1`, collected before Arm 1
 
 - **What the methodology says.** "Arms": the Extension arm is "the same protocol with another

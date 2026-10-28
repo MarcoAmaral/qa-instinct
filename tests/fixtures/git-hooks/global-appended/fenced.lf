@@ -1,0 +1,23 @@
+#!/bin/sh
+echo before
+
+# >>> bem-te-vi global pre-commit >>>
+# Added by qa-skills global installer
+GLOBAL_VALIDATOR="$HOME/.claude/hooks/validate-tc-format.sh"
+if [ -f "$GLOBAL_VALIDATOR" ]; then
+    # Validate every staged Markdown file, renamed ones included. The list is NUL-separated so
+    # names with spaces, non-ASCII characters or glob characters arrive intact. bash does the
+    # reading, so this block also works appended to a hook that runs under plain sh.
+    git diff --cached --name-only -z --diff-filter=ACMR -- '*.md' | bash -c '
+        while IFS= read -r -d "" FILE; do
+            if grep -qE "^## TC-[A-Z0-9]+-[0-9]+:" "$FILE" 2>/dev/null; then
+                if ! "$1" "$FILE"; then
+                    printf "\033[0;31mError: Test case validation failed for %s. Commit aborted.\033[0m\n" "$FILE"
+                    exit 1
+                fi
+            fi
+        done' bash "$GLOBAL_VALIDATOR" || exit 1
+fi
+# GLOBAL_PRECOMMIT_APPEND
+# <<< bem-te-vi global pre-commit <<<
+echo after

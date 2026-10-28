@@ -1,7 +1,7 @@
 # Requires -Version 5.1
 #
 # tests/conformance/run.ps1 - run every conformance case against every installer
-# available on Windows: install.ps1 and cli/bem-te-vi.js. (install.sh is covered by run.sh.)
+# available on Windows: install.ps1 and cli/qa-instinct.js. (install.sh is covered by run.sh.)
 # Each guarantee the installers share is written once, as a case under cases\, and is
 # required of all of them. See plans/016.
 #
@@ -26,9 +26,10 @@ $ErrorActionPreference = 'Stop'
 $here = $PSScriptRoot
 $repo = (Resolve-Path (Join-Path $here '..\..')).Path
 $pkg = if ($Package) { (Resolve-Path $Package).Path } else { $repo }
-# The CLI moved from bin\cli.js to cli\bem-te-vi.js after 4.0.1 (plan 051); an older package tree
-# still has it at the old path.
-$cli = Join-Path $pkg 'cli\bem-te-vi.js'
+# The CLI moved from bin\cli.js to cli\bem-te-vi.js after 4.0.1 (plan 051), and to
+# cli\qa-instinct.js with the rename (plan 065); an older package tree still has it at an old path.
+$cli = Join-Path $pkg 'cli\qa-instinct.js'
+if (-not (Test-Path -LiteralPath $cli)) { $cli = Join-Path $pkg 'cli\bem-te-vi.js' }
 if (-not (Test-Path -LiteralPath $cli)) { $cli = Join-Path $pkg 'bin\cli.js' }
 $casesDir = if ($Cases) { (Resolve-Path -LiteralPath $Cases).Path } else { "$here\cases" }
 $utf8 = New-Object System.Text.UTF8Encoding($false)
@@ -51,6 +52,9 @@ function Get-Sha([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SH
 # run.sh applies the same grammar, line for line (tests\conformance\test-runner.ps1 checks this).
 
 $caseEditors = @('claude', 'cursor', 'windsurf', 'copilot', 'cline', 'antigravity')
+# The manifest every installer writes, and the name a 4.x install wrote it under (plan 066).
+$manifestName = '.qa-instinct-manifest'
+$legacyManifestName = '.qa-skills-manifest'
 
 # A relative path with forward slashes, no empty, '.' or '..' segment, no drive or backslash.
 function Test-SafeRel([string]$Rel) {
@@ -98,6 +102,13 @@ function Test-Directive([string]$Key, [string]$Val) {
             # The path is the rest of the line, so it may hold a space (plan 053 I11).
             $w = @($Val -split '\s+', 3)
             return (($w.Count -eq 3) -and ($w[0] -cin 'project', 'home') -and ($w[1] -cin $caseEditors) -and (Test-SandboxRel $w[2]))
+        }
+        'legacy-manifest' {
+            if ($Val.Contains(' -> ')) {
+                $parts = $Val -split ' -> ', 2
+                return (($parts[0].Trim() -cin 'project', 'home') -and (Test-PathSpec $parts[1].Trim()))
+            }
+            return ($Val -cin 'project', 'home')
         }
         { $_ -in 'seed-dir', 'seed-readonly', 'seed-unreadable', 'seed-crlf', 'expect-file', 'expect-absent', 'expect-backup', 'expect-no-backup' } { return (Test-PathSpec $Val) }
         { $_ -in 'run', 'run-unknown-option' } {
@@ -214,15 +225,34 @@ function Invoke-Case([string]$Dir, [string]$Installer) {
                 'seed-manifest' {
                     $p = $val -split '\s+', 3; $root = Get-ScopeRoot $p[0]
                     $file = [System.IO.Path]::GetFullPath((Join-Path $root ($p[2] -replace '/', '\')))
-                    [System.IO.File]::AppendAllText("$root\.qa-skills-manifest", "$(Get-Sha $file)  $($p[1])  $($p[2])`n", $utf8)
+                    [System.IO.File]::AppendAllText("$root\$manifestName", "$(Get-Sha $file)  $($p[1])  $($p[2])`n", $utf8)
                 }
                 'drop-manifest' {
                     # Removes an installed file and its manifest line, as if the install predated the file.
                     $p = $val -split '\s+', 3; $root = Get-ScopeRoot $p[0]
                     Remove-Item -LiteralPath (Join-Path $root ($p[2] -replace '/', '\')) -Force -ErrorAction SilentlyContinue
                     $pattern = '^[0-9a-f]{64}  ' + [regex]::Escape($p[1]) + '  ' + [regex]::Escape($p[2]) + '$'
-                    $rest = @([System.IO.File]::ReadAllLines("$root\.qa-skills-manifest", $utf8) | Where-Object { $_ -cnotmatch $pattern })
-                    [System.IO.File]::WriteAllText("$root\.qa-skills-manifest", (($rest | ForEach-Object { "$_`n" }) -join ''), $utf8)
+                    $rest = @([System.IO.File]::ReadAllLines("$root\$manifestName", $utf8) | Where-Object { $_ -cnotmatch $pattern })
+                    [System.IO.File]::WriteAllText("$root\$manifestName", (($rest | ForEach-Object { "$_`n" }) -join ''), $utf8)
+                }
+                'legacy-manifest' {
+                    # Renames the scope's manifest to the name a 4.x install wrote it under. With
+                    # "-> <path>", the manifest moves to that path and the old name becomes a symlink to it.
+                    $parts = $val -split ' -> ', 2; $root = Get-ScopeRoot $parts[0].Trim()
+                    if (-not (Test-Path -LiteralPath "$root\$manifestName")) { $failures.Add("no manifest to rename in $($parts[0].Trim())") }
+                    elseif ($parts.Count -eq 1) { Move-Item -LiteralPath "$root\$manifestName" -Destination "$root\$legacyManifestName" }
+                    else {
+                        $t = Resolve-CasePath $parts[1].Trim()
+                        New-Item -ItemType Directory -Path (Split-Path -Parent $t) -Force | Out-Null
+                        Move-Item -LiteralPath "$root\$manifestName" -Destination $t
+                        try { New-Item -ItemType SymbolicLink -Path "$root\$legacyManifestName" -Target $t -ErrorAction Stop | Out-Null }
+                        catch {
+                            if ($_.FullyQualifiedErrorId -notlike 'NewItemSymbolicLinkElevationRequired*') {
+                                throw "conformance: cannot create symlink '$legacyManifestName': $($_.Exception.Message)"
+                            }
+                            $notRun = 'creating a symlink needs Developer Mode or an elevated shell'; break
+                        }
+                    }
                 }
                 'seed-dir'     { New-Item -ItemType Directory -Path (Resolve-CasePath $val) -Force | Out-Null }
                 'seed-readonly' { Set-ItemProperty -LiteralPath (Resolve-CasePath $val) -Name IsReadOnly -Value $true }
@@ -305,7 +335,7 @@ function Invoke-Case([string]$Dir, [string]$Installer) {
                         # where the link pointed; it matches the same pattern but is not a backup itself.
                         $t = Resolve-CasePath $left
                         $backups = @(Get-ChildItem -LiteralPath (Split-Path -Parent $t) -Force -ErrorAction SilentlyContinue |
-                                     Where-Object { $_.Name -like ((Split-Path -Leaf $t) + '.qa-skills-backup-*') -and $_.Name -notlike '*.link-target' })
+                                     Where-Object { $_.Name -like ((Split-Path -Leaf $t) + '.qa-instinct-backup-*') -and $_.Name -notlike '*.link-target' })
                         if ($key -eq 'expect-backup' -and $backups.Count -lt 1) { $failures.Add("no backup of $val") }
                         if ($key -eq 'expect-no-backup' -and $backups.Count -gt 0) { $failures.Add("unexpected backup of $val") }
                         if ($key -eq 'expect-backup-content') {
@@ -319,7 +349,7 @@ function Invoke-Case([string]$Dir, [string]$Installer) {
                         }
                     }
                     { $_ -in 'expect-manifest', 'expect-no-manifest' } {
-                        $p = $val -split '\s+', 3; $mf = "$(Get-ScopeRoot $p[0])\.qa-skills-manifest"
+                        $p = $val -split '\s+', 3; $mf = "$(Get-ScopeRoot $p[0])\$manifestName"
                         $pattern = '^[0-9a-f]{64}  ' + [regex]::Escape($p[1]) + '  ' + [regex]::Escape($p[2]) + '$'
                         $found = $false
                         if (Test-Path -LiteralPath $mf) {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bem-te-vi - Installation Script
+# QA Instinct - Installation Script
 # Version: 2.0.0
 
 set -e  # Exit on error
@@ -116,7 +116,7 @@ fi
 
 if [ "$SHOW_HELP" = true ]; then
     cat << 'HELPTEXT'
-Bem-te-vi - Installation Script v2.0.0
+QA Instinct - Installation Script v2.0.0
 
 Usage: ./install.sh [OPTIONS]
 
@@ -188,7 +188,7 @@ if [ -z "$SHA256_TOOL" ]; then
 fi
 
 echo "╔════════════════════════════════════════════════╗"
-echo "║   Bem-te-vi - Installation Script               ║"
+echo "║   QA Instinct - Installation Script               ║"
 echo "║   QA skills for AI editors                      ║"
 echo "╚════════════════════════════════════════════════╝"
 echo ""
@@ -198,7 +198,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 QA_COMMANDS_DIR="$SCRIPT_DIR/.claude/commands"
 QA_SKILL_FILE="$QA_COMMANDS_DIR/qa.md"
 ADAPTERS_DIR="$SCRIPT_DIR/adapters"
-EDITOR_MAP_FILE="$SCRIPT_DIR/.qa-skills-editor-map"
+EDITOR_MAP_FILE="$SCRIPT_DIR/.qa-instinct-editor-map"
 
 # 1. Check qa.md exists
 if [ ! -f "$QA_SKILL_FILE" ]; then
@@ -312,7 +312,7 @@ generate_cursor_mdc() {
     mkdir -p "$(dirname "$TARGET")"
     cat > "$TARGET" << 'FRONTMATTER'
 ---
-description: "Senior QA Analyst + QA Engineer — aligned with ISTQB CTFL v4.0; Playwright, Vitest, BDD and CI/CD"
+description: "Senior QA Engineer — aligned with ISTQB CTFL v4.0; Playwright, Vitest, BDD and CI/CD"
 alwaysApply: false
 ---
 FRONTMATTER
@@ -333,8 +333,10 @@ check_adapter_exists() {
 
 # ─── Helper: register Git hooks ──────────────────────────────────────────────
 
-# The marker line the project hook carries; uninstall and the "is this ours?" check match on it.
-PROJECT_HOOK_MARKER="Pre-commit hook to validate test cases in qa-skills"
+# The marker line the project hook carries; uninstall and the "is this ours?" check match on it,
+# and on the line every 4.x release wrote (plan 066).
+PROJECT_HOOK_MARKER="Pre-commit hook to validate test cases in qa-instinct"
+PROJECT_HOOK_OLD_MARKER="Pre-commit hook to validate test cases in qa-skills"
 
 # Prints the hooks directory of the git repository rooted at $1 and fails when $1 is not the
 # root of one. Asking git (rather than assuming $1/.git/hooks) handles a .git that is a file,
@@ -357,7 +359,9 @@ GLOBAL_HOOK_BEGIN="# >>> bem-te-vi global pre-commit >>>"
 GLOBAL_HOOK_END="# <<< bem-te-vi global pre-commit <<<"
 GLOBAL_HOOK_OLD_MARKER="# Added by qa-skills global installer"
 GLOBAL_HOOK_OLD_END="# GLOBAL_PRECOMMIT_APPEND"
-GLOBAL_HOOK_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-skills"
+GLOBAL_HOOK_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-instinct"
+# The header a 4.x or older release wrote; a fresh hook from before the fences starts at it.
+GLOBAL_HOOK_OLD_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-skills"
 
 # Matches a first line that is a sh or bash shebang, the only hooks a bash block can be appended to.
 SH_SHEBANG_RE='^#![[:space:]]*(/[^[:space:]]*/)?(env[[:space:]]+)?(ba)?sh([[:space:]]|$)'
@@ -394,7 +398,7 @@ GLOBAL_PRECOMMIT_BLOCK
 # nothing is printed and the caller must leave the file alone.
 strip_global_hook_block() {
     awk -v B="$GLOBAL_HOOK_BEGIN" -v E="$GLOBAL_HOOK_END" -v O="$GLOBAL_HOOK_OLD_MARKER" \
-        -v A="$GLOBAL_HOOK_OLD_END" -v H="$GLOBAL_HOOK_FRESH_HEADER" '
+        -v A="$GLOBAL_HOOK_OLD_END" -v H="$GLOBAL_HOOK_OLD_FRESH_HEADER" '
         { line[NR] = $0; t = $0; sub(/\r$/, "", t); trim[NR] = t }
         END {
             s = 0; old = 0
@@ -431,14 +435,14 @@ register_git_hook() {
         # .git/hooks entirely, so writing there would only pretend to register something.
         HOOKS_PATH_CFG="$(git -C "$BASE_DIR" config core.hooksPath 2>/dev/null || true)"
         if [ -n "$HOOKS_PATH_CFG" ]; then
-            printf '%b\n' "${YELLOW}  ⚠ core.hooksPath is set ($HOOKS_PATH_CFG); add the bem-te-vi check to your hook manager yourself:${NC}"
+            printf '%b\n' "${YELLOW}  ⚠ core.hooksPath is set ($HOOKS_PATH_CFG); add the qa-instinct check to your hook manager yourself:${NC}"
             printf '%b\n' "${CYAN}      bash .claude/hooks/validate-tc-format.sh <file>${NC}"
             return 0
         fi
 
         local HOOK_FILE="$HOOK_DIR/pre-commit"
         # Never replace a hook we did not write: it is the user's (or their hook manager's).
-        if [ -L "$HOOK_FILE" ] || { [ -e "$HOOK_FILE" ] && ! grep -q "$PROJECT_HOOK_MARKER" "$HOOK_FILE"; }; then
+        if [ -L "$HOOK_FILE" ] || { [ -e "$HOOK_FILE" ] && ! grep -qF -e "$PROJECT_HOOK_MARKER" -e "$PROJECT_HOOK_OLD_MARKER" "$HOOK_FILE"; }; then
             printf '%b\n' "${YELLOW}  ⚠ Kept your existing pre-commit hook: $HOOK_FILE${NC}"
             printf '%b\n' "${CYAN}      To validate test cases from it, run: bash .claude/hooks/validate-tc-format.sh <file>${NC}"
             return 0
@@ -449,7 +453,7 @@ register_git_hook() {
         # Create pre-commit script
         cat > "$HOOK_FILE" << 'PRECOMMIT'
 #!/usr/bin/env bash
-# Pre-commit hook to validate test cases in qa-skills
+# Pre-commit hook to validate test cases in qa-instinct
 
 SCRIPT_DIR="$(git rev-parse --show-toplevel)"
 VALIDATOR="$SCRIPT_DIR/.claude/hooks/validate-tc-format.sh"
@@ -528,7 +532,7 @@ PRECOMMIT
 
 # ─── Shared editor → install-folder mapping ──────────────────────────────────
 # Single source of truth for every non-claude editor's install folders and display label, shared
-# with install.ps1 and cli/bem-te-vi.js. See .qa-skills-editor-map. Format: tab-separated
+# with install.ps1 and cli/qa-instinct.js. See .qa-instinct-editor-map. Format: tab-separated
 # "<editor>\t<project rules>\t<global rules>\t<project skills>\t<global skills>\t<label>",
 # "-" where the editor has none (plan 047). The generated rule files of adapters/<editor>/rules/
 # go into the rules folder, and the one Agent Skills tree adapters/skills/ into the skills folder.
@@ -566,7 +570,7 @@ remove_empty_ancestors() {
 }
 
 # ─── Install manifest ─────────────────────────────────────────────────────────
-# Every file the installer writes is recorded in <base>/.qa-skills-manifest as
+# Every file the installer writes is recorded in <base>/.qa-instinct-manifest as
 # "<sha256>  <editor>  <path relative to base>". Uninstall then removes only files whose
 # content still matches what was installed, so a project's own files are never destroyed —
 # including ones whose names collide with the package's, and files this package shipped
@@ -577,7 +581,9 @@ remove_empty_ancestors() {
 # stray leading UTF-8 BOM and trailing \r so a manifest written by an older release, or by
 # PowerShell's platform-native encoding, still parses correctly.
 
-manifest_file() { echo "$1/.qa-skills-manifest"; }
+manifest_file() { echo "$1/.qa-instinct-manifest"; }
+# The name every 4.x release wrote the manifest under (plan 066).
+legacy_manifest_file() { echo "$1/.qa-skills-manifest"; }
 
 valid_sha256() {   # text -> success when it is 64 lowercase hex digits
     [ "${#1}" -eq 64 ] && [ -z "${1//[0-9a-f]/}" ]
@@ -595,7 +601,7 @@ hash_file() {
 # The package's own file with CRLF line endings (a Windows checkout with core.autocrlf, a
 # Windows editor) is still the package's file. A file on disk therefore *matches* a hash if
 # its bytes hash to it, or its bytes with every carriage return removed do — the same rule in
-# install.ps1 and cli/bem-te-vi.js (plans/017). Hashes are still recorded as the raw bytes.
+# install.ps1 and cli/qa-instinct.js (plans/017). Hashes are still recorded as the raw bytes.
 hash_file_without_cr() {
     local HASH
     HASH="$(set -o pipefail; { tr -d '\r' < "$1" | sha256_stdin; } 2>/dev/null)" || HASH=""
@@ -681,6 +687,41 @@ manifest_record() {   # base editor rel hash
     manifest_write "$MF" "$BODY"
 }
 
+# Moves a 4.x install's manifest to the current name, the same in all three installers (plan 066),
+# once per base and before anything reads the manifest. Every entry of both files is kept; on the
+# same editor and path the current manifest's entry wins. The new manifest is written the usual
+# way, then the old name is removed: a symlink there is unlinked, never its target. A folder or an
+# unreadable file at the old name is not a manifest this run can use, so it is left and reported.
+MIGRATED_BASES=""
+migrate_manifest() {   # base
+    local BASE="$1" OLD NEW BODY="" KEYS=$'\n' HASH ED REL
+    case "$MIGRATED_BASES" in *"|$BASE|"*) return 0 ;; esac
+    MIGRATED_BASES="$MIGRATED_BASES|$BASE|"
+    OLD="$(legacy_manifest_file "$BASE")"
+    NEW="$(manifest_file "$BASE")"
+    if [ -d "$OLD" ]; then
+        printf '%b\n' "${YELLOW}  ! Kept ${OLD##*/} — it is a directory, not a manifest${NC}"
+        return 0
+    fi
+    [ -f "$OLD" ] || return 0
+    if [ ! -r "$OLD" ]; then
+        printf '%b\n' "${YELLOW}  ! Kept ${OLD##*/} — it cannot be read${NC}"
+        return 0
+    fi
+    while read -r HASH ED REL; do
+        [ -n "$HASH" ] || continue
+        KEYS="$KEYS$ED  $REL"$'\n'
+        BODY="$BODY$HASH  $ED  $REL"$'\n'
+    done < <(manifest_lines "$NEW")
+    while read -r HASH ED REL; do
+        [ -n "$HASH" ] || continue
+        case "$KEYS" in *$'\n'"$ED  $REL"$'\n'*) continue ;; esac
+        BODY="$BODY$HASH  $ED  $REL"$'\n'
+    done < <(manifest_lines "$OLD")
+    manifest_write "$NEW" "$BODY" || return 1
+    rm -f "$OLD"
+}
+
 # Known-hash list: the SHA-256 of every file this package has ever shipped, across all tagged
 # releases (see generate-known-hashes.sh and plans/011-release-hash-provenance.md). Lets the
 # installer tell its own older file from the user's edit with certainty instead of guessing —
@@ -691,7 +732,7 @@ KNOWN_HASHES_LOADED=false
 load_known_hashes() {
     [ "$KNOWN_HASHES_LOADED" = true ] && return 0
     KNOWN_HASHES_LOADED=true
-    local LIST="$SCRIPT_DIR/.qa-skills-known-hashes"
+    local LIST="$SCRIPT_DIR/.qa-instinct-known-hashes"
     # Missing list (old checkout, trimmed package) is not an error: known_hash simply never
     # matches, and every differing destination falls back to today's back-up-and-warn behavior.
     [ -f "$LIST" ] || return 0
@@ -735,7 +776,7 @@ backup_dest() {   # base editor rel dest src -> if dest's content differs from s
     done
     local BACKUP SUFFIX N=0
     SUFFIX="$(date -u +%Y%m%dT%H%M%SZ)"
-    BACKUP="$DEST.qa-skills-backup-$SUFFIX"
+    BACKUP="$DEST.qa-instinct-backup-$SUFFIX"
     # Created exclusively, like the manifest's temp file: a name already taken, a link planted
     # there included, is never opened; the next number is tried instead.
     until write_exclusive "$BACKUP" cat "$DEST"; do
@@ -744,7 +785,7 @@ backup_dest() {   # base editor rel dest src -> if dest's content differs from s
             printf '%b\n' "${RED}Error: could not back up $DEST${NC}" >&2
             return 1
         fi
-        BACKUP="$DEST.qa-skills-backup-$SUFFIX-$N"
+        BACKUP="$DEST.qa-instinct-backup-$SUFFIX-$N"
     done
     echo "BACKUP $BACKUP"
 }
@@ -767,7 +808,7 @@ write_exclusive() {   # file command...
 }
 
 # A symlinked folder below the editor's top-level folder (.claude/rules, .agents/skills, ...) is
-# never written or deleted through: after `bem-te-vi link` those folders are the npm package's own
+# never written or deleted through: after `qa-instinct link` those folders are the npm package's own
 # files, and any other link leads outside the install tree. The top-level folder itself (.claude
 # as a link into a dotfiles repository) is followed, as the editor follows it (plan 033 item 1).
 linked_ancestor() {   # base rel -> prints the first symlinked folder (relative to base), if any
@@ -791,9 +832,9 @@ report_linked_dir() {   # base dir action verb — once per link and run
     local BASE="$1" DIR="$2" ACTION="$3" VERB="$4" HINT=""
     case "$REPORTED_LINKS" in *"|$DIR|"*) return 0 ;; esac
     REPORTED_LINKS="$REPORTED_LINKS|$DIR|"
-    # A link `bem-te-vi link` made points at some package's .claude/<same name>.
+    # A link `qa-instinct link` made points at some package's .claude/<same name>.
     case "/$(readlink "$BASE/$DIR")" in
-        */.claude/"${DIR##*/}") HINT="; run 'bem-te-vi unlink' first" ;;
+        */.claude/"${DIR##*/}") HINT="; run 'qa-instinct unlink' first" ;;
     esac
     printf '%b\n' "${YELLOW}  ! $ACTION $DIR/ — it is a symbolic link; nothing was $VERB through it$HINT${NC}"
 }
@@ -913,7 +954,7 @@ install_file() {      # base editor src dest
             UPDATE_CHANGED_COUNT=$((UPDATE_CHANGED_COUNT + 1))
         fi
     fi
-    if [ -n "${QA_SKILLS_DEBUG:-}" ]; then
+    if [ -n "${QA_INSTINCT_DEBUG:-}" ]; then
         echo "  (debug) recorded $REL in $(manifest_file "$BASE")"
     fi
 }
@@ -1094,8 +1135,8 @@ read_editor_files() {   # editor scope base — sets EDITOR_FILES_LIST; fails wh
     local LIST
     LIST="$(editor_files "$1" "$2" "$3"; printf '%s\n' "$EDITOR_FILES_END")"
     # Test seam: keep only this many lines, as the cut on macOS did (lifecycle Test 71).
-    if [ -n "${BEM_TE_VI_TEST_CUT_LIST:-}" ]; then
-        LIST="$(printf '%s\n' "$LIST" | head -n "$BEM_TE_VI_TEST_CUT_LIST")"
+    if [ -n "${QA_INSTINCT_TEST_CUT_LIST:-}" ]; then
+        LIST="$(printf '%s\n' "$LIST" | head -n "$QA_INSTINCT_TEST_CUT_LIST")"
     fi
     case "$LIST" in
         "$EDITOR_FILES_END"|*$'\n'"$EDITOR_FILES_END") ;;
@@ -1255,6 +1296,7 @@ adopt_known() {   # editor scope base
 
 # Install, or update when --update was given.
 deploy_to_editor() {   # editor scope base
+    migrate_manifest "$3"
     if [ "$OPERATION" = update ]; then update_to_editor "$@"; else install_to_editor "$@"; fi
 }
 
@@ -1336,7 +1378,7 @@ purge_git_hook() {
             [ -n "$HOOK_DIR" ] || continue
             HOOK_FILE="$HOOK_DIR/pre-commit"
             if [ -f "$HOOK_FILE" ] && [ ! -L "$HOOK_FILE" ]; then
-                if grep -q "$PROJECT_HOOK_MARKER" "$HOOK_FILE"; then
+                if grep -qF -e "$PROJECT_HOOK_MARKER" -e "$PROJECT_HOOK_OLD_MARKER" "$HOOK_FILE"; then
                     rm -f "$HOOK_FILE"
                     printf '%b\n' "${GREEN}  ✓ Purged project-level git pre-commit hook: $HOOK_FILE${NC}"
                 fi
@@ -1365,7 +1407,7 @@ purge_git_hook() {
                     printf '%b\n' "${GREEN}  ✓ Cleaned global git pre-commit hook: $HOOK_FILE${NC}"
 
                     # Remove if nothing is left but the shebang and our own header comments
-                    if ! grep -qvE "^(#!.*|$GLOBAL_HOOK_FRESH_HEADER|$GLOBAL_HOOK_OLD_END|[[:space:]]*)\$" "$HOOK_FILE"; then
+                    if ! grep -qvE "^(#!.*|$GLOBAL_HOOK_FRESH_HEADER|$GLOBAL_HOOK_OLD_FRESH_HEADER|$GLOBAL_HOOK_OLD_END|[[:space:]]*)\$" "$HOOK_FILE"; then
                         rm -f "$HOOK_FILE"
                         printf '%b\n' "${CYAN}  i Removed empty global hook file.${NC}"
                     fi
@@ -1401,6 +1443,7 @@ uninstall_from_editor() {
     local BASE_DIR="$3"       # base directory (project dir or $HOME)
     local ED_REMOVED_START=$UNINSTALL_REMOVED_COUNT
     local ED_KEPT_START=$UNINSTALL_KEPT_COUNT
+    migrate_manifest "$BASE_DIR"
     note_uninstall_base "$BASE_DIR"
 
     case "$EDITOR_NAME" in
@@ -1449,7 +1492,7 @@ uninstall_from_editor() {
             # removals left empty. Editors with no global skills folder are never installed there.
             # With no manifest there is nothing to remove: unlike Claude Code's, these
             # destinations were never written without one, and the package's older files here
-            # are not in .qa-skills-known-hashes, so a match could only be a copy the user made
+            # are not in .qa-instinct-known-hashes, so a match could only be a copy the user made
             # (plan 047, review of #193).
             local LABEL REL PKG_DEST
             LABEL="$(editor_map_field "$EDITOR_NAME" label)"
@@ -1493,6 +1536,11 @@ git_commit_and_push() {
                 safe_manifest_rel "$REL" && [ -e "$REL" ] && PATHS+=("$REL")
             done < <(manifest_lines "$MANIFEST")
             [ -e "$MANIFEST" ] && PATHS+=("$(basename "$MANIFEST")")
+            # A manifest moved from its 4.x name: commit the old name's removal with it (plan 066).
+            if [ ! -e "$(legacy_manifest_file "$(pwd)")" ] \
+                && git ls-files --error-unmatch -- "$(basename "$(legacy_manifest_file "$(pwd)")")" >/dev/null 2>&1; then
+                PATHS+=("$(basename "$(legacy_manifest_file "$(pwd)")")")
+            fi
 
             if [ "${#PATHS[@]}" -gt 0 ] \
                 && git add -- "${PATHS[@]}" \
@@ -1518,7 +1566,7 @@ git_commit_and_push() {
 # ─── Post-install hint ───────────────────────────────────────────────────────
 
 # Lists what the package ships, read from its own .claude/ at run time, so a new command, skill
-# or agent shows up here with no edit. The same block in install.ps1 and cli/bem-te-vi.js (plan 033
+# or agent shows up here with no edit. The same block in install.ps1 and cli/qa-instinct.js (plan 033
 # item 8). Rules are counted, not named.
 print_claude_hint() {
     local CLAUDE_SRC="$SCRIPT_DIR/.claude" COMMANDS SKILLS AGENTS RULES
@@ -1567,8 +1615,8 @@ elif [ "$UNINSTALL_FLAG" = true ]; then
 elif [ "$NON_INTERACTIVE" = true ]; then
     OPERATION="install"
 else
-    echo "Bem-te-vi - Lifecycle Manager"
-    echo "1. Install (Fresh deployment of Bem-te-vi)"
+    echo "QA Instinct - Lifecycle Manager"
+    echo "1. Install (Fresh deployment of QA Instinct)"
     echo "2. Update (Pull latest versions of all rules and commands)"
     echo "3. Uninstall / Remove (Purge all copied files & clean up git hooks)"
     echo ""
@@ -1778,10 +1826,10 @@ if [ "$OPERATION" = "uninstall" ]; then
         echo "Removed $UNINSTALL_REMOVED_COUNT file(s); kept $UNINSTALL_KEPT_COUNT (see warnings above)."
     elif [ "$UNINSTALL_REMOVED_COUNT" -eq 0 ]; then
         printf '%b\n' "${CYAN}Nothing to uninstall.${NC}"
-        echo "No Bem-te-vi files were found installed."
+        echo "No QA Instinct files were found installed."
     else
         printf '%b\n' "${GREEN}Uninstallation successful!${NC}"
-        echo "Bem-te-vi has been completely removed. Removed $UNINSTALL_REMOVED_COUNT file(s)."
+        echo "QA Instinct has been completely removed. Removed $UNINSTALL_REMOVED_COUNT file(s)."
     fi
 elif [ "$OPERATION" = "update" ]; then
     UPDATE_TOTAL=$((UPDATE_CHANGED_COUNT + UPDATE_UPTODATE_COUNT + UPDATE_KEPT_COUNT))
@@ -1808,7 +1856,7 @@ else
         RULES_HINT="skills only (a global install writes no rules)"
         COPILOT_RULES_HINT="$RULES_HINT"
     else
-        RULES_HINT="bem-te-vi rules always on"
+        RULES_HINT="qa-instinct rules always on"
         COPILOT_RULES_HINT="rules in .github/copilot-instructions.md"
     fi
     for EDITOR in "${EDITORS[@]}"; do
@@ -1826,7 +1874,7 @@ else
                 echo "  Copilot     : $COPILOT_RULES_HINT; every command, skill and agent is a skill (/qa-cases)"
                 ;;
             cline)
-                echo "  Cline       : bem-te-vi rules always on; every command, skill and agent is a skill (/qa-cases)"
+                echo "  Cline       : qa-instinct rules always on; every command, skill and agent is a skill (/qa-cases)"
                 ;;
             antigravity)
                 echo "  Antigravity : $RULES_HINT; every command, skill and agent is a skill (ask for qa-cases)"

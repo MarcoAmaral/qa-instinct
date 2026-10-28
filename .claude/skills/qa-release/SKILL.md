@@ -7,9 +7,9 @@ metadata:
 ---
 # Skill: Release Readiness (Go/No-Go Record)
 
-> **Senior QA Analyst** | ISTQB CTFL v4.0 (§1.1.1, §1.2.1, §5.1.3, §5.3.2, §1.4.4, §5.4) | Evaluates a gate, never defines one
+> **Senior QA Engineer** | ISTQB CTFL v4.0 (§1.1.1, §1.2.1, §5.1.3, §5.3.2, §1.4.4, §5.4) | Evaluates a gate, never defines one
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 This skill is activated when the question is "are we ready to ship?". It leaves one file, `release/go-no-go-<version>.md`, that a reader can audit: which criterion, what evidence, from which build, what is still open, who accepted which risk.
 

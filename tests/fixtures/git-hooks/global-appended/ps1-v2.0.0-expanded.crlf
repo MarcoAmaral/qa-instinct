@@ -1,0 +1,19 @@
+#!/bin/sh
+echo before
+
+# Added by qa-skills global installer
+GLOBAL_VALIDATOR="\C:\Users\user/.claude/hooks/validate-tc-format.sh"
+if [ -f "\" ]; then
+    STAGED_FILES=\
+    if [ -n "\" ]; then
+        for FILE in \; do
+            if grep -qE "^## TC-[A-Z0-9]+-[0-9]+:" "\" 2>/dev/null; then
+                if ! "\" "\"; then
+                    echo -e "\033[0;31mError: Test case validation failed for \. Commit aborted.\033[0m"
+                    exit 1
+                fi
+            fi
+        done
+    fi
+fi
+echo after

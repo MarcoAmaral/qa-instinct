@@ -9,7 +9,7 @@ metadata:
 
 > **Senior QA Engineer** | ISTQB CTFL v4.0 (§2.2.1, §2.2.2, §4.2.1, §4.2.2, §4.2.4, §5.1.7, §1.4.3) | Contract first, then design, then evidence
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 This skill is activated when a request is to test an API, an endpoint or a GraphQL operation, to check a response against its contract, or to write API tests. Each step leaves a file under `api-tests/`, so work resumes from disk.
 

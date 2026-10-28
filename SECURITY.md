@@ -1,8 +1,8 @@
 # Security Policy
 
-`@marcoamaral/bem-te-vi` installs files into other people's repositories. Its installers create,
+`qa-instinct` installs files into other people's repositories. Its installers create,
 overwrite and delete files on a user's machine, and they make those decisions partly from
-`.qa-skills-manifest` — a file that lives inside the consuming repo and is therefore outside the
+`.qa-instinct-manifest` — a file that lives inside the consuming repo and is therefore outside the
 package's control. That is where this package's real risk sits, and it is what this policy is
 mostly about.
 
@@ -17,7 +17,7 @@ commit to, not an enterprise SLA.
 
 Go to the repository's **Security** tab → **Report a vulnerability**, or:
 
-<https://github.com/MarcoAmaral/bem-te-vi/security/advisories/new>
+<https://github.com/MarcoAmaral/qa-instinct/security/advisories/new>
 
 This opens a private advisory visible only to you and the maintainer. It lets us fix the defect
 and publish a GitHub Security Advisory (GHSA) at the same time, so users find out from their
@@ -25,9 +25,9 @@ tooling rather than from an attacker.
 
 Please include:
 
-- the version you tested (`bem-te-vi --help` prints it, or check `package.json`);
+- the version you tested (`qa-instinct --help` prints it, or check `package.json`);
 - your OS, shell and Node version — the three installers (`install.sh`, `install.ps1`,
-  `cli/bem-te-vi.js`) are separate implementations and a defect often exists in only one of
+  `cli/qa-instinct.js`) are separate implementations and a defect often exists in only one of
   them;
 - a reproduction: the smallest manifest, file layout or command that triggers it;
 - what an attacker gains — a file read, written, deleted, or code executed.
@@ -51,7 +51,7 @@ only that you sent a private report and received no reply — no details of the 
 ## Supported versions
 
 Only the latest released minor line receives security fixes. This package is small and updating
-takes two commands (`npm update -g @marcoamaral/bem-te-vi`, then `bem-te-vi update`), so backports
+takes two commands (`npm update -g qa-instinct`, then `qa-instinct update`), so backports
 to older lines are not offered.
 
 4.1.0 is the first public release, and the first version published to npm. Versions up to 4.0.1
@@ -100,7 +100,7 @@ below).
   limits the published tarball to the rule content, `cli/`, `adapters/` and metadata. CI gates
   production dependencies at `--audit-level=high` and treats dev findings as warnings.
 - **Anything requiring an attacker who can already write to the user's repository as a
-  precondition and gains nothing new by it.** Note the important exception: `.qa-skills-manifest`
+  precondition and gains nothing new by it.** Note the important exception: `.qa-instinct-manifest`
   *is* attacker-controllable by design, because it is committed and travels with the repo. A
   crafted manifest that makes an installer act outside the install tree is firmly in scope — see
   the history below.
@@ -112,11 +112,11 @@ below).
 Three invariants the installers are required to hold. A bug that breaks one of them is a
 vulnerability, not a defect:
 
-1. **Manifest paths are validated before use.** Every path read from `.qa-skills-manifest` is
+1. **Manifest paths are validated before use.** Every path read from `.qa-instinct-manifest` is
    checked to be relative, free of `..` segments, and to resolve inside the install tree. An entry
    that fails is refused and reported, never acted on.
 2. **A file that is not ours is never destroyed.** A colliding file is backed up to
-   `<file>.qa-skills-backup-<UTC timestamp>` unless its hash appears in `.qa-skills-known-hashes`,
+   `<file>.qa-instinct-backup-<UTC timestamp>` unless its hash appears in `.qa-instinct-known-hashes`,
    which identifies it as the package's own older file. Uninstall removes only files still exactly
    as installed, keeps and reports the rest, and never deletes a backup.
 3. **Links and read-only files are never forced.** A symlinked destination file is never written

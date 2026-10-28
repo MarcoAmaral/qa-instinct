@@ -1,15 +1,25 @@
-# Bem-te-vi Roadmap
+# QA Instinct Roadmap
 
 One page for newcomers: what the package ships, what comes next, what it will not do, and how to
 suggest something. It is written by hand from [`plans/README.md`](plans/README.md), last on
-2026-10-20. The detailed record lives in [`plans/`](plans/): every numbered plan, why it was
+2026-10-26. The detailed record lives in [`plans/`](plans/): every numbered plan, why it was
 needed, the pull requests that carried it, and the approaches that were rejected and why. Where
 this page and `plans/README.md` disagree, the plans index is right.
 
-## What 4.1.0 Ships
+## What 4.3.0 Ships
 
-4.1.0 is the first public release. Versions up to 4.0.1 were developed in a private repository;
-[`CHANGELOG.md`](CHANGELOG.md) keeps their history.
+4.1.0 was the first public release. Versions up to 4.0.1 were developed in a private repository;
+[`CHANGELOG.md`](CHANGELOG.md) keeps their history. Since 4.1.0:
+
+- **The name QA Instinct** (4.2.0, plan 065): npm package and command `qa-instinct`, repository
+  `MarcoAmaral/qa-instinct`.
+- **One Senior QA Engineer persona** (4.3.0): commands and skills speak as a Senior QA Engineer;
+  `/qa` keeps the analysis and engineering split as two kinds of work.
+- **`qa-instinct` names for the installers' own files** (4.3.0, plan 066): `.qa-instinct-manifest`
+  and `.qa-instinct-backup-*`. The next run of any installer moves a 4.x `.qa-skills-manifest`
+  to the new name, keeping every entry.
+
+And from 4.1.0:
 
 - **The `/qa` router and ten commands** for test cases, defect reports, BDD, automation, TDD,
   refinement, code review, static review of requirements, traceability and the multi-agent
@@ -26,7 +36,7 @@ this page and `plans/README.md` disagree, the plans index is right.
   smells, test doubles and what mocking costs, characterization tests, CI preconditions, delivery
   versus deployment, feature flags, canary and A/B validity.
 - **Three installers that agree and never destroy your files**: the npm CLI, `install.sh` and
-  `install.ps1`, held to one conformance suite of 64 cases on Linux, macOS (bash 3.2) and Windows
+  `install.ps1`, held to one conformance suite of 70 cases on Linux, macOS (bash 3.2) and Windows
   (PowerShell 5.1), with the fixes from the pre-launch code audit (plans 044, 045 and 046).
 - **Six editors from one source**: Claude Code, Cursor, Windsurf, GitHub Copilot, Cline and
   Antigravity. Outside Claude Code the rules are small always-on rule files and every command,
@@ -40,7 +50,7 @@ this page and `plans/README.md` disagree, the plans index is right.
   WSL install reports a Windows home it cannot resolve (plans 053 and 057). An install from WSL
   into the Windows user profile says that its pre-commit hook is not active for Windows-side git
   and that `install.ps1` sets it up there (plan 014, A3).
-- **A CLI help that is true**: `bem-te-vi --help` lists each command with only the options it
+- **A CLI help that is true**: `qa-instinct --help` lists each command with only the options it
   accepts, and the package requires Node 24, the latest LTS (#197).
 - **Corrected `/qa-defect` and `/qa-cases`**: Root Cause stays "not yet analysed" until analysis
   finds it, with a separate field for suspicions; every good title states its condition; and
@@ -70,14 +80,9 @@ The [README](README.md) explains each part, and `CHANGELOG.md` lists every chang
   conclusion.
 - **Each editor checked by hand.** The non-Claude layouts follow each editor's own documentation;
   none has yet been observed in the editor itself (plan 047, "Findings outside scope").
-- **Plugin installs without rules.** Claude Code plugins cannot ship rules, so a plugin install has
-  the commands and skills but not the rules they assume. Since plan 060 each command, skill and
-  agent that names a rule says in its reply which rule it could not apply; closing the gap itself
-  is still open.
-- **The git hook's text from one source.** `install.sh` and `install.ps1` each carry their own
-  copy of the pre-commit hook they register. One template for both would stop them drifting.
-
-The plugin without rules waits on a decision by the maintainer before any work starts.
+- **Plugin installs without rules.** Claude Code plugins cannot ship rules. Plan 067 (option A,
+  chosen by Marco on 2026-10-26) ships them as the `qa-rules` skill, which a command reads when it
+  needs a rule; always-on rules still need `npx qa-instinct init`.
 
 Deferred until someone needs them (decided by Marco, 2026-10-20):
 
@@ -104,12 +109,12 @@ names static analysis tools but does not teach running one or triaging its findi
 
 ## How to Propose Something
 
-- **A new skill or command**: open a [proposal](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=proposal.yml)
+- **A new skill or command**: open a [proposal](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=proposal.yml)
   before writing it.
-- **Something wrong in what the package teaches**: the [CTFL claim](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=ctfl-claim.yml)
+- **Something wrong in what the package teaches**: the [CTFL claim](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=ctfl-claim.yml)
   form.
-- **What happened when you used it**: a [field report](https://github.com/MarcoAmaral/bem-te-vi/issues/new?template=field-report.yml).
-- **A question or an early idea**: [Discussions](https://github.com/MarcoAmaral/bem-te-vi/discussions).
+- **What happened when you used it**: a [field report](https://github.com/MarcoAmaral/qa-instinct/issues/new?template=field-report.yml).
+- **A question or an early idea**: [Discussions](https://github.com/MarcoAmaral/qa-instinct/discussions).
 
 Larger work becomes a numbered plan in `plans/` before any code. [`CONTRIBUTING.md`](CONTRIBUTING.md)
 has the evidence a change needs and the steps from fork to pull request.

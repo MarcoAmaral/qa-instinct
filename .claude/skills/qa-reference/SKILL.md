@@ -1,15 +1,15 @@
 ---
 name: qa-reference
-description: "Bem-te-vi's on-demand QA reference. Text that names the `qa-reference` skill's `references/<file>.md` means a file in this skill's folder: load this skill, then read it there. Holds the test pyramid, CTFL test levels and types, ISTQB design techniques, coverage items and measures, CI/CD tag filters, Playwright/Vitest assertion examples, the axe-core template, the XSS payload spec and security checklists, evidence capture, Vitest and Playwright project patterns, automation in CI, defect report system info and Azure DevOps filing, test case examples, planning and reporting detail, test tool selection, shift-left, confirmation, regression and maintenance testing, CI preconditions and the broken build, delivery versus deployment, feature flags, canary and A/B validity, commit and lint conventions, and how to record an empty field and a correction. Use when writing or reviewing test automation, an accessibility or security test, test evidence, a tag filter, or when recommending a test tool."
+description: "QA Instinct's on-demand QA reference. Text that names the `qa-reference` skill's `references/<file>.md` means a file in this skill's folder: load this skill, then read it there. Holds the test pyramid, CTFL test levels and types, ISTQB design techniques, coverage items and measures, CI/CD tag filters, Playwright/Vitest assertion examples, the axe-core template, the XSS payload spec and security checklists, evidence capture, Vitest and Playwright project patterns, automation in CI, defect report system info and Azure DevOps filing, test case examples, planning and reporting detail, test tool selection, shift-left, confirmation, regression and maintenance testing, CI preconditions and the broken build, delivery versus deployment, feature flags, canary and A/B validity, commit and lint conventions, and how to record an empty field and a correction. Use when writing or reviewing test automation, an accessibility or security test, test evidence, a tag filter, or when recommending a test tool."
 metadata:
   id: qa-reference
   author: Marco Amaral
 ---
 # Skill: QA Reference (Read on Demand)
 
-> **Bem-te-vi** | Templates, examples and procedures behind the always-on rules
+> **QA Instinct** | Templates, examples and procedures behind the always-on rules
 
-**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either (a Claude Code plugin install has neither), go on without the rule and say at the end of your reply which rule you could not apply.
+**If a rule is not loaded.** When a rule this file names is not in your context, load the `qa-rules` skill and read that rule in the skill's own `references` folder. If no `qa-rules` skill is installed either, go on without the rule and say at the end of your reply which rule you could not apply.
 
 The rules (`testing-guidelines`, `code-style-qa`, `test-evidence` and the others) hold the short must-lists that apply to every conversation. The
 detail behind them lives here and costs nothing until it is needed: read the one file the task

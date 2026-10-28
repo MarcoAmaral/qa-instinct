@@ -106,3 +106,40 @@ Other names considered and checked the same day, so the choice is on record: qa-
 npm, ~4,600 GitHub repos), QA Superpowers (borrows the brand of obra/superpowers, ~297k stars),
 Bugkiller (`bug-killer` taken on npm, 29 exact repos), BugHammer and Testwarden (free, but frame
 or brand the work less accurately), verity-qa, qa-rigor, perito-qa, tamandua-qa (free).
+
+## Decision (2026-10-25): rename to QA Instinct
+
+> **Status: decided, 2026-10-25, by Marco.** Supersedes the 2026-10-08 choice of name; option B's
+> keep-list stands. Executed in `plans/065-qa-instinct-rename.md`.
+
+**Rename Bem-te-vi to QA Instinct.** "Bem-te-vi" says nothing about QA to anyone who does not know
+the bird. "QA Instinct" says what the package does: a senior QA's instincts loaded into an AI
+assistant, as the README's "a QA engineer's brain already loaded" puts it.
+
+| Identifier | Value | Checked 2026-10-25 |
+| --- | --- | --- |
+| Display name | QA Instinct | no product or company of that name; only a Ministry of Testing talk titled "Testing With Instinct" |
+| npm package | `qa-instinct`, unscoped (`npx qa-instinct init`), not `@marcoamaral/qa-instinct` | `npm view qa-instinct` 404 |
+| CLI command (`bin`) | `qa-instinct` | — |
+| GitHub repository | `MarcoAmaral/qa-instinct`, renamed from `MarcoAmaral/bem-te-vi` (GitHub redirects the old URL) | 0 repositories named like it |
+| Old npm package | `@marcoamaral/bem-te-vi` unpublished, not deprecated | 147 downloads, all on its publish day (2026-10-22): mirrors and scanners, not users; 0 stars, forks or watchers |
+
+The version continues the series (4.2.0, the next minor after 4.1.1), so the release history
+stays readable. Publishing `qa-instinct` and removing the old package are approved for this
+rename; any other outward-facing step still needs Marco's go-ahead.
+
+## Decision (2026-10-25, internal names)
+
+> **Status: decided, 2026-10-25, by Marco.** Supersedes option B's keep-list. Executed in
+> `plans/066-qa-instinct-internal-names.md`.
+
+**Take option C.** Marco installed QA Instinct in his portfolio repository and found
+`.qa-skills-manifest` at its root, named after the package's first name. The manifest, the backup
+suffix, the hook markers, the debug switch, the known-hash list and the editor map move to
+`qa-instinct`. All three installers migrate an old manifest on their next run and keep
+recognising the old hook text, so no install is stranded. Released as 5.0.0, because a 4.x CLI
+cannot see an install made by 5.x.
+
+> **Note, 2026-10-26, Marco.** Released as **4.3.0**, not 5.0.0: the version series stays
+> continuous, as for the 4.2.0 rename. A CLI older than 4.3.0 cannot see an install made by 4.3.0
+> or later; the changelog's breaking-change note says so.

@@ -1,16 +1,16 @@
 # The README demo (plan 049). Render it with demo/record.sh, which prepares the throwaway project
-# and the environment this tape expects; `vhs demo/bem-te-vi.tape` alone fails at Require or at
+# and the environment this tape expects; `vhs demo/qa-instinct.tape` alone fails at Require or at
 # the hidden setup.
 #
 # One clip, one live run: install the package, show the story, run /qa-cases in Claude Code's
 # print mode, list the cases it wrote, run the package's format hook on them. The only cut is the
 # model's wait (about 30 seconds of a blank screen), hidden between Hide and Show below.
 
-Output demo/bem-te-vi.gif
-Output demo/bem-te-vi.mp4
-Output demo/bem-te-vi.webm
+Output demo/qa-instinct.gif
+Output demo/qa-instinct.mp4
+Output demo/qa-instinct.webm
 
-Require bem-te-vi
+Require qa-instinct
 Require claude
 Require node
 
@@ -30,7 +30,7 @@ Sleep 1s
 Show
 
 Sleep 800ms
-Type "bem-te-vi init --editor claude"
+Type "qa-instinct init --editor claude"
 Sleep 500ms
 Enter
 Sleep 5s

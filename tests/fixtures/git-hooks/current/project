@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Pre-commit hook to validate test cases in qa-instinct
+
+SCRIPT_DIR="$(git rev-parse --show-toplevel)"
+VALIDATOR="$SCRIPT_DIR/.claude/hooks/validate-tc-format.sh"
+
+if [ -f "$VALIDATOR" ]; then
+    # Validate every staged Markdown file, renamed ones included. The list is NUL-separated so
+    # names with spaces, non-ASCII characters or glob characters arrive intact.
+    git diff --cached --name-only -z --diff-filter=ACMR -- '*.md' |
+    while IFS= read -r -d '' FILE; do
+        # Only validate if the file contains test cases
+        if grep -qE "^## TC-[A-Z0-9]+-[0-9]+:" "$SCRIPT_DIR/$FILE" 2>/dev/null; then
+            if ! "$VALIDATOR" "$SCRIPT_DIR/$FILE"; then
+                printf '\033[0;31mError: Test case validation failed for %s. Commit aborted.\033[0m\n' "$FILE"
+                exit 1
+            fi
+        fi
+    done
+    # The loop ran in a subshell, so its failure only shows up here.
+    [ "${PIPESTATUS[1]}" -eq 0 ] || exit 1
+fi

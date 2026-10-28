@@ -1,12 +1,12 @@
 name: Installer bug
-description: Installing, updating, linking or uninstalling Bem-te-vi did something wrong.
+description: Installing, updating, linking or uninstalling QA Instinct did something wrong.
 title: "[Installer] "
 labels: ["bug", "installer"]
 body:
   - type: markdown
     attributes:
       value: |
-        The three installers (the `bem-te-vi` CLI, `install.sh`, `install.ps1`) are separate
+        The three installers (the `qa-instinct` CLI, `install.sh`, `install.ps1`) are separate
         implementations of one contract, and a defect is often in only one of them. The fields
         below are what decide whether a report reproduces. A defect that lets an installer read,
         write or delete a file outside the install tree is a security problem: report it
@@ -16,7 +16,7 @@ body:
     attributes:
       label: Installer
       options:
-        - "bem-te-vi CLI (npx or npm install -g)"
+        - "qa-instinct CLI (npx or npm install -g)"
         - "install.sh"
         - "install.ps1"
         - "Claude Code plugin"
@@ -44,7 +44,7 @@ body:
     id: version
     attributes:
       label: Package version
-      description: "`bem-te-vi --help` prints it; for the shell installers, the tag or commit you ran."
+      description: "`qa-instinct --help` prints it; for the shell installers, the tag or commit you ran."
       placeholder: "4.1.0"
     validations:
       required: true
@@ -74,7 +74,7 @@ body:
     id: output
     attributes:
       label: Output
-      description: Everything the installer printed. Set `QA_SKILLS_DEBUG=1` for a trace line per manifest entry (`install.sh`, `install.ps1`).
+      description: Everything the installer printed. Set `QA_INSTINCT_DEBUG=1` for a trace line per manifest entry (`install.sh`, `install.ps1`).
       render: text
     validations:
       required: true

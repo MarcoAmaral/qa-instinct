@@ -1,14 +1,14 @@
 # Installer conformance suite
 
-`install.sh`, `install.ps1` and `cli/bem-te-vi.js` must behave identically. Each guarantee they
+`install.sh`, `install.ps1` and `cli/qa-instinct.js` must behave identically. Each guarantee they
 share is written **once** here, as a case, and every installer is run against every case:
 
 ```bash
-tests/conformance/run.sh            # install.sh and cli/bem-te-vi.js (Linux, macOS)
+tests/conformance/run.sh            # install.sh and cli/qa-instinct.js (Linux, macOS)
 ```
 
 ```powershell
-tests\conformance\run.ps1           # install.ps1 and cli/bem-te-vi.js (Windows)
+tests\conformance\run.ps1           # install.ps1 and cli/qa-instinct.js (Windows)
 ```
 
 Both accept a case-name filter. Both can run the installers from another package tree, so a new
@@ -44,6 +44,7 @@ then uninstall. Expectations are checked after the last line.
 | `seed-package: <path> = <package path>` | Copy a file from the package under test |
 | `seed-manifest: <scope> <editor> <path>` | Append a manifest entry carrying that file's real hash |
 | `drop-manifest: <scope> <editor> <path>` | Remove an installed file and its manifest entry, as if the install predated it |
+| `legacy-manifest: <scope> [-> <path>]` | Rename the scope's manifest to `.qa-skills-manifest`, the name a 4.x install wrote (plan 066). With `-> <path>`, move the manifest there and make the old name a symlink to it |
 | `seed-dir: <path>` | Create an empty folder, and any folder above it |
 | `seed-readonly: <path>` | Make a seeded file read-only |
 | `seed-unreadable: <path>` | Make a seeded file unreadable: `chmod a-r`, or on Windows a rule denying the current user the right to read its data |
@@ -57,14 +58,14 @@ then uninstall. Expectations are checked after the last line.
 | `expect-content: <path> = <text>` | Exact content, ignoring a trailing newline |
 | `expect-same-as-package: <path> = <package path>` | Byte-identical to the package's copy |
 | `expect-tree-as-package: <path> = <package folder>` | Every file below that folder of the package is below the path, byte-identical; a package folder with no file fails |
-| `expect-backup:` / `expect-no-backup: <path>` | A `<path>.qa-skills-backup-*` does / does not exist (the `.link-target` file beside a symlink's backup is not counted) |
+| `expect-backup:` / `expect-no-backup: <path>` | A `<path>.qa-instinct-backup-*` does / does not exist (the `.link-target` file beside a symlink's backup is not counted) |
 | `expect-backup-content: <path> = <text>` | The backup holds this text |
 | `expect-backup-link-target: <path> = <path>` | The backup of a replaced symlink records that target in `<backup>.link-target` |
 | `expect-manifest:` / `expect-no-manifest: <scope> <editor> <path>` | Manifest entry present / absent |
 | `expect-output-lists-package: <package dir> <pattern>` | Every match of the pattern in that folder of the package (`*/` for folders) is named in the output, without `.md`, with a leading `/` in `.claude/commands` |
 | `expect-output:` / `expect-no-output: <phrase>` | Substring of the combined output of every `run:` |
 
-In the four manifest directives the path is the rest of the line after the scope and the editor,
+In the four manifest directives that take an editor, the path is the rest of the line after the scope and the editor,
 so it may hold a space.
 
 **A case file is checked before it runs.** Every path stays inside its scope's folder: relative,

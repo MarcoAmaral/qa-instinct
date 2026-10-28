@@ -1,33 +1,33 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Bem--te--vi-blue?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Bem-te-vi" height="60">
+  <img src="https://img.shields.io/badge/QA_Instinct-blue?style=for-the-badge&logo=checkmarx&logoColor=white" alt="QA Instinct" height="60">
 </p>
 
-<h1 align="center">Bem-te-vi</h1>
+<h1 align="center">QA Instinct</h1>
 
 <p align="center">
-  Built by Marco Amaral — Senior QA skills for any AI coding assistant
+  Built by Marco Amaral — Senior QA Engineer skills for any AI coding assistant
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@marcoamaral/bem-te-vi"><img src="https://img.shields.io/npm/v/@marcoamaral/bem-te-vi?style=flat-square&color=blue" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/@marcoamaral/bem-te-vi"><img src="https://img.shields.io/npm/dm/@marcoamaral/bem-te-vi?style=flat-square" alt="npm downloads"></a>
-  <a href="https://github.com/MarcoAmaral/bem-te-vi/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@marcoamaral/bem-te-vi?style=flat-square" alt="license"></a>
-  <a href="https://github.com/MarcoAmaral/bem-te-vi"><img src="https://img.shields.io/github/stars/MarcoAmaral/bem-te-vi?style=flat-square" alt="GitHub stars"></a>
+  <a href="https://www.npmjs.com/package/qa-instinct"><img src="https://img.shields.io/npm/v/qa-instinct?style=flat-square&color=blue" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/qa-instinct"><img src="https://img.shields.io/npm/dm/qa-instinct?style=flat-square" alt="npm downloads"></a>
+  <a href="https://github.com/MarcoAmaral/qa-instinct/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/qa-instinct?style=flat-square" alt="license"></a>
+  <a href="https://github.com/MarcoAmaral/qa-instinct"><img src="https://img.shields.io/github/stars/MarcoAmaral/qa-instinct?style=flat-square" alt="GitHub stars"></a>
 </p>
 
 ---
 
-## What is Bem-te-vi?
+## What is QA Instinct?
 
-*The bem-te-vi is a Brazilian bird whose name means "I saw you!", which is what a tester says to a defect.*
+*QA Instinct is a senior QA engineer's instincts, loaded into your AI assistant before the first prompt.*
 
-Bem-te-vi is a plug-and-play skill package that gives AI coding assistants (Claude Code, Cursor, Windsurf, Copilot, Cline, Gemini) the expertise of a **Senior QA Analyst and QA Engineer**. It ships as a set of modular rules, slash commands, auto-loaded skills, and four subagents (a code reviewer and the three stages of a test-design pipeline) — all grounded in the **ISTQB CTFL v4.0** syllabus and modern test engineering practices. Instead of prompting your AI with long, custom instructions every time, you install this once and get structured test case generation, defect reports, BDD scenarios, Playwright/Vitest scaffolding, risk analysis, TDD workflows, and more — all following industry standards out of the box.
+QA Instinct is a plug-and-play skill package that gives AI coding assistants (Claude Code, Cursor, Windsurf, Copilot, Cline, Gemini) the expertise of a **Senior QA Engineer**. It ships as a set of modular rules, slash commands, auto-loaded skills, and four subagents (a code reviewer and the three stages of a test-design pipeline) — all grounded in the **ISTQB CTFL v4.0** syllabus and modern test engineering practices. Instead of prompting your AI with long, custom instructions every time, you install this once and get structured test case generation, defect reports, BDD scenarios, Playwright/Vitest scaffolding, risk analysis, TDD workflows, and more — all following industry standards out of the box.
 
 ---
 
 ## See It in Action
 
-![A terminal: bem-te-vi init installs the package, /qa-cases turns a three-criteria ServeRest cart story into nine test cases, and the package's format hook passes on them](demo/bem-te-vi.gif)
+![A terminal: qa-instinct init installs the package, /qa-cases turns a three-criteria ServeRest cart story into nine test cases, and the package's format hook passes on them](demo/qa-instinct.gif)
 
 *Real, unedited output of one live `/qa-cases` run in Claude Code's print mode on Claude Sonnet 5.5 (2026-10-20); only the model's wait is cut. How it was made and how to re-record it: [`demo/`](demo/README.md).*
 
@@ -37,9 +37,9 @@ Bem-te-vi is a plug-and-play skill package that gives AI coding assistants (Clau
 
 As a QA professional, I found myself repeating the same detailed prompts every time I wanted AI help with testing tasks: "follow ISTQB standards", "use the AAA pattern", "apply Boundary Value Analysis", "use Page Object Model", "tag tests with @smoke @p0"... Every new conversation started from zero.
 
-I wanted a solution where the AI **already knows** how a Senior QA works — the standards, the patterns, the templates, the techniques — so I could focus on the actual testing problem instead of re-teaching fundamentals every session.
+I wanted a solution where the AI **already knows** how a Senior QA Engineer works — the standards, the patterns, the templates, the techniques — so I could focus on the actual testing problem instead of re-teaching fundamentals every session.
 
-Bem-te-vi solves this by encoding years of QA expertise into a portable, installable package. Install it once, and every AI conversation starts with a QA engineer's brain already loaded.
+QA Instinct solves this by encoding years of QA expertise into a portable, installable package. Install it once, and every AI conversation starts with a QA engineer's brain already loaded.
 
 ---
 
@@ -120,27 +120,27 @@ Needs Node.js 24, the latest LTS, or later; Node.js 22 and older are no longer s
 
 ```bash
 # Without installing anything globally
-npx @marcoamaral/bem-te-vi init
+npx qa-instinct init
 
 # Or install the command once
-npm install -g @marcoamaral/bem-te-vi
+npm install -g qa-instinct
 ```
 
 ### Add to a project
 
 ```bash
 # Option A: Copy files (independent, version-locked)
-bem-te-vi init
+qa-instinct init
 
 # Option B: Symlink (auto-updates when you update the npm package)
 # On Windows without Developer Mode or an elevated shell it links with directory junctions instead
-bem-te-vi link
+qa-instinct link
 
 # Later: refresh what init copied to the installed package's version
-bem-te-vi update
+qa-instinct update
 
 # Remove files that `init` copied, keeping anything you changed
-bem-te-vi uninstall
+qa-instinct uninstall
 ```
 
 ### Other ways to install
@@ -148,40 +148,54 @@ bem-te-vi uninstall
 **Claude Code plugin marketplace:**
 
 ```text
-/plugin marketplace add MarcoAmaral/bem-te-vi
-/plugin install bem-te-vi@bem-te-vi
+/plugin marketplace add MarcoAmaral/qa-instinct
+/plugin install qa-instinct@qa-instinct
 ```
 
-This installs the commands, skills and agents under the plugin's prefix (`/bem-te-vi:qa-cases`,
-`/bem-te-vi:qa-bdd`, …). **It does not install the rules**: Claude Code plugins cannot ship rules,
-so the rules a command names are not in context. A command, skill or agent that names a rule then
-goes on without it and says at the end of its reply which rule it could not apply. If you use both
-the plugin and `init`, the commands appear twice.
+This installs the commands, skills and agents under the plugin's prefix (`/qa-instinct:qa-cases`,
+`/qa-instinct:qa-bdd`, …). Claude Code plugins cannot ship rules, so the plugin carries them as the
+`qa-rules` skill: a command, skill or agent that names a rule reads it from there when it runs.
+**The rules are not always on**, as they are after `init`: a question asked without a command gets
+none of them. If you use both the plugin and `init`, the commands appear twice.
 
 **Skills only, for any agent:**
 
 ```bash
-npx skills add MarcoAmaral/bem-te-vi
+npx skills add MarcoAmaral/qa-instinct
 ```
 
 This installs the eight skills (`qa-plan`, `qa-explore`, `qa-reference`, `qa-migrate`, `qa-api`, `qa-flaky`, `qa-release`, `qa-a11y`) and nothing else: no
 commands, agents or rules.
 
 For everything, including the rules, and an update and uninstall that never touch your own files,
-use `bem-te-vi init`.
+use `qa-instinct init`.
 
 What each install gives you, and what the commands do where a part is missing:
 
-| Install | Rules | References (`qa-reference`) | Scripts (`validate-tc-format.sh`, `check-test-evidence.sh`) |
+| Install | Rules | References | Scripts |
 | --- | --- | --- | --- |
-| `bem-te-vi init` (project) | In context in every conversation | Yes | Yes, in `.claude/hooks/` |
-| `bem-te-vi init --global` | In context, from `~/.claude/rules/` | Yes | Yes, in `~/.claude/hooks/` |
-| Claude Code plugin | **No**: a command, skill or agent that names a rule goes on without it and says so in its reply | Yes, in the plugin's skill folder | **No** (copied, not wired): commands apply the checks by reading the files and say the script was not run |
-| `npx skills add` | **No**: a skill that names a rule goes on without it and says so | Yes, with the `qa-reference` skill | **No**, and no commands either |
-| Cursor, Windsurf, Copilot, Cline, Antigravity (project) | Always on, one rule file per rule named `bem-te-vi-<rule>` (Copilot: sections of `.github/copilot-instructions.md`) | Yes, in the `qa-reference` skill of the editor's skills folder | **No**: the checks are applied by reading the files, and the reply says the script was not run |
-| Cursor, Windsurf, Copilot, Antigravity (global) | **No** rule files (none of them documents a global rules folder every surface reads that the package may write); the `qa-rules` skill holds every rule | Yes, as above | **No**, as above |
-| Cline (global) | Always on, one rule file per rule in `~/.cline/rules/` | Yes, as above | **No**, as above |
-| `AGENTS.md`, `CLAUDE.md` (copied by hand) | Inline, each under a `<!-- bem-te-vi-<rule> -->` line | Only if you also copy the package's `adapters/skills/` folders, as the file's header says | **No**, as above |
+| `qa-instinct init` (project) | Always loaded | Yes | Yes, `.claude/hooks/` |
+| `qa-instinct init --global` | Always loaded, `~/.claude/rules/` | Yes | Yes, `~/.claude/hooks/` |
+| Claude Code plugin | **No** ¹ | Yes | **No** ² |
+| `npx skills add` | **No** ¹ | Yes | **No**, no commands |
+| Other editors (project) ³ | Always loaded ⁴ | Yes | **No** ² |
+| Other editors (global) ³ | `qa-rules` skill ⁵ | Yes | **No** ² |
+| Cline (global) | Always loaded, `~/.cline/rules/` | Yes | **No** ² |
+| `AGENTS.md`, `CLAUDE.md` ⁶ | Inline | With `adapters/skills/` ⁷ | **No** ² |
+
+References are the `qa-reference` skill, in the editor's skills folder (the plugin's own skill
+folder for the plugin). Scripts are `validate-tc-format.sh` and `check-test-evidence.sh`.
+
+1. A command, skill or agent that names a rule goes on without it and says so in its reply.
+2. The commands apply the checks by reading the files, and the reply says the script was not
+   run. The plugin copies the scripts but does not wire them.
+3. Cursor, Windsurf, Copilot, Antigravity; Cline too for a project install.
+4. One rule file per rule, named `qa-instinct-<rule>`. Copilot: sections of
+   `.github/copilot-instructions.md`.
+5. No rule files: none of these editors documents a global rules folder every surface reads that
+   the package may write, so the `qa-rules` skill holds every rule.
+6. Copied by hand. Each rule sits under a `<!-- qa-instinct-<rule> -->` line.
+7. Only if you also copy the package's `adapters/skills/` folders, as the file's header says.
 
 Commands name a rule by its name (the `test-evidence` rule), a reference by the skill that holds
 it (the `qa-reference` skill's `references/evidence-capture.md`, opened by loading that skill and
@@ -203,7 +217,7 @@ Open your AI assistant and type:
 
 ## Commands & Modules
 
-Bem-te-vi is modular — only the relevant module loads per task, saving tokens and context window.
+QA Instinct is modular — only the relevant module loads per task, saving tokens and context window.
 
 | Command | What it does | Size |
 | --- | --- | --- |
@@ -288,12 +302,12 @@ Every command answers in the language of your prompt, English by default.
 
 | AI Editor | How it works | Install |
 | --- | --- | --- |
-| **Claude Code** (CLI & VS Code) | Slash commands + rules + skills + agents | `bem-te-vi init` |
-| **Cursor** / **Trae** | Rules in `.cursor/rules/` (`alwaysApply: true`); skills in `.cursor/skills/`, or `~/.cursor/skills/` globally; `/qa-cases` | `bem-te-vi init --editor cursor` |
-| **Windsurf (Devin Desktop)** | Rules in `.windsurf/rules/` (`trigger: always_on`); skills in `.windsurf/skills/`, or `~/.codeium/windsurf/skills/` globally; `@qa-cases` | `bem-te-vi init --editor windsurf` |
-| **GitHub Copilot** | Rules in `.github/copilot-instructions.md`; skills in `.github/skills/`, or `~/.copilot/skills/` globally (no rules file globally); `/qa-cases` | `bem-te-vi init --editor copilot` |
-| **Cline** | Rules in `.cline/rules/` (always active), or `~/.cline/rules/` globally; skills in `.cline/skills/`, or `~/.cline/skills/` globally; `/qa-cases` | `bem-te-vi init --editor cline` |
-| **Gemini / Antigravity** | Rules in `.agents/rules/` (`trigger: always_on`); skills in `.agents/skills/`, or globally in `~/.gemini/config/skills/` (App and IDE) and `~/.gemini/antigravity-cli/skills/` (CLI); ask for a skill by name | `bem-te-vi init --editor antigravity` |
+| **Claude Code** (CLI & VS Code) | Slash commands + rules + skills + agents | `qa-instinct init` |
+| **Cursor** / **Trae** | Rules in `.cursor/rules/` (`alwaysApply: true`); skills in `.cursor/skills/`, or `~/.cursor/skills/` globally; `/qa-cases` | `qa-instinct init --editor cursor` |
+| **Windsurf (Devin Desktop)** | Rules in `.windsurf/rules/` (`trigger: always_on`); skills in `.windsurf/skills/`, or `~/.codeium/windsurf/skills/` globally; `@qa-cases` | `qa-instinct init --editor windsurf` |
+| **GitHub Copilot** | Rules in `.github/copilot-instructions.md`; skills in `.github/skills/`, or `~/.copilot/skills/` globally (no rules file globally); `/qa-cases` | `qa-instinct init --editor copilot` |
+| **Cline** | Rules in `.cline/rules/` (always active), or `~/.cline/rules/` globally; skills in `.cline/skills/`, or `~/.cline/skills/` globally; `/qa-cases` | `qa-instinct init --editor cline` |
+| **Gemini / Antigravity** | Rules in `.agents/rules/` (`trigger: always_on`); skills in `.agents/skills/`, or globally in `~/.gemini/config/skills/` (App and IDE) and `~/.gemini/antigravity-cli/skills/` (CLI); ask for a skill by name | `qa-instinct init --editor antigravity` |
 | **ChatGPT / Claude Web** | Upload or paste the universal adapter | Manual copy from `adapters/universal/` (and `adapters/skills/`) |
 
 Outside Claude Code, every command, skill and agent is an Agent Skill of the same name (`/qa-cases`
@@ -310,10 +324,10 @@ measures):
 | Copilot | 1 | 393 lines | 393 lines | "about 1,000 lines" per file |
 | Antigravity | 10 | 7,906 bytes | 23,360 bytes (23,275 characters) | 24,000 bytes per rule file; 20,000 tokens for all always-on rules |
 | Cline | 10 | 7,860 characters | 22,965 characters | none stated |
-| `AGENTS.md` | 1 | 24,355 bytes | 24,355 bytes | Codex reads 32 KiB |
+| `AGENTS.md` | 1 | 24,362 bytes | 24,362 bytes | Codex reads 32 KiB |
 
 The 24 skills hold 51 files; their names and descriptions, all that is in context before one is
-used, come to 7,798 characters (about 1,950 tokens at 4 characters a token).
+used, come to 7,816 characters (about 1,950 tokens at 4 characters a token).
 
 **Three notes on the editor layout.** Cursor, Windsurf, Copilot and Cline also read other tools'
 skill folders (`.agents/skills/`, `.claude/skills/`), so with two editors installed in one project
@@ -334,9 +348,9 @@ installers print that command after an Antigravity install. Checked on Antigravi
 2026-10-21: in a WSL window and from a Windows folder, the agent loaded the rules and the
 `qa-cases` skill on its own, and its test cases passed the package's format check.
 
-> **Note:** `bem-te-vi init` (this npm package's CLI) supports every editor above via `--editor
+> **Note:** `qa-instinct init` (this npm package's CLI) supports every editor above via `--editor
 > <name>` or `--editor all`, with an interactive menu when run on a TTY with no flag. The shell
-> installer (`install.sh` / `install.ps1`) in the [GitHub repository](https://github.com/MarcoAmaral/bem-te-vi)
+> installer (`install.sh` / `install.ps1`) in the [GitHub repository](https://github.com/MarcoAmaral/qa-instinct)
 > supports the same editors for users without Node/npm.
 >
 > A global install (`--global`, `--target global`) puts each editor's skills in its own global
@@ -357,23 +371,26 @@ installers print that command after an Antigravity install. Checked on Antigravi
 
 ### Your own files are never destroyed
 
-All three installers — `install.sh`, `install.ps1` and the npm CLI (`bem-te-vi`) — record every
-file they write in `.qa-skills-manifest`, at the root of the project (or of your home directory
+All three installers — `install.sh`, `install.ps1` and the npm CLI (`qa-instinct`) — record every
+file they write in `.qa-instinct-manifest`, at the root of the project (or of your home directory
 for a global install).
 
 - **Installing** over a file that already exists and differs from what the installer is about to
-  write first checks its content hash against `.qa-skills-known-hashes` — every SHA-256 the
+  write first checks its content hash against `.qa-instinct-known-hashes` — every SHA-256 the
   package has ever shipped, across all its tagged releases. A match means the file is the
   package's own older content (however it got there, and whatever it's currently named), so it is
   overwritten and recorded in the manifest, with no backup. No match means it's treated as yours:
-  it is copied to `<file>.qa-skills-backup-<UTC timestamp>` first, and reported. This covers a file
+  it is copied to `<file>.qa-instinct-backup-<UTC timestamp>` first, and reported. This covers a file
   of your own whose name matches one of the package's (for example your own
   `.claude/rules/security-qa.md` or `.github/copilot-instructions.md`), including one you happen to have edited to the
   exact bytes of an older release.
 - **Uninstalling** removes only files that are still exactly as installed. Anything you added or
   changed is kept, and reported. Backups are never removed.
-- Keep `.qa-skills-manifest` for as long as the package is installed; deleting it makes uninstall
+- Keep `.qa-instinct-manifest` for as long as the package is installed; deleting it makes uninstall
   fall back to removing only files whose content still matches the package's current copy.
+- **An install made before 4.3** recorded itself in `.qa-skills-manifest`. The next `init`, `update`
+  or `uninstall` moves it to `.qa-instinct-manifest`, keeping every entry, and removes the old file;
+  commit both changes. Backups named `.qa-skills-backup-*` are kept like any other backup.
 - **A read-only file is left alone**, on install and on uninstall alike. Marking a file read-only
   is taken as a deliberate signal, and the rest of the tree still installs.
 - **A symlinked destination is never written through.** The file it points at, outside the
@@ -381,7 +398,7 @@ for a global install).
   the link pointed, and the link itself is replaced by the package's file.
 - **A symlinked folder inside the editor's folder is never written or deleted through.** Files
   under a linked `.claude/rules` (say) are skipped on install and kept on uninstall, with a
-  message; the rest installs. After `bem-te-vi link`, run `bem-te-vi unlink` before switching to
+  message; the rest installs. After `qa-instinct link`, run `qa-instinct unlink` before switching to
   a copy. The editor's own folder (`.claude` itself) may be a link, as in a dotfiles setup. A
   Windows directory junction counts as a link.
 - This guarantee covers all three installers, and they interoperate: you can install with one and
@@ -390,7 +407,7 @@ for a global install).
   trailing `\r` from an older release — and all three agree on SHA-256, whether it comes from
   `sha256sum` (Linux), `shasum -a 256` (macOS), `Get-FileHash` (Windows) or Node's `crypto`.
   They read the same known-hash list the same tolerant way.
-- Set `QA_SKILLS_DEBUG=1` (`install.sh` or `install.ps1`) to print a trace line for every manifest entry
+- Set `QA_INSTINCT_DEBUG=1` (`install.sh` or `install.ps1`) to print a trace line for every manifest entry
   recorded during install.
 
 ---
@@ -400,13 +417,13 @@ for a global install).
 **Nothing runs in the background, no API key is needed, and nothing is sent anywhere.** The package
 is text your AI assistant reads, plus an installer.
 
-- **What `bem-te-vi init` writes.** For Claude Code: `.claude/commands/`, `.claude/rules/`,
+- **What `qa-instinct init` writes.** For Claude Code: `.claude/commands/`, `.claude/rules/`,
   `.claude/skills/`, `.claude/agents/` and `.claude/hooks/` in your project (or in `~/.claude/`
   with `--global`). For the other editors: the rule files and the skills folder at the paths in
   [Editor Support](#editor-support).
-  It also writes `.qa-skills-manifest`, the record of what it installed, and backs up any file of
+  It also writes `.qa-instinct-manifest`, the record of what it installed, and backs up any file of
   yours that was in the way (see [Your own files are never destroyed](#your-own-files-are-never-destroyed)).
-- **No network, no telemetry.** The `bem-te-vi` command makes no network requests and starts no
+- **No network, no telemetry.** The `qa-instinct` command makes no network requests and starts no
   other programs: it copies files and records their hashes. (Getting the package from npm is, of
   course, a download.)
 - **The two scripts in `.claude/hooks/` do not run on their own.** `init` copies them and marks them
@@ -430,12 +447,12 @@ is text your AI assistant reads, plus an installer.
 ## CLI Reference
 
 ```text
-bem-te-vi init      [--global] [--editor <name>]
-bem-te-vi uninstall [--global] [--editor <name>]
-bem-te-vi update    [--global] [--editor <name>]
-bem-te-vi link      [--global]
-bem-te-vi unlink    [--global]
-bem-te-vi --version
+qa-instinct init      [--global] [--editor <name>]
+qa-instinct uninstall [--global] [--editor <name>]
+qa-instinct update    [--global] [--editor <name>]
+qa-instinct link      [--global]
+qa-instinct unlink    [--global]
+qa-instinct --version
 ```
 
 `link` and `unlink` work on Claude Code's `.claude/` folder only and do not take `--editor`.
@@ -450,11 +467,11 @@ bem-te-vi --version
 | `uninstall --editor <name>` / `--editor all` | Remove one editor's files, or every installed editor's files |
 | `link` | Symlink into `.claude/` — auto-updates with `npm update -g` |
 | `link --global` | Symlink into `~/.claude/` globally |
-| `unlink` | Remove bem-te-vi symlinks |
+| `unlink` | Remove qa-instinct symlinks |
 | `update` | Refresh installed files to this package's current version, install the files it added since your install, and remove unmodified ones it no longer ships. Files you changed are backed up, never overwritten. Never installs an editor that was not already installed; with nothing installed, does nothing. `install.sh --update` and `install.ps1 -Update` do the same |
 | `update --editor <name>` | Refresh one editor's files. With no `--editor`, refreshes every editor the manifest records |
-| `update --global` | Refresh the global install recorded in `~/.qa-skills-manifest` |
-| `--version` / `-v` | Print the installed version (`bem-te-vi <version>`) |
+| `update --global` | Refresh the global install recorded in `~/.qa-instinct-manifest` |
+| `--version` / `-v` | Print the installed version (`qa-instinct <version>`) |
 | `help` / `--help` / `-h` | Print the commands and flags |
 
 ### Symlink vs Copy
@@ -462,22 +479,22 @@ bem-te-vi --version
 | | `init` (copy) | `link` (symlink) |
 | --- | --- | --- |
 | **Speed** | Instant | Instant |
-| **Updates** | Run `bem-te-vi update` after upgrading the package | Automatic — symlink points to package |
+| **Updates** | Run `qa-instinct update` after upgrading the package | Automatic — symlink points to package |
 | **Offline** | Works independently | Requires package to stay installed |
 | **Git** | Can be committed to repo | Add `.claude/` to `.gitignore` |
 | **Best for** | Teams, CI/CD | Personal use, multi-project |
 
 `update` refreshes from the version of the package that is running it — it cannot fetch a newer
-release of itself. Upgrade the package first, then run `bem-te-vi update`.
+release of itself. Upgrade the package first, then run `qa-instinct update`.
 
 ### Rolling back to an older version
 
 Uninstall with the version you have, then install the older one:
 
 ```bash
-bem-te-vi uninstall --editor all                 # with the version you are on now
-npm install -g @marcoamaral/bem-te-vi@<version>  # the version to go back to
-bem-te-vi init --editor <the editors you use>
+qa-instinct uninstall --editor all                 # with the version you are on now
+npm install -g qa-instinct@<version>  # the version to go back to
+qa-instinct init --editor <the editors you use>
 ```
 
 With the shell installers it is the same two steps: run `install.sh --uninstall` (or
@@ -495,7 +512,7 @@ all backups survive the round trip.
 | Tool | Colour is on when | Turn it off |
 | --- | --- | --- |
 | `install.sh`, `generate-adapters.sh` | Output is a terminal, `FORCE_COLOR` is set, or running in GitHub Actions | `NO_COLOR=1` (any value) or `--no-color` |
-| `bem-te-vi` CLI | Output is a terminal | `NO_COLOR=1` (any value) |
+| `qa-instinct` CLI | Output is a terminal | `NO_COLOR=1` (any value) |
 | `install.ps1` | Always — PowerShell's own console colours, not ANSI codes | Not configurable |
 
 Piped or redirected output from the first two contains no escape codes unless `FORCE_COLOR` is set.
@@ -505,7 +522,7 @@ Piped or redirected output from the first two contains no escape codes unless `F
 ## Does it work?
 
 A claim that a QA package makes an AI assistant better needs a measurement a tester would accept,
-so Bem-te-vi has a benchmark whose method was written down before any data
+so QA Instinct has a benchmark whose method was written down before any data
 ([`benchmark/METHODOLOGY.md`](benchmark/METHODOLOGY.md)). It gives the same nine QA tasks (test
 cases, a defect report, a risk-based plan, an API contract check, an accessibility audit, a flaky-test
 analysis, BDD scenarios) to the same model under four conditions:
@@ -513,8 +530,8 @@ analysis, BDD scenarios) to the same model under four conditions:
 - **A**, nothing added;
 - **B**, one sentence: "Work as a thorough, professional QA engineer.";
 - **C**, a placebo: a guide of the same size and shape about writing help-center articles, loaded the
-  same way as Bem-te-vi ([`benchmark/CONTROL.md`](benchmark/CONTROL.md));
-- **D**, Bem-te-vi's command or skill for the task.
+  same way as QA Instinct ([`benchmark/CONTROL.md`](benchmark/CONTROL.md));
+- **D**, QA Instinct's command or skill for the task.
 
 The primary outcome is **content pass**: every content check of the task passes (each acceptance
 criterion covered, the right boundary values, the seeded defects found, and so on), checked by
@@ -530,7 +547,7 @@ and the analysis prints "underpowered" for every comparison.
 | A, nothing added | 3 of 9 | 0 of 9 | US$0.025 |
 | B, one sentence | 4 of 9 | 0 of 9 | US$0.027 |
 | C, placebo | 2 of 9 | 0 of 9 | US$0.034 |
-| D, Bem-te-vi | 8 of 9 | 7 of 9 | US$0.046 |
+| D, QA Instinct | 8 of 9 | 7 of 9 | US$0.046 |
 
 The full collection (ten runs per cell, 360 generations, about US$13 at API prices) runs after the
 method is frozen and published. The costs are what Claude Code reports at API list prices; run
@@ -570,14 +587,14 @@ not teach running one.
 | **Accessibility** | `@axe-core/playwright` |
 | **Migration sources** | Cypress, Selenium (to Playwright, via the migration skill) |
 
-Other frameworks work through the assistant's general knowledge; Bem-te-vi has no dedicated guidance for them yet.
+Other frameworks work through the assistant's general knowledge; QA Instinct has no dedicated guidance for them yet.
 
 ---
 
 ## Project Structure
 
 ```text
-bem-te-vi/
+qa-instinct/
 ├── .claude/
 │   ├── commands/          # 11 slash commands (/qa, /qa-cases, /qa-automate, ...)
 │   ├── rules/             # 9 always-loaded rules (testing, context discovery, code style, a11y, security, ...)
@@ -586,11 +603,11 @@ bem-te-vi/
 │   └── hooks/             # Validation scripts (test case format and test evidence checkers)
 ├── .claude-plugin/        # Claude Code plugin and marketplace manifests
 ├── adapters/              # Compiled outputs for other editors (generated, not committed)
-├── cli/bem-te-vi.js       # npm CLI (init, update, uninstall, link, unlink)
+├── cli/qa-instinct.js       # npm CLI (init, update, uninstall, link, unlink)
 ├── install.sh             # Multi-editor installer (Linux/macOS/WSL)
 ├── install.ps1            # Multi-editor installer (Windows)
 ├── generate-adapters.sh   # Compiler: .claude/ → adapters/ (generate-adapters.ps1 on Windows)
-├── .qa-skills-editor-map  # Each editor's install paths, read by all three installers
+├── .qa-instinct-editor-map  # Each editor's install paths, read by all three installers
 ├── tests/                 # Conformance and lifecycle suites, content checks
 ├── examples/              # Real output on public software
 ├── benchmark/             # The efficacy benchmark and its pilot results
@@ -607,7 +624,7 @@ bem-te-vi/
   needs, what will not be merged, and the checks to run before a pull request.
 - [ROADMAP.md](ROADMAP.md): what 4.1.0 ships, what is planned next and what is out of scope;
   [`plans/`](plans/README.md) holds the detailed record.
-- [Issue forms](https://github.com/MarcoAmaral/bem-te-vi/issues/new/choose): installer bugs, wrong or
+- [Issue forms](https://github.com/MarcoAmaral/qa-instinct/issues/new/choose): installer bugs, wrong or
   missing CTFL claims, field reports from real QA work, proposals for a new skill or command.
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): the Contributor Covenant 2.1.
 - [llms.txt](llms.txt): the files an AI agent should read to use or change the package.
@@ -628,7 +645,7 @@ ISTQB® is a registered trademark of the International Software Testing Qualific
 
 ## Author
 
-**Marco Amaral** — Senior QA Analyst
+**Marco Amaral** — Senior QA Engineer
 
 - GitHub: [github.com/MarcoAmaral](https://github.com/MarcoAmaral)
 - npm: [@marcoamaral](https://www.npmjs.com/~marcoamaral)

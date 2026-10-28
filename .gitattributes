@@ -1,7 +1,7 @@
 # Every file in this repository is stored with LF line endings, and is checked out with LF on
 # every platform. Git for Windows defaults to core.autocrlf=true, which would otherwise rewrite
 # the package's own files to CRLF on checkout: their SHA-256 then no longer matches
-# .qa-skills-known-hashes (built from the stored, LF blobs), so a Windows user installing from a
+# .qa-instinct-known-hashes (built from the stored, LF blobs), so a Windows user installing from a
 # clone would see the package's own older files backed up as if they were theirs.
 * text=auto eol=lf
 
@@ -10,9 +10,13 @@
 tests/conformance/cases/** -text
 
 # Release fixtures are the exact bytes a tagged release shipped; their hashes are in
-# .qa-skills-known-hashes. Never convert them.
+# .qa-instinct-known-hashes. Never convert them.
 tests/fixtures/release-v2.2.0/** -text
 tests/fixtures/release-v4.0.1/** -text
 
 # Changelog fixtures are release-please's output as committed; the dedupe test reads them as is.
 tests/fixtures/dedupe-changelog/** -text
+
+# Git hook fixtures are the exact bytes a release's installer wrote, final line break and CRLF
+# included (plan 064). Never convert them.
+tests/fixtures/git-hooks/** -text

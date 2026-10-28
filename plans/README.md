@@ -33,8 +33,8 @@ chained-prompt command).
 | 016 | One conformance suite for three installers | P0 | L | 009-013, #78 | DONE (items 1-5 #82; item 6 #89, #93; follow-ups #92, #93) |
 | 017 | Recognise the package's own files whatever their line endings | P2 | M | #84, #82 | DONE (#88, 2.8.0; item 2 decided 2026-10-08) |
 | 018 | Ship the MIT license the package already claims | P1 | S | — | DONE (#101, 2.9.0) |
-| 019 | Get qa-skills ready for its public launch | P0 | XL | 018 | IN PROGRESS (phases 1-7, 9-11 done in 3.0.0; 13 done before launch by plans 023 and 039-042; 12 drafted; 8 after launch) |
-| 020 | Rename to Bem-te-vi and move to a fresh public repository | P0 | M | 019 phases 2-4, #104 | IN PROGRESS (part A #105, 3.0.0; part B, the public repo, last) |
+| 019 | Get qa-skills ready for its public launch | P0 | XL | 018 | ~~IN PROGRESS~~ DONE except phase 12 (2026-10-26: phase 8, the launch, done with 4.1.0 on 2026-10-22; phases 1-7, 9-11 done in 3.0.0; 13 done before launch by plans 023 and 039-042; 12, the directory submissions, drafted and left to Marco) |
+| 020 | Rename to Bem-te-vi and move to a fresh public repository | P0 | M | 019 phases 2-4, #104 | ~~IN PROGRESS~~ DONE except step 7 (2026-10-26: part A #105, 3.0.0; part B, the public repository, launched with 4.1.0 on 2026-10-22, since renamed by plan 065; step 7, archiving the private repository, left to Marco) |
 | 021 | A context diet for the always-loaded rules | P1 | L | 019 phase 9 | DONE (#111, 3.0.0) |
 | 022 | Plugin marketplace and Agent Skills installs | P1 | M | 019 phase 10, 020 | DONE (#109, 3.0.0) |
 | 023 | The `qa-migrate` skill (Cypress / Selenium to Playwright) | P2 | L | 019 phase 13 | DONE (skill, worked example and Selenium check in one PR, before launch at Marco's call; uninstall fix found on the way) |
@@ -76,6 +76,10 @@ chained-prompt command).
 | 061 | The installer findings of the final pre-launch review | P0 | S | 016, 033, 045, 047 | DONE (branch `fix/review-installer-findings`, into `next`; B1 update with no editor, B2 file destination linked to a folder, S1 global hooks folder, L1 Claude Code prune; cases 077-080, lifecycle Tests 53-54 in PowerShell) |
 | 062 | Antigravity on WSL, and the CLI's install wording for every editor | P1 | S | 008, 047, 058 | DONE (branch `fix/antigravity-wsl-note`, into `next`; README note on opening a WSL window; the installers print the WSL window command under WSL; CLI header and "Done!" line no longer Claude-only; lifecycle Tests 69-70, PowerShell Test 55) |
 | 063 | `install.sh --update` on macOS leaves a tail of one editor's skills wrong (issue #3) | P1 | M | 016, 033, 047 | DONE (PR #5, branch `fix/macos-update-tail`; cause: `prune_unshipped` read a cut `editor_files` list on macOS bash 3.2; lists now read whole and checked by an end line; lifecycle Test 71; 0 of 300 macOS runs failed) |
+| 064 | Keep the two installers' git hook texts identical, and pin every hook a release wrote | P3 | M | 016, 026 | DONE (branch `refactor/hook-template`, PR to be opened; parity test and every release's hooks pinned; `install.ps1` project hook now ends in a newline) |
+| 065 | Rename to QA Instinct, publish it, and remove the old npm package | P1 | M | 020 | DONE (PR #8, branch `feat/qa-instinct-rename`; PR #11 the changelog header; release PR #10, 4.2.0 published to npm as `qa-instinct` on 2026-10-25; demo re-recorded) |
+| 066 | Rename the installers' internal `qa-skills` names, migrating every existing install | P2 | L | 009-012, 016, 064, 065 | DONE (PR #16, CI green on Linux, Windows and macOS; PR #17 set the version; 4.3.0 published to npm on 2026-10-26) |
+| 067 | Ship the `qa-rules` skill in the Claude Code plugin | P2 | S | 022, 047, 060 | IN REVIEW (branch `feat/plugin-ships-qa-rules`) |
 
 ¹ These SHAs changed on 2026-09-14, when an AI co-author trailer was removed
 from two commit messages before opening PR #11. File contents are unchanged.

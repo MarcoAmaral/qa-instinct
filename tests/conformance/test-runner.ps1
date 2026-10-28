@@ -69,6 +69,8 @@ Test-Rejected 'package-path-climbs-out' "name: x${lf}seed-package: home:copy.txt
 Test-Rejected 'fixture-path-climbs-out' "name: x${lf}seed-fixture: home:copy.txt = ../../canary${lf}"
 Test-Rejected 'manifest-path-absolute' "name: x${lf}seed-manifest: project claude /etc/hostname${lf}"
 Test-Rejected 'manifest-entry-at-sandbox-root' "name: x${lf}seed-manifest: project claude ../output.log${lf}"
+Test-Rejected 'legacy-manifest-bad-scope' "name: x${lf}legacy-manifest: global${lf}"
+Test-Rejected 'legacy-manifest-link-climbs-out' "name: x${lf}legacy-manifest: project -> home:../../canary${lf}"
 Test-Rejected 'expect-path-climbs-out' "name: x${lf}expect-absent: home:../../canary${lf}"
 Test-Rejected 'readonly-climbs-out' "name: x${lf}seed-readonly: home:../../canary${lf}"
 Test-Rejected 'unreadable-climbs-out' "name: x${lf}seed-unreadable: home:../../canary${lf}"
@@ -114,6 +116,7 @@ Test-Rejected 'manifest-path-with-a-space-climbs-out' "name: x${lf}drop-manifest
 Test-Accepted 'package-tree' ("name: a copy of a package folder matches it file for file${lf}seed-package: home:t/check-test-evidence.sh = .claude/hooks/check-test-evidence.sh${lf}" +
     "seed-package: home:t/validate-tc-format.sh = .claude/hooks/validate-tc-format.sh${lf}expect-tree-as-package: home:t = .claude/hooks${lf}")
 # The editor of a run line may be left out: the installer then gets no editor option (plan 061 B1).
+Test-Accepted 'legacy-manifest' "name: legacy-manifest renames the manifest to its 4.x name${lf}seed: project:a.md = A${lf}seed-manifest: project claude a.md${lf}legacy-manifest: project${lf}expect-file: project:.qa-skills-manifest${lf}expect-absent: project:.qa-instinct-manifest${lf}"
 Test-Accepted 'run-without-editor' "name: a run line may name no editor${lf}run: uninstall project${lf}expect-exit: 0${lf}"
 Test-Accepted 'every-directive' (@(
         'name: every directive', 'seed: project:a/b.txt = HELLO', 'seed-fixture: project:fx.txt = fixture.txt',

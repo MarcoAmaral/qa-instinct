@@ -1,12 +1,12 @@
 {
-  "name": "bem-te-vi",
+  "name": "qa-instinct",
   "owner": {
     "name": "Marco Amaral"
   },
-  "description": "Bem-te-vi: QA Analyst and QA Engineer commands, skills and agents for Claude Code.",
+  "description": "QA Instinct: Senior QA Engineer commands, skills and agents for Claude Code.",
   "plugins": [
     {
-      "name": "bem-te-vi",
+      "name": "qa-instinct",
       "source": ".",
       "description": "QA commands, skills and agents grounded in software testing standards (rules are not included; see the README)."
     }
