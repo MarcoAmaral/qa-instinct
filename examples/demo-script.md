@@ -1,8 +1,9 @@
 # Demo recording script
 
 > **Superseded, 2026-10-18 (plan 049).** The demo is now scripted and rendered with VHS from
-> [`demo/bem-te-vi.tape`](../demo/bem-te-vi.tape); see [`demo/README.md`](../demo/README.md) to
-> re-record it. This storyboard for recording by hand is kept as the record of plan 019 phase 7.
+> [`demo/qa-instinct.tape`](../demo/qa-instinct.tape) (`demo/bem-te-vi.tape` until plan 065); see
+> [`demo/README.md`](../demo/README.md) to re-record it. This storyboard for recording by hand is
+> kept as the record of plan 019 phase 7.
 
 For recording the README's demo GIF yourself (plan 019 phase 7). An interactive AI session can't be
 recorded from a script, so this is a storyboard to follow by hand. Until the GIF exists, the
