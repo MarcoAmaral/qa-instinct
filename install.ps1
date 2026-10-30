@@ -561,7 +561,7 @@ function Purge-GitHook {
                 # Strip only our own block, leaving every other line of the hook as it was.
                 $cleanContent = Remove-GlobalHookBlock $content
                 if ($null -eq $cleanContent) {
-                    Write-Info "Kept global pre-commit hook - could not find the bem-te-vi block to remove: $hookFile"
+                    Write-Info "Kept global pre-commit hook - could not find the block QA Instinct added: $hookFile"
                 }
                 else {
                     # Remove if nothing is left but the shebang and our own header comments
