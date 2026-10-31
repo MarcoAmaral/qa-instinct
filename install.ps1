@@ -1370,22 +1370,21 @@ function Get-PackageFiles {
 # Update, the same in all three installers (plan 033 item 3). For an editor the manifest records:
 # refresh its files and install the ones this release added (the install path), then remove each
 # recorded file the package no longer ships if it is unchanged, keep and report it otherwise, and
-# drop its entry either way. With no manifest at all, adopt only files whose hash a release
-# shipped. An editor the manifest does not record is never installed.
+# drop its entry either way. With no manifest at all, first adopt only files whose hash a release
+# shipped; an adopted file proves its editor is installed, so that editor then takes the same path
+# in this run (plan 069). An editor the manifest does not record is never installed.
 function Update-ForEditor {
     param([string]$EditorName, [string]$SourcePath, [string]$BaseDir, [string]$Scope)
     $mf = Get-ManifestPath $BaseDir
-    if (Test-Path -LiteralPath $mf) {
-        $recorded = @(Get-ManifestBufferLines $mf | Where-Object { (($_ -split '\s+', 3)[1]) -eq $EditorName })
-        if ($recorded.Count -eq 0) { return }
-        $script:UpdateReport = $true
-        try { Install-ForEditor -EditorName $EditorName -SourcePath $SourcePath -BaseDir $BaseDir -Scope $Scope }
-        finally { $script:UpdateReport = $false }
-        Remove-Unshipped $BaseDir $EditorName $Scope
-    }
-    else {
-        Add-KnownFiles $BaseDir $EditorName $Scope
-    }
+    # The manifest stays in the buffer until the run ends, so no file here means this run began
+    # without one, and what Add-KnownFiles adopted is read back from the buffer.
+    if (-not (Test-Path -LiteralPath $mf)) { Add-KnownFiles $BaseDir $EditorName $Scope }
+    $recorded = @(Get-ManifestBufferLines $mf | Where-Object { $_ -and (($_ -split '\s+', 3)[1]) -eq $EditorName })
+    if ($recorded.Count -eq 0) { return }
+    $script:UpdateReport = $true
+    try { Install-ForEditor -EditorName $EditorName -SourcePath $SourcePath -BaseDir $BaseDir -Scope $Scope }
+    finally { $script:UpdateReport = $false }
+    Remove-Unshipped $BaseDir $EditorName $Scope
 }
 
 function Remove-Unshipped {

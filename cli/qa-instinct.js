@@ -1427,7 +1427,8 @@ function packageFilesFor(base, isGlobal, editor) {
 // adopted only when its hash proves the package shipped it (identical to the
 // current package file, or a hash in the known-hash list); anything else at
 // that path is the user's, untouched, and not even reported (it was never
-// ours to report on).
+// ours to report on). The run then finishes each editor this proved installed
+// (plan 069, in cmdUpdate); that step meets such a file as init would.
 function detectAdoptOne(base, editor, src, dest, knownHashes, report) {
   const linked = linkedAncestor(base, toPosix(path.relative(base, dest)));
   if (linked) {
@@ -1546,6 +1547,18 @@ function printUpdateReport(report) {
   }
 }
 
+// Every editor the manifest records: what is installed here, not every editor the package supports.
+function recordedEditors(base) {
+  return [
+    ...new Set(
+      readPortableLines(manifestFile(base))
+        .map(parseManifestLine)
+        .filter(Boolean)
+        .map((e) => e.editor),
+    ),
+  ];
+}
+
 function cmdUpdate(opts) {
   const targetBase = resolveTarget(opts);
   const isGlobal = opts.global;
@@ -1579,19 +1592,11 @@ function cmdUpdate(opts) {
   if (hasManifest) {
     // No --editor: every editor the manifest actually records — not every
     // editor this package supports, since most were never installed here.
-    const manifestEditors = [
-      ...new Set(
-        readPortableLines(manifestFile(targetBase))
-          .map(parseManifestLine)
-          .filter(Boolean)
-          .map((e) => e.editor),
-      ),
-    ];
     const editors = editorFlag
       ? editorFlag === "all"
         ? ALL_EDITORS
         : [editorFlag]
-      : manifestEditors;
+      : recordedEditors(targetBase);
 
     for (const editor of editors) {
       updateManifestEditor(targetBase, isGlobal, editor, knownHashes, report);
@@ -1608,6 +1613,12 @@ function cmdUpdate(opts) {
 
     for (const editor of editors) {
       detectAndAdoptEditor(targetBase, isGlobal, editor, knownHashes, report);
+    }
+    // An adopted file proves its editor is installed, so that editor is finished in this run, as
+    // a run that found the manifest would finish it. The others stay untouched (plan 069).
+    const adopted = recordedEditors(targetBase);
+    for (const editor of editors.filter((e) => adopted.includes(e))) {
+      updateManifestEditor(targetBase, isGlobal, editor, knownHashes, report);
     }
   }
 
