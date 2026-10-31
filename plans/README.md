@@ -80,7 +80,7 @@ chained-prompt command).
 | 065 | Rename to QA Instinct, publish it, and remove the old npm package | P1 | M | 020 | DONE (PR #8, branch `feat/qa-instinct-rename`; PR #11 the changelog header; release PR #10, 4.2.0 published to npm as `qa-instinct` on 2026-10-25; demo re-recorded) |
 | 066 | Rename the installers' internal `qa-skills` names, migrating every existing install | P2 | L | 009-012, 016, 064, 065 | DONE (PR #16, CI green on Linux, Windows and macOS; PR #17 set the version; 4.3.0 published to npm on 2026-10-26) |
 | 067 | Ship the `qa-rules` skill in the Claude Code plugin | P2 | S | 022, 047, 060 | IN REVIEW (branch `feat/plugin-ships-qa-rules`) |
-| 068 | The `qa-static-analysis` skill: triage what a static analysis tool reports | P3 | S | 037, 038, 040, 047 | IN REVIEW (branch `feat/qa-static-analysis-skill`; evals written, not run: `plugin eval` is gated on Claude Code 2.1.224) |
+| 068 | The `qa-static-analysis` skill: triage what a static analysis tool reports | P3 | S | 037, 038, 040, 047 | DONE (PR #22, released in 4.5.0; evals run 2026-10-31 on SWARE: the skill is found, 3 of 3 in plain words, but the plugin scored 1.00 without it, so they show no gain; see the plan's note) |
 
 ¹ These SHAs changed on 2026-09-14, when an AI co-author trailer was removed
 from two commit messages before opening PR #11. File contents are unchanged.
