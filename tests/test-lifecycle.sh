@@ -996,6 +996,12 @@ USER_BACKUP_35=$(find .claude/rules -name 'accessibility-qa.md.qa-instinct-backu
 [ -n "$USER_BACKUP_35" ] || { printf '%b\n' "${RED}✘ update replaced the user's own file at a shipped path without a backup${NC}"; exit 1; }
 [ "$(cat "$USER_BACKUP_35")" = "$USER_CONTENT_35" ] || { printf '%b\n' "${RED}✘ the backup does not hold the user's own file${NC}"; exit 1; }
 
+echo "Verifying the closing note names the running version and both ways to update..."
+VERSION_35=$(node -p "require('$REPO_DIR/package.json').version")
+grep -qF "these are qa-instinct $VERSION_35's files" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ the closing note does not name the running version${NC}"; exit 1; }
+grep -qF "npx qa-instinct@latest update" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ the closing note does not name the npx route${NC}"; exit 1; }
+grep -qF "npm update -g qa-instinct" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ the closing note does not name the npm -g route${NC}"; exit 1; }
+
 cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 35 passed successfully! A pre-manifest install was finished in one run and the user's own file was kept.${NC}"
 

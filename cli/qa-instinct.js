@@ -1539,10 +1539,9 @@ function printUpdateReport(report) {
   if (changed > 0) {
     console.log(
       c.cyan("  Note: ") +
-        "this refreshed files from the qa-instinct version currently running " +
-        "this command — it cannot update the package itself. To pick up a " +
-        "newer release, run 'npm update -g qa-instinct' first, " +
-        "then 'qa-instinct update' again.\n",
+        `these are qa-instinct ${require("../package.json").version}'s files. ` +
+        "For a newer release, run 'npx qa-instinct@latest update', or " +
+        "'npm update -g qa-instinct' first if you installed it with npm -g.\n",
     );
   }
 }
@@ -1656,7 +1655,8 @@ ${c.bold("Flags:")}
                     install. It never installs an editor that wasn't already
                     installed — with nothing installed, it does nothing.
                     Refreshing does not check npm for a newer release; run
-                    'npm update -g qa-instinct' first for that.
+                    'npx qa-instinct@latest update' for that, or
+                    'npm update -g qa-instinct' first after an npm -g install.
   ${c.cyan("--version, -v")}     Print the version and exit (alone, before any command)
 
 ${c.bold("Examples:")}

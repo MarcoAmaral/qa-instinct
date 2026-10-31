@@ -1017,6 +1017,12 @@ $userBackup34 = Get-ChildItem -Path ".claude\rules" -Filter 'accessibility-qa.md
 if (-not $userBackup34) { throw "update replaced the user's own file at a shipped path without a backup" }
 if ((Get-Content -Raw -LiteralPath $userBackup34.FullName).Trim() -ne $userContent34) { throw "the backup does not hold the user's own file" }
 
+Write-Host "Verifying the closing note names the running version and both ways to update..." -ForegroundColor Cyan
+$version34 = (Get-Content -Raw "$repoDir\package.json" | ConvertFrom-Json).version
+if ($updateText34 -notmatch [regex]::Escape("these are qa-instinct $version34's files")) { throw "the closing note does not name the running version. Output was: $updateText34" }
+if ($updateText34 -notmatch [regex]::Escape("npx qa-instinct@latest update")) { throw "the closing note does not name the npx route" }
+if ($updateText34 -notmatch [regex]::Escape("npm update -g qa-instinct")) { throw "the closing note does not name the npm -g route" }
+
 Set-Location -Path $repoDir
 Write-Host "[OK] Test 34 passed successfully! A pre-manifest install was finished in one run and the user's own file was kept." -ForegroundColor Green
 
