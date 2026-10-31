@@ -290,6 +290,13 @@ jobs:
           chmod +x ./tests/test-docs-drift.sh
           ./tests/test-docs-drift.sh
 
+      # Plan 070: the former package name only in the historical record and on allowlisted lines.
+      - name: Former Name Only Where Kept on Purpose
+        run: |
+          shellcheck tests/test-old-name.sh
+          chmod +x ./tests/test-old-name.sh
+          ./tests/test-old-name.sh
+
       # Plan 055: every ```ts block under .claude/ type-checks with tsc --strict, or carries a
       # ts-check skip marker with its reason. Needs the devDependencies from npm ci.
       - name: TypeScript Samples Type-Check

@@ -173,6 +173,7 @@ repository root:
 | Changelog Merge-Entry Dedupe | `./tests/test-dedupe-changelog.sh` |
 | Node Engines Within Runtime Dependencies | `./tests/test-node-engines.sh` |
 | Command Names and Sizes Match the Files | `./tests/test-docs-drift.sh` |
+| Former Name Only Where Kept on Purpose | `./tests/test-old-name.sh` |
 | TypeScript Samples Type-Check | `./tests/test-ts-samples.sh` |
 | Run Integration Tests | `./tests/test-lifecycle.sh` |
 
@@ -180,7 +181,7 @@ For a quick pass before you push, `npm run lint` runs ESLint and Prettier, and `
 checks in the table that take a few seconds and need only Node and bash: frontmatter, citations,
 plan format, `llms.txt`, test case contracts, both hook tests, the hook text parity check, the plugin
 manifests, rules size, reference pointers, `/qa-trace`, the changelog dedupe, Node engines, command names and sizes,
-TypeScript samples and the benchmark integrity check. It stops at the first failure. It does not run
+the former name, TypeScript samples and the benchmark integrity check. It stops at the first failure. It does not run
 ShellCheck, markdownlint, the known-hash check, the adapter generator, the corpus index, the
 conformance suite or the integration tests: run those from the table when you touch what they cover.
 

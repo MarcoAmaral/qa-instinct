@@ -1412,7 +1412,7 @@ purge_git_hook() {
                         printf '%b\n' "${CYAN}  i Removed empty global hook file.${NC}"
                     fi
                 else
-                    printf '%b\n' "${YELLOW}  ! Kept global pre-commit hook — could not find the bem-te-vi block to remove: $HOOK_FILE${NC}"
+                    printf '%b\n' "${YELLOW}  ! Kept global pre-commit hook — could not find the block QA Instinct added: $HOOK_FILE${NC}"
                 fi
                 rm -f "$STRIPPED"
             fi
