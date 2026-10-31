@@ -162,7 +162,9 @@ Both rounds ran on SWARE (Claude Code 2.1.291, `--runs 3 --model sonnet --trust-
 fresh clone) on 2026-10-31, under plan 037's cap: "before" at `e86d191`, "after" at `2888edc`, the
 current `main`, not the feature branch the Outcome names, which is merged. Files:
 `evals/results/2026-10-31-static-analysis-before.json` and `-after.json`, with paths replaced by
-`<repository>` and `<temp>`; scores and costs are unchanged. A first attempt on 2026-10-30 ended in
+`<repository>` and `<temp>`; scores and costs are unchanged. The agent was the `sonnet` alias and
+the judge the tool's default, Haiku; the files record neither model's exact string, and the traces
+were not kept. A first attempt on 2026-10-30 ended in
 `auth_failed` at no cost; the cause was not established, and the rerun authenticated.
 
 | Round | Case | Plugin arm | Baseline arm | Skill call | Cost (US$) |
