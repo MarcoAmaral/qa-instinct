@@ -83,6 +83,10 @@ The [README](README.md) explains each part, and `CHANGELOG.md` lists every chang
 - **Plugin installs without rules.** Claude Code plugins cannot ship rules. Plan 067 (option A,
   chosen by Marco on 2026-10-26) ships them as the `qa-rules` skill, which a command reads when it
   needs a rule; always-on rules still need `npx qa-instinct init`.
+- **Plan 069, `update` in one run.** On an install made before manifests (2.3.3), `update`
+  refreshes the files already there but adds none of the new ones until it runs a second time, and
+  its closing note names `npm update -g` even when it was run with `npx`. Both found on
+  2026-10-29; the fix goes into all three installers and ships as 4.5.1.
 
 Deferred until someone needs them (decided by Marco, 2026-10-20):
 
