@@ -134,3 +134,25 @@ both commands.
 - **Detect `npx` for item 2** (`npm_command=exec`, `npm_config_user_agent`): fragile across npm
   versions and package runners (`pnpm dlx`, `bunx`), and one message covering both routes is true
   for all of them.
+
+## Outcome
+
+- **Red**: cases 087-089 failed 6 of 6 runs on `install.sh` and the CLI on `main` ("differs from the
+  package's .claude/skills/qa-reference/SKILL.md"). Case 090 was added here, for two editors in one
+  pre-manifest install, because adopting the first writes the manifest; it failed 2 of 2 without
+  the fix.
+- **Green**: 148 of 148 conformance runs, 62 lifecycle tests, `npm test`, lint. Replay of the
+  fixture `tests/fixtures/release-v2.2.0` in a scratch home: one `update --global` adopted 2 files
+  and added 52, 54 in the manifest; the next run reported "Everything is up to date".
+- **Not run locally**: `install.ps1` and the PowerShell suite (no `pwsh` on this machine), so Windows
+  CI is the only check. It matters here: the first draft of the `install.ps1` change was wrong, and
+  reading the code caught it. That installer holds the manifest in a buffer until the run ends, so
+  a file check after adopting always found nothing. It now reads the buffer.
+- **Option A, recorded.** Marco did not choose between A and B; the executor took the plan's
+  recommendation, which also matches the decision already in the code (2026-10-14, plan 033 item 3:
+  update backs up a colliding user file). This changes a tested guarantee: lifecycle Test 35 and
+  PowerShell Test 34 asserted that update left the user's file at a package path untouched in a
+  pre-manifest install (plan 013 item 5). They now assert that the file is kept in a backup. The
+  second run already did this; it now happens in the first.
+- **The plan's reproduction used a backup that no longer exists.** The tarball of MarcoWork's old
+  install was in `/tmp`, and the machine restarted on 2026-10-31. Nothing depended on it.
