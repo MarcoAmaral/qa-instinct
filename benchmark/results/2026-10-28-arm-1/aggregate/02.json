@@ -1,0 +1,2862 @@
+{
+  "schemaVersion": 1,
+  "claudeVersion": "2.1.291",
+  "startedAt": "2026-10-28T14:45:22.380Z",
+  "durationSeconds": 426,
+  "costUsd": 1.2486279999999998,
+  "partial": false,
+  "suite": {
+    "root": "<repository>",
+    "ablation": "none",
+    "modelOverride": "claude-haiku-4-5-20251001",
+    "judgeModel": "claude-haiku-4-5-20251001",
+    "caseFilter": "*-cases-order-status",
+    "threshold": 1,
+    "concurrency": 2,
+    "plugins": [
+      {
+        "name": "bare",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/bare-plugin"
+      },
+      {
+        "name": "writing-guide",
+        "version": "1.0.0",
+        "path": "<repository>/benchmark/control-standard"
+      },
+      {
+        "name": "qa-instinct",
+        "version": "4.5.0",
+        "path": "<repository>"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "A-cases-order-status",
+      "dir": "benchmark/cases/A/cases-order-status",
+      "source": "prose",
+      "promptMarkdown": "Write test cases for the user story below.\n\nStory ORD-4: Order status changes\n\nAs a store operator, I want every order to move through a fixed set of statuses, so that customers and staff always see where an order is.\n\nAn order is created with the status Placed.\n\n- AC-1: Recording a payment on a Placed order changes its status to Paid.\n- AC-2: Marking a Paid order as shipped changes its status to Shipped.\n- AC-3: Confirming delivery of a Shipped order changes its status to Delivered.\n- AC-4: A Placed or Paid order can be cancelled; its status becomes Cancelled.\n- AC-5: Cancelling a Shipped order is refused with \"Shipped orders cannot be cancelled.\"\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "State[- ]Transition",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-unlisted-invalid-transition",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.16666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0217402,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-10-28T14:45:22.730Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0217802,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-10-28T14:45:22.730Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0202232,
+            "judgeCostUsd": 0,
+            "durationSeconds": 21,
+            "startedAt": "2026-10-28T14:45:35.245Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.3333333333333333,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0236762,
+            "judgeCostUsd": 0,
+            "durationSeconds": 16,
+            "startedAt": "2026-10-28T14:45:35.363Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0214842,
+            "judgeCostUsd": 0,
+            "durationSeconds": 1,
+            "startedAt": "2026-10-28T14:45:56.383Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0230492,
+            "judgeCostUsd": 0,
+            "durationSeconds": 15,
+            "startedAt": "2026-10-28T14:45:51.132Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0210202,
+            "judgeCostUsd": 0,
+            "durationSeconds": 12,
+            "startedAt": "2026-10-28T14:45:57.847Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.021924199999999998,
+            "judgeCostUsd": 0,
+            "durationSeconds": 14,
+            "startedAt": "2026-10-28T14:46:06.482Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.021470200000000002,
+            "judgeCostUsd": 0,
+            "durationSeconds": 12,
+            "startedAt": "2026-10-28T14:46:09.605Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0202942,
+            "judgeCostUsd": 0,
+            "durationSeconds": 21,
+            "startedAt": "2026-10-28T14:46:20.756Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.4833333333333333,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "B-cases-order-status",
+      "dir": "benchmark/cases/B/cases-order-status",
+      "source": "prose",
+      "promptMarkdown": "Work as a thorough, professional QA engineer. Write test cases for the user story below.\n\nStory ORD-4: Order status changes\n\nAs a store operator, I want every order to move through a fixed set of statuses, so that customers and staff always see where an order is.\n\nAn order is created with the status Placed.\n\n- AC-1: Recording a payment on a Placed order changes its status to Paid.\n- AC-2: Marking a Paid order as shipped changes its status to Shipped.\n- AC-3: Confirming delivery of a Shipped order changes its status to Delivered.\n- AC-4: A Placed or Paid order can be cancelled; its status becomes Cancelled.\n- AC-5: Cancelling a Shipped order is refused with \"Shipped orders cannot be cancelled.\"\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "State[- ]Transition",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-unlisted-invalid-transition",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.025482199999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 20,
+            "startedAt": "2026-10-28T14:46:21.909Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0264772,
+            "judgeCostUsd": 0,
+            "durationSeconds": 10,
+            "startedAt": "2026-10-28T14:46:41.374Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0292532,
+            "judgeCostUsd": 0,
+            "durationSeconds": 24,
+            "startedAt": "2026-10-28T14:46:41.696Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0234972,
+            "judgeCostUsd": 0,
+            "durationSeconds": 16,
+            "startedAt": "2026-10-28T14:46:51.085Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.026197199999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 20,
+            "startedAt": "2026-10-28T14:47:06.147Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.025710200000000002,
+            "judgeCostUsd": 0,
+            "durationSeconds": 19,
+            "startedAt": "2026-10-28T14:47:06.933Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0238982,
+            "judgeCostUsd": 0,
+            "durationSeconds": 26,
+            "startedAt": "2026-10-28T14:47:25.830Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0291022,
+            "judgeCostUsd": 0,
+            "durationSeconds": 36,
+            "startedAt": "2026-10-28T14:47:25.862Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.027737199999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 10,
+            "startedAt": "2026-10-28T14:47:51.503Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0286582,
+            "judgeCostUsd": 0,
+            "durationSeconds": 15,
+            "startedAt": "2026-10-28T14:48:01.562Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.5666666666666667,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "C-cases-order-status",
+      "dir": "benchmark/cases/C/cases-order-status",
+      "source": "prose",
+      "promptMarkdown": "/writing-guide:help-articles Write test cases for the user story below.\n\nStory ORD-4: Order status changes\n\nAs a store operator, I want every order to move through a fixed set of statuses, so that customers and staff always see where an order is.\n\nAn order is created with the status Placed.\n\n- AC-1: Recording a payment on a Placed order changes its status to Paid.\n- AC-2: Marking a Paid order as shipped changes its status to Shipped.\n- AC-3: Confirming delivery of a Shipped order changes its status to Delivered.\n- AC-4: A Placed or Paid order can be cancelled; its status becomes Cancelled.\n- AC-5: Cancelling a Shipped order is refused with \"Shipped orders cannot be cancelled.\"\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "State[- ]Transition",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-unlisted-invalid-transition",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 0.3333333333333333,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0287922,
+            "judgeCostUsd": 0,
+            "durationSeconds": 11,
+            "startedAt": "2026-10-28T14:48:01.407Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0318512,
+            "judgeCostUsd": 0,
+            "durationSeconds": 17,
+            "startedAt": "2026-10-28T14:48:12.578Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.3333333333333333,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0293872,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-10-28T14:48:16.406Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0337952,
+            "judgeCostUsd": 0,
+            "durationSeconds": 18,
+            "startedAt": "2026-10-28T14:48:29.012Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0303972,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-10-28T14:48:29.804Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.030726200000000002,
+            "judgeCostUsd": 0,
+            "durationSeconds": 14,
+            "startedAt": "2026-10-28T14:48:42.881Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0307662,
+            "judgeCostUsd": 0,
+            "durationSeconds": 14,
+            "startedAt": "2026-10-28T14:48:47.333Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.3333333333333333,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.029847199999999997,
+            "judgeCostUsd": 0,
+            "durationSeconds": 13,
+            "startedAt": "2026-10-28T14:48:57.047Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0290172,
+            "judgeCostUsd": 0,
+            "durationSeconds": 11,
+            "startedAt": "2026-10-28T14:49:01.574Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.5,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0295512,
+            "judgeCostUsd": 0,
+            "durationSeconds": 12,
+            "startedAt": "2026-10-28T14:49:09.926Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.4833333333333333,
+        "passRate": 0
+      }
+    },
+    {
+      "name": "D-cases-order-status",
+      "dir": "benchmark/cases/D/cases-order-status",
+      "source": "prose",
+      "promptMarkdown": "/qa-instinct:qa-cases Write test cases for the user story below.\n\nStory ORD-4: Order status changes\n\nAs a store operator, I want every order to move through a fixed set of statuses, so that customers and staff always see where an order is.\n\nAn order is created with the status Placed.\n\n- AC-1: Recording a payment on a Placed order changes its status to Paid.\n- AC-2: Marking a Paid order as shipped changes its status to Shipped.\n- AC-3: Confirming delivery of a Shipped order changes its status to Delivered.\n- AC-4: A Placed or Paid order can be cancelled; its status becomes Cancelled.\n- AC-5: Cancelling a Shipped order is refused with \"Shipped orders cannot be cancelled.\"\n\nWhere information is missing, state your assumption and continue; do not ask questions. Reply with the deliverable only, as Markdown, starting at its first line, with no introduction and no code fence around it. Do not create or edit files.",
+      "runsPerCase": 3,
+      "timeoutSeconds": 600,
+      "maxTurns": 15,
+      "graders": [
+        {
+          "name": "con-every-ac",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-technique-named",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "State[- ]Transition",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "con-unlisted-invalid-transition",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+            "flags": "i",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-every-case-complete",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]+:.*$(?!(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Tags(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Issue(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Automation Score(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?ISTQB Technique(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Manual Env(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Precondition(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Steps(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Expected(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?data-testid needed(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Note(?:\\*\\*)?[ \\t]*\\|[ \\t]*[^|\\s])(?=(?:(?!^#)[\\s\\S])*?^\\|[ \\t]*(?:\\*\\*)?Source(?:\\*\\*)?[ \\t]*\\|[ \\t]*(?:ACs?[-_ #.]*[0-9]|Added by QA \\([^)]*[^) ][^)]*\\))))",
+            "flags": "m",
+            "match": "not_contains"
+          }
+        },
+        {
+          "name": "fmt-frontmatter",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "(?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+            "flags": "m",
+            "match": "contains"
+          }
+        },
+        {
+          "name": "fmt-has-cases",
+          "type": "regex",
+          "weight": 1,
+          "config": {
+            "target": "last_message",
+            "pattern": "^## TC-[A-Z0-9]+-[0-9]{3}:",
+            "flags": "m",
+            "match": "contains"
+          }
+        }
+      ],
+      "arms": {
+        "with": [
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.0487302,
+            "judgeCostUsd": 0,
+            "durationSeconds": 43,
+            "startedAt": "2026-10-28T14:49:12.450Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0469142,
+            "judgeCostUsd": 0,
+            "durationSeconds": 37,
+            "startedAt": "2026-10-28T14:49:21.824Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0429812,
+            "judgeCostUsd": 0,
+            "durationSeconds": 31,
+            "startedAt": "2026-10-28T14:49:55.121Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.043850200000000006,
+            "judgeCostUsd": 0,
+            "durationSeconds": 32,
+            "startedAt": "2026-10-28T14:49:58.324Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 1,
+            "passed": true,
+            "turns": 1,
+            "costUsd": 0.045739199999999994,
+            "judgeCostUsd": 0,
+            "durationSeconds": 34,
+            "startedAt": "2026-10-28T14:50:26.208Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.052374199999999996,
+            "judgeCostUsd": 0,
+            "durationSeconds": 46,
+            "startedAt": "2026-10-28T14:50:30.777Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)[^\\n]{0,160}(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)|(?:non-?paid|unpaid|not (?:yet )?paid|without (?:a )?payment|non-?shipped|not (?:yet )?shipped|already (?:delivered|cancell?ed)|\\b(?:Delivered|Cancell?ed) order|\\bship\\w*\\s+(?:a |an |the )?(?:Placed|unpaid|non-?paid)\\b|\\bdeliver\\w*\\s+(?:a |an |the )?(?:Placed|Paid|unpaid)\\b|\\b(?:pay|payment)\\w*\\s+(?:on |for |to )?(?:a |an |the )?(?:Shipped|Delivered|Cancell?ed)\\b)[^\\n]{0,160}(?:attempt|cannot|can't|can ?not|refus|reject|invalid|not allowed|not permitted|prevent|block|disallow)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.043475200000000006,
+            "judgeCostUsd": 0,
+            "durationSeconds": 31,
+            "startedAt": "2026-10-28T14:51:00.671Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.048705200000000004,
+            "judgeCostUsd": 0,
+            "durationSeconds": 40,
+            "startedAt": "2026-10-28T14:51:16.638Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.8333333333333334,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.0451612,
+            "judgeCostUsd": 0,
+            "durationSeconds": 35,
+            "startedAt": "2026-10-28T14:51:31.318Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": true,
+                "weight": 1,
+                "explanation": "pattern absent as expected",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          },
+          {
+            "score": 0.6666666666666666,
+            "passed": false,
+            "turns": 1,
+            "costUsd": 0.043891200000000005,
+            "judgeCostUsd": 0,
+            "durationSeconds": 32,
+            "startedAt": "2026-10-28T14:51:56.587Z",
+            "error": null,
+            "tracePath": "<temp>",
+            "skippedPaidGraders": false,
+            "graders": [
+              {
+                "name": "con-every-ac",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^(?=[\\s\\S]*(?:\\bAC[- ]?0?1\\b|\\bPlaced\\b[^\\n]{0,80}\\bPaid\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?2\\b|\\bPaid\\b[^\\n]{0,80}\\bShipped\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?3\\b|\\bShipped\\b[^\\n]{0,80}\\bDelivered\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?4\\b|\\b(?:Placed|Paid)\\b[^\\n]{0,120}\\bCancell?ed\\b))(?=[\\s\\S]*(?:\\bAC[- ]?0?5\\b|Shipped orders cannot be cancell?ed))",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-technique-named",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched State[- ]Transition",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "con-unlisted-invalid-transition",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern not found in last_message",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-every-case-complete",
+                "passed": false,
+                "weight": 1,
+                "explanation": "pattern found (expected absent)",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-frontmatter",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched (?<![\\s\\S])-{3}\\r?\\n(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^feature_code:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tc_count:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^tracker_issues:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^risk_level:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^(?:runbook|cdt):)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^implementation_pack:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^spec:)(?=(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^last_updated:)(?:(?!^-{3}[ \\t]*\\r?$)[\\s\\S])*?^-{3}[ \\t]*\\r?$",
+                "withOnly": false,
+                "scored": true
+              },
+              {
+                "name": "fmt-has-cases",
+                "passed": true,
+                "weight": 1,
+                "explanation": "matched ^## TC-[A-Z0-9]+-[0-9]{3}:",
+                "withOnly": false,
+                "scored": true
+              }
+            ]
+          }
+        ]
+      },
+      "aggregates": {
+        "score": 0.8333333333333333,
+        "passRate": 0.2
+      }
+    }
+  ],
+  "aggregates": {
+    "casesTotal": 4,
+    "casesPassed": 0,
+    "overallScore": 0.5916666666666666,
+    "overallPassRate": 0.05
+  }
+}

@@ -7,6 +7,122 @@ correction to an entry is a new entry that names it. Newest first.
 The pilot ran before the freeze, on the version it disclosed; what it changed is in
 `METHODOLOGY.md`, "Pilot disclosure", not here.
 
+## 2026-10-28: technique naming and the WCAG version in Arm 1
+
+- **What the methodology says.** Content pass requires every `con-` grader of the task, including
+  `con-technique-named` in the three test-case tasks and `con-wcag-2-2` ("The audit names WCAG 2.2
+  as the standard", pattern `WCAG\s*2\.2`) in `a11y-signup-form`.
+- **What the read-through found.** As in the Extension arm (entry of 2026-10-27), A, B and C apply
+  the technique without naming it. With the corrections below, in the three test-case tasks A and B
+  pass every other content grader in 9 or 10 of 10 runs and C in 7 to 10, yet name the technique in
+  0 to 4. The prompt of `a11y-signup-form` names no WCAG version; A, B and C cite WCAG 2.1 in 7, 7
+  and 5 of their 10 answers and 2.2 in none, so they pass `con-wcag-2-2` in 0 of 10 and D in 10. On
+  `claude-fable-5-1` A, B and C passed it in 10, 10 and 9 of 10: this model does not use the current
+  version unless the package names it.
+- **What was done.** Nothing in the collected results changed; both graders do what their
+  descriptions say. As in the Extension arm, `rescore.js --set-aside con-technique-named` over the
+  corrected verdicts gives `analysis-corrected-without-naming.md`: content pass A 47/90, B 54/90,
+  C 43/90, D 72/90; D vs C +32.2 (+21.1 to +43.3), D vs B +20.0 (+8.9 to +30.0), D vs A +27.8
+  (+16.7 to +38.9). In that reading D leads in four tasks (`a11y-signup-form`, `defect-gift-card`,
+  `plan-split-payment`, `bdd-loyalty-points`) and not in the other five. Setting `con-wcag-2-2`
+  aside as well would change no verdict: every A, B and C answer of `a11y-signup-form` also fails
+  `con-limits-stated`, and every D answer passes `con-wcag-2-2`. No further reading was computed.
+- **Why it matters.** Naming accounts for about half of the corrected difference against B and C,
+  and the claim holds without it. `con-wcag-2-2`, like naming, rewards what the package tells the
+  model, not what the task asks for; whether either belongs in content pass is a question for a new
+  methodology version, Marco's decision.
+
+## 2026-10-28: the judge failed four flaky-run-history answers that match its rubric in Arm 1
+
+- **What the methodology says.** `jdg-cause-classes` passes when the reply classifies the cart
+  test as test timing, the search test as shared data or order dependence, the latest-order test as
+  a real intermittent product defect and the avatar test as a consistent failure, and does not
+  call the login test flaky. The judge is never re-run or overruled (`RUNBOOK.md` section 5).
+- **What the read-through found.** The judge (`claude-haiku-4-5-20251001`, three votes per answer)
+  failed 9 of 40 answers, and each of the nine was read. D runs 1, 5 and 6 and B run 9 give each
+  test the rubric's class, in a table or a heading per test (for example "Test timing",
+  "Order/shared state", "Product intermittent defect (eventual consistency)", "Deterministic Failure
+  (always fails, not flaky)") and do not call the login test flaky; the votes against them are
+  unanimous, and the judge records no reason. A runs 2, 3 and 9 name the backend's delay as the
+  cause of the latest-order failure but propose only a test-side wait, which the rubric may or may
+  not count as a product defect. C run 2 says two tests are "consistently broken" and gives the
+  latest-order test as a timing problem, a correct fail. The fixture changed in 1.2 worked: all nine
+  answers class the cart test as a timing problem.
+- **What was done.** Nothing was re-judged or re-scored. Judge pass, as collected: A 18/30,
+  B 20/30, C 13/30, D 27/30 (`jdg-cause-classes` A 7, B 9, C 9, D 7 of 10).
+- **Why it matters.** The judge is a secondary outcome. On this task it counts against D three
+  times and against B once where the answer is right. In both arms the D answers this judge failed
+  were right by the rubric or more careful than it (entry of 2026-10-27).
+
+## 2026-10-28: eight content graders gave 44 wrong verdicts in Arm 1
+
+- **What the methodology says.** `RUNBOOK.md` section 5: "A verdict that is wrong is a grader
+  defect: record it in `DEVIATIONS.md` with the output that showed it." A defective grader is not
+  fixed and re-scored silently; a corrected re-score is reported beside the analysis and labelled.
+- **What the read-through found.** Each verdict below was checked by reading the output; every one
+  is a failure that should have been a pass, and the reason for each is in
+  `results/2026-10-28-arm-1/corrections.json`.
+  - `bdd-loyalty-points` `con-vague-ac-flagged` (A 4, B 5, C 3, D 6): the threshold for AC-4's
+    "fast" is stated as an assumption, in an "Assumptions" section or a comment, as the grader's
+    description accepts, but the pattern wants the flag word after the AC-4 or "fast" mention and
+    here it comes before. Answers that only write "within 2 seconds" in a step stay failed.
+  - `cases-order-status` `con-unlisted-invalid-transition` (A 2, C 2, D 3): cases such as "Cannot
+    transition directly from Placed to Shipped" or "Cancel Delivered Order Returns Error" are not
+    covered. Answers whose only invalid transition is the listed one (cancelling a shipped order)
+    stay failed.
+  - `api-orders-contract` `con-undocumented-500` (A 3, B 2, C 2): "500 not defined in OpenAPI spec
+    (only 201, 400 allowed)", "(not in spec)", "Unspecified status" or "Undefined status code" after
+    "201 or 400", and "neither 201 nor 400" are not covered.
+  - `flaky-run-history` `con-deterministic-apart` (A 2, B 1, C 3): "This is not a flaky test",
+    "Real bug, not flakiness" and "fails 100% of the time, not intermittently" are not covered.
+  - `defect-gift-card` `con-repro-rate` (A 1, D 1): "3 failed, 7 passed out of 10 attempts" and
+    "Pass Rate: 70% (7 passed, 3 failed)" are not covered.
+  - `a11y-signup-form` `con-find-keyboard` (A 1, B 1): the `div` with `onclick` is reported and "Not
+    keyboard accessible" is on the next line; the pattern needs both on one line.
+  - `plan-split-payment` `con-entry-exit` (C 1): one heading, "Entry / Exit Criteria", with "Entry:"
+    and "Exit:" lists.
+  - `a11y-signup-form` `con-no-4-1-1` (D 1): 4.1.1 appears only in a list of criteria "Not checked
+    or not applicable to this page". Answers that report the duplicate `id` under 4.1.1 Parsing
+    (B 3, 7 and 10, D 1 and 4) stay failed.
+
+  Totals: A 13, B 9, C 11, D 11. Three of these graders were changed in methodology 1.2
+  (`con-undocumented-500`, `con-repro-rate`, `con-no-4-1-1`): 1.2 added the wordings the Extension
+  arm used, and this model uses others. The other five gave no wrong verdict on the Extension arm's
+  answers. Also checked and correct: `con-tier-boundaries` (each failing answer lacks at least one
+  of 499, 500, 1,999 and 2,000 points), `con-severity-and-priority` (the failing answers give no
+  priority), `con-expected-actual` (A 3 and 9 quote "Gift card discount", not the message),
+  `con-undeclared-length`, `con-find-lang`, and `con-subtotal-boundary` (A 10 and D 2 and 6 lack
+  49.99, C 7 and 10 both 49.99 and 50.00).
+- **What was done.** `runs.jsonl` and `analysis.md` stay as collected. `rescore.js` applies
+  `corrections.json`; `analysis-corrected.md` is its output through `analyze.js` unchanged: content
+  pass A 21/90, B 30/90, C 22/90, D 71/90; D vs C +54.4 (+43.3 to +64.4), D vs B +45.6 (+33.3 to
+  +56.7), D vs A +55.6 (+44.4 to +66.7), against +52.2, +41.1 and +52.2 as collected (A 16/90,
+  B 26/90, C 16/90, D 63/90). Every contrast still "supports the claim". The patterns were not
+  changed.
+- **Why it matters.** The defects fall on every condition, D included (11 of 44, against 4 of 48 in
+  the Extension arm), and the conclusion does not depend on them. Two arms have now each needed a
+  read-through of every failed content verdict: the patterns keep missing wordings they were not
+  tested on.
+
+## 2026-10-28: Arm 1 is collected on a Claude subscription, from the SWARE distribution
+
+- **What the methodology says.** "Cost" estimates Arm 1 at about US$13 at list prices with a US$16
+  cap, and `RUNBOOK.md` asks for Claude Code with `claude plugin eval`, "signed in with the account
+  that pays for the run".
+- **What was done.** Marco decided on 2026-10-28 to collect Arm 1 as the Extension arm was
+  collected: from the SWARE WSL distribution, where Claude Code 2.1.291 has `claude plugin eval`
+  (the MarcoWork distribution has 2.1.224, where the command is not available), signed in to the
+  Swareco Team subscription with extra usage off, on methodology 1.2 (digest
+  `7f873e1c3f2378840b6c55f4ed5f5f1ff8c137383ee3b9d39751b69a06523af7`). The `RUNBOOK.md` commands run
+  unchanged, `claude-haiku-4-5-20251001` as agent and judge, ten runs per cell, cap US$16 at the
+  list prices the tool reports. The Extension arm's usage guard applies: no task starts at 95% or
+  more of the five-hour or weekly limit, a task in flight stops at 98%, and a task stopped part-way
+  is set aside and collected again whole, as its own entry here. Results go to
+  `benchmark/results/2026-10-28-arm-1/`.
+- **Why it matters.** The cost is reported at list prices; on a subscription it counts against the
+  plan's usage limits instead of being billed. The protocol, the model and the cases are Arm 1's as
+  frozen.
+
 ## 2026-10-27: methodology 1.2, six content graders and one fixture changed before Arm 1
 
 - **What the methodology says.** "A change before full collection is a new row under 'Version
