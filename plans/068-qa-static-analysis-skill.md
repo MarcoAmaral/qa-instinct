@@ -82,6 +82,10 @@ or pasted text. The skill reads the cited code before judging each finding and p
    the code instead of trusting the report. Run locally only, within plan 037's cap; record the
    failing run against `main` (the plugin without the skill) and the passing run after. Results go
    to `evals/results/`.
+
+   > **Correction, 2026-10-31.** The graders as written are `llm` judges, not regex, and the run
+   > against the plugin without the skill did not fail. See "Note, 2026-10-31".
+
 2. **The skill**: `.claude/skills/qa-static-analysis/SKILL.md`. It mirrors `qa-flaky`: banner with
    citations, the "If a rule is not loaded" paragraph, the rules and references it reuses, then
    steps (read the report, read the code, verdict, severity, action, gate, report). The body stays
@@ -151,3 +155,41 @@ can see, which adds about 400 characters of skill description to D's context.
   `nosemgrep` and `.semgrepignore`, Semgrep `--baseline-commit`, `npm audit` flags. CodeQL's
   inline suppression is from its 2.12.0 changelog and secondary sources, and the reference says to
   check it before relying on it.
+
+## Note, 2026-10-31: the evals ran, and they cannot show a gain
+
+Both rounds ran on SWARE (Claude Code 2.1.291, `--runs 3 --model sonnet --trust-plugin -j 3`, a
+fresh clone) on 2026-10-31, under plan 037's cap: "before" at `e86d191`, "after" at `2888edc`, the
+current `main`, not the feature branch the Outcome names, which is merged. Files:
+`evals/results/2026-10-31-static-analysis-before.json` and `-after.json`, with paths replaced by
+`<repository>` and `<temp>`; scores and costs are unchanged. The agent was the `sonnet` alias and
+the judge the tool's default, Haiku; the files record neither model's exact string, and the traces
+were not kept. A first attempt on 2026-10-30 ended in
+`auth_failed` at no cost; the cause was not established, and the rerun authenticated.
+
+| Round | Case | Plugin arm | Baseline arm | Skill call | Cost (US$) |
+| --- | --- | --- | --- | --- | --- |
+| Before | plain request | 1.00 | 1.00 | 0 of 3 | 1.51, both cases |
+| Before | skill named | 1.00 | 0.89 | 0 of 3 | |
+| After | plain request | 1.00 | 0.94 | 3 of 3 | 1.87, both cases |
+| After | skill named | 0.94 | 1.00 | 0 of 3 | |
+
+- **The red step did not happen.** The plugin without the skill scored 1.00 on both cases, so
+  these evals do not show that the skill improves the answer. Sonnet already gets the six planted
+  findings without it. Every difference above is one or two graders in one run. Showing a gain
+  would need a harder fixture or a smaller model.
+- **What they do show: the skill is found.** Asked in plain words, the model called it in 3 of 3
+  runs on `main`, and in 0 of 3 before it existed.
+- **"Skill call 0 of 3" on the named case is the indicator's limit, not a miss.** `skill-fired`
+  counts `Skill` tool calls, and a slash command expands without one. The replies show the skill
+  loaded: on `e86d191` all three open by saying the command "isn't installed"; on `main` none does,
+  they take 2 to 6 turns instead of 1, and each states what was read and what was not, as the
+  skill's report step asks. The indicator could be dropped from that case.
+- **The one lost point looks like a split judge, not a wrong reply.** In the named case, run 2,
+  `baseline-out-of-gate` failed on votes FAIL FAIL PASS. That reply notes the finding is marked
+  `unchanged`, says "Fail on new findings only", and baselines it with an owner, which is what the
+  rubric asks. The fixture may be the cause: the prompt calls this the first run, a finding marked
+  `unchanged` does not fit one, and all three replies in that case say so and query it instead of
+  taking it as settled. The score is kept as collected.
+- **The test-only sentence, "Not re-run after the change" above**: `test-only-not-reachable` passed
+  in all six plugin-arm runs on `main`.
