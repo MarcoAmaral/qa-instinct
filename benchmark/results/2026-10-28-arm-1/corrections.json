@@ -1,0 +1,401 @@
+{
+  "description": "Grader verdicts found wrong in the RUNBOOK section 5 read-through of Arm 1 on 2026-10-28, each checked by reading the output. Applied only by benchmark/analysis/rescore.js for the labelled corrected re-score; runs.jsonl and analysis.md stay as collected. See DEVIATIONS.md, 2026-10-28.",
+  "corrections": [
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "A",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "A",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "C",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "C",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "D",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "D",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "cases-order-status",
+      "grader": "con-unlisted-invalid-transition",
+      "condition": "D",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The answer has a case for an unlisted invalid transition (\"Cancel Delivered Order Returns Error\", \"Mark Non-Paid Order as Shipped\", \"Mark Placed order as shipped (skip Paid)\", \"Cannot change status backwards\", \"Cannot transition directly from Placed to Shipped\", \"transition from Delivered to any other state is refused\", \"Attempt to transition order directly from Placed to Delivered\"); the pattern needs the refusal word before the state on the same line, or other wording."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "A",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "A",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "A",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "B",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "B",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "B",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "B",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "B",
+      "run": 9,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "C",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "C",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "C",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "D",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "D",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "D",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "D",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "D",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "bdd-loyalty-points",
+      "grader": "con-vague-ac-flagged",
+      "condition": "D",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The threshold for AC-4's \"fast\" is stated as an assumption (an Assumptions section or comment such as '\"Load fast\" means page loads in under 2 seconds'), which the grader's description accepts; the pattern needs the flag word after the AC-4 or \"fast\" mention, and here it comes before."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "A",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "A",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "B",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "B",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "C",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "api-orders-contract",
+      "grader": "con-undocumented-500",
+      "condition": "C",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The 500 is said to be undocumented in other words (\"500 not defined in OpenAPI spec (only 201, 400 allowed)\", \"(not in spec)\", \"Unspecified status\" or \"Undefined status code\" in a table row after \"201 or 400\", \"neither 201 nor 400\"); the pattern misses them."
+    },
+    {
+      "task": "plan-split-payment",
+      "grader": "con-entry-exit",
+      "condition": "C",
+      "run": 5,
+      "collected": false,
+      "corrected": true,
+      "reason": "Entry and exit criteria are both given under one heading, \"Entry / Exit Criteria\", with \"Entry:\" and \"Exit:\" lists; the pattern needs the literal words \"entry criteria\"."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-no-4-1-1",
+      "condition": "D",
+      "run": 2,
+      "collected": false,
+      "corrected": true,
+      "reason": "4.1.1 appears only in a list of criteria \"Not checked or not applicable to this page\"; the duplicate id is not reported under it."
+    },
+    {
+      "task": "flaky-run-history",
+      "grader": "con-deterministic-apart",
+      "condition": "A",
+      "run": 4,
+      "collected": false,
+      "corrected": true,
+      "reason": "The avatar test is kept apart as a real failure in other words (\"This is not a flaky test\", \"Consistently broken (0/10 passes) ... Real bug, not flakiness\", \"fails 100% of the time, not intermittently\", \"a real bug, not flakiness\"); the pattern needs \"not flaky\", \"deterministic\" or a listed phrase."
+    },
+    {
+      "task": "flaky-run-history",
+      "grader": "con-deterministic-apart",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The avatar test is kept apart as a real failure in other words (\"This is not a flaky test\", \"Consistently broken (0/10 passes) ... Real bug, not flakiness\", \"fails 100% of the time, not intermittently\", \"a real bug, not flakiness\"); the pattern needs \"not flaky\", \"deterministic\" or a listed phrase."
+    },
+    {
+      "task": "flaky-run-history",
+      "grader": "con-deterministic-apart",
+      "condition": "B",
+      "run": 7,
+      "collected": false,
+      "corrected": true,
+      "reason": "The avatar test is kept apart as a real failure in other words (\"This is not a flaky test\", \"Consistently broken (0/10 passes) ... Real bug, not flakiness\", \"fails 100% of the time, not intermittently\", \"a real bug, not flakiness\"); the pattern needs \"not flaky\", \"deterministic\" or a listed phrase."
+    },
+    {
+      "task": "flaky-run-history",
+      "grader": "con-deterministic-apart",
+      "condition": "C",
+      "run": 1,
+      "collected": false,
+      "corrected": true,
+      "reason": "The avatar test is kept apart as a real failure in other words (\"This is not a flaky test\", \"Consistently broken (0/10 passes) ... Real bug, not flakiness\", \"fails 100% of the time, not intermittently\", \"a real bug, not flakiness\"); the pattern needs \"not flaky\", \"deterministic\" or a listed phrase."
+    },
+    {
+      "task": "flaky-run-history",
+      "grader": "con-deterministic-apart",
+      "condition": "C",
+      "run": 3,
+      "collected": false,
+      "corrected": true,
+      "reason": "The avatar test is kept apart as a real failure in other words (\"This is not a flaky test\", \"Consistently broken (0/10 passes) ... Real bug, not flakiness\", \"fails 100% of the time, not intermittently\", \"a real bug, not flakiness\"); the pattern needs \"not flaky\", \"deterministic\" or a listed phrase."
+    },
+    {
+      "task": "flaky-run-history",
+      "grader": "con-deterministic-apart",
+      "condition": "C",
+      "run": 6,
+      "collected": false,
+      "corrected": true,
+      "reason": "The avatar test is kept apart as a real failure in other words (\"This is not a flaky test\", \"Consistently broken (0/10 passes) ... Real bug, not flakiness\", \"fails 100% of the time, not intermittently\", \"a real bug, not flakiness\"); the pattern needs \"not flaky\", \"deterministic\" or a listed phrase."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-find-keyboard",
+      "condition": "A",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The `div` with `onclick` is reported and its impact, \"Not keyboard accessible\", is on the next line; the pattern needs both on one line."
+    },
+    {
+      "task": "a11y-signup-form",
+      "grader": "con-find-keyboard",
+      "condition": "B",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The `div` with `onclick` is reported and its impact, \"Not keyboard accessible\", is on the next line; the pattern needs both on one line."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-repro-rate",
+      "condition": "A",
+      "run": 8,
+      "collected": false,
+      "corrected": true,
+      "reason": "The observed rate is stated as \"3 failed, 7 passed out of 10 attempts\" or \"Pass Rate: 70% (7 passed, 3 failed)\"; the pattern covers \"3/10\", \"3 of 10\", \"3 in 10\" and \"30%\" only."
+    },
+    {
+      "task": "defect-gift-card",
+      "grader": "con-repro-rate",
+      "condition": "D",
+      "run": 10,
+      "collected": false,
+      "corrected": true,
+      "reason": "The observed rate is stated as \"3 failed, 7 passed out of 10 attempts\" or \"Pass Rate: 70% (7 passed, 3 failed)\"; the pattern covers \"3/10\", \"3 of 10\", \"3 in 10\" and \"30%\" only."
+    }
+  ]
+}
