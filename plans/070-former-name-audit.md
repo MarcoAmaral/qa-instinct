@@ -10,6 +10,7 @@
 - **Priority**: P3. One user-visible message and one broken link; no wrong behaviour.
 - **Effort**: S.
 - **Risk**: LOW. The installers change one message each; markers and folder names stay.
+  (2026-11-12: Marco chose option B below, so the global hook's fence lines change too, MEDIUM.)
 - **Depends on**: plan 065 (the rename and its keep-list), 066 (internal names)
 - **Planned at**: commit `2888edc` (`main`), 2026-10-29
 
@@ -59,10 +60,30 @@ Every global pre-commit hook QA Instinct writes today, including on a fresh inst
 opens their hook sees the former name. Plans 064 and 065 kept the lines because uninstall finds the
 block by them.
 
-- **A (kept here)**: leave them. No risk; the name stays visible in new hooks.
-- **B**: write `qa-instinct` fences from now on and recognise both on uninstall and reinstall, as
-  plan 066 did for the manifest. Touches both shell installers, the hook-parity check, its fixtures
-  and the conformance cases; its own plan, effort M.
+- **A**: leave them. No risk; the name stays visible in new hooks.
+- **B (Marco chose it, 2026-11-12)**: write `qa-instinct` fences from now on and recognise both on
+  uninstall and reinstall, as plan 066 did for the manifest. Touches both shell installers, the
+  hook-parity check, its fixtures and the conformance cases; its own plan, effort M.
+
+### What option B did
+
+Marco asked for it in this plan's pull request rather than a plan of its own, so it is recorded here.
+It turned out smaller than estimated: the CLI writes no git hook, so no conformance case was touched.
+
+- `install.sh` and `install.ps1` write `# >>> qa-instinct global pre-commit >>>` and
+  `# <<< qa-instinct global pre-commit <<<`. Uninstall looks for the current begin line first, then
+  the former name's; each begin line pairs only with its own end line.
+- **Reinstall** needs nothing new: install leaves any global hook that already names
+  `validate-tc-format.sh` as it is, old fence included.
+- **Not migrated in place**: a hook installed before this change keeps its old fence until it is
+  uninstalled. Rewriting lines in a file that may be the user's, only to change two comments, was
+  not worth the risk.
+- **Downgrade**: an uninstaller from 4.5.x or earlier does not know the new fence. It still removes
+  the block by the old "Added by" line inside it, and leaves the two new fence lines, which are
+  comments; a fresh hook left with only those is not deleted. Nothing of the user's is lost.
+- Tests: `tests/test-hook-parity.sh` compares the two old-fence constants between the installers;
+  `tests/fixtures/git-hooks/current/` holds the new bytes; the existing `fenced*` fixtures, written
+  by releases with the old fence, are now what proves uninstall still finds it.
 
 ## Rejected approaches
 
@@ -83,3 +104,10 @@ block by them.
   it too ("allowlist entry matches no line any more").
 - **Green**: after the rename, "The former name appears only in the record and on 47 allowlisted
   lines", exit 0.
+- **Option B, red**: with the old-fence lookup removed from `install.sh`, uninstall over the
+  fixtures `global-appended/fenced.lf` and `global-fresh/fenced.lf.nl` left
+  `# >>> bem-te-vi global pre-commit >>>` and `# <<< bem-te-vi global pre-commit <<<` in the hook,
+  and Test 72 would fail on both.
+- **Option B, green** (2026-11-12, local): "The former name appears only in the record and on 37
+  allowlisted lines"; hook parity, `npm test` and shellcheck exit 0; the bash lifecycle suite ran
+  and passed 62 of 62 tests, among them 41, 72 and 73. The PowerShell suites run only in CI.
