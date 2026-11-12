@@ -81,6 +81,7 @@ chained-prompt command).
 | 066 | Rename the installers' internal `qa-skills` names, migrating every existing install | P2 | L | 009-012, 016, 064, 065 | DONE (PR #16, CI green on Linux, Windows and macOS; PR #17 set the version; 4.3.0 published to npm on 2026-10-26) |
 | 067 | Ship the `qa-rules` skill in the Claude Code plugin | P2 | S | 022, 047, 060 | IN REVIEW (branch `feat/plugin-ships-qa-rules`) |
 | 068 | The `qa-static-analysis` skill: triage what a static analysis tool reports | P3 | S | 037, 038, 040, 047 | DONE (PR #22, released in 4.5.0; evals run 2026-10-31 on SWARE: the skill is found, 3 of 3 in plain words, but the plugin scored 1.00 without it, so they show no gain; see the plan's note) |
+| 069 | `update` finishes a pre-manifest install in one run, and its closing note names the right command | P2 | M | 009-013, 016, 033, 066 | IN REVIEW (branch `fix/update-pre-manifest-install`; 148 conformance runs and 62 lifecycle tests green locally; PowerShell suites run only in CI) |
 
 ¹ These SHAs changed on 2026-09-14, when an AI co-author trailer was removed
 from two commit messages before opening PR #11. File contents are unchanged.
