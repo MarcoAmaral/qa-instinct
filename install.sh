@@ -1166,8 +1166,9 @@ package_files() {   # editor scope base
 # Update, the same in all three installers (plan 033 item 3). For an editor the manifest records:
 # refresh its files and install the ones this release added (the install path), then remove each
 # recorded file the package no longer ships if it is unchanged, keep and report it otherwise, and
-# drop its entry either way. With no manifest at all, adopt only files whose hash a release
-# shipped. An editor the manifest does not record is never installed.
+# drop its entry either way. With no manifest at all, first adopt only files whose hash a release
+# shipped; an adopted file proves its editor is installed, so that editor then takes the same path
+# in this run (plan 069). An editor the manifest does not record is never installed.
 UPDATE_NO_MANIFEST_BASES=""
 update_to_editor() {   # editor scope base
     local ED="$1" SCOPE="$2" BASE="$3" MF
@@ -1175,15 +1176,12 @@ update_to_editor() {   # editor scope base
     # Whether the base had a manifest is decided once per run: adopting one editor's files writes
     # a manifest, and the next editor must still be adopted, not skipped as "not recorded".
     if [ ! -f "$MF" ]; then UPDATE_NO_MANIFEST_BASES="$UPDATE_NO_MANIFEST_BASES|$BASE|"; fi
-    if case "$UPDATE_NO_MANIFEST_BASES" in *"|$BASE|"*) false ;; *) true ;; esac; then
-        manifest_lines "$MF" | awk -v ed="$ED" '$2 == ed { found = 1 } END { exit !found }' || return 0
-        UPDATE_REPORT=true
-        install_to_editor "$ED" "$SCOPE" "$BASE"
-        UPDATE_REPORT=false
-        prune_unshipped "$BASE" "$ED" "$SCOPE"
-    else
-        adopt_known "$ED" "$SCOPE" "$BASE"
-    fi
+    case "$UPDATE_NO_MANIFEST_BASES" in *"|$BASE|"*) adopt_known "$ED" "$SCOPE" "$BASE" ;; esac
+    manifest_lines "$MF" | awk -v ed="$ED" '$2 == ed { found = 1 } END { exit !found }' || return 0
+    UPDATE_REPORT=true
+    install_to_editor "$ED" "$SCOPE" "$BASE"
+    UPDATE_REPORT=false
+    prune_unshipped "$BASE" "$ED" "$SCOPE"
 }
 
 prune_unshipped() {   # base editor scope

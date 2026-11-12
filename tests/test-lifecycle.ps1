@@ -543,8 +543,8 @@ $knownHashes = Get-Content -LiteralPath "$repoDir\.qa-instinct-known-hashes" -En
 if ($knownHashes -match "^$userHash\s") { throw "Test setup error: the user-edit content collides with a known release hash" }
 Remove-Item -LiteralPath ".qa-instinct-manifest" -Force
 
-# A reinstall, not -Update: with no manifest, update adopts only files a release shipped and
-# leaves this one alone (plan 033 item 3), so only install reaches the backup path.
+# A reinstall: this test is about install's backup path. Update takes the same path once it has
+# adopted a file (plan 069); Test 34 covers that.
 powershell.exe -ExecutionPolicy Bypass -File "$repoDir\install.ps1" -Target project -Editor claude -NonInteractive -NoHooks
 if ($LASTEXITCODE -ne 0) { throw "install.ps1 (Test 18, reinstall) failed with exit status $LASTEXITCODE" }
 
@@ -973,11 +973,11 @@ Set-Location -Path $repoDir
 Write-Host "[OK] Test 33 passed successfully! A dropped file was removed when unmodified and kept when modified." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
-# TEST 34: `qa-instinct update` adopts a pre-manifest install, and never
-# touches the user's own files at another shipped path (plan 013, item 3)
+# TEST 34: `qa-instinct update` adopts a pre-manifest install and finishes it in
+# one run, keeping the user's own file at a shipped path in a backup (plans 013, 069)
 # -----------------------------------------------------------------------------
 Write-Host ""
-Write-Host "Running Test 34: A pre-manifest install is picked up and adopted, and the user's own files survive it..." -ForegroundColor Yellow
+Write-Host "Running Test 34: A pre-manifest install is adopted and finished in one run, and the user's own file is kept..." -ForegroundColor Yellow
 
 $updateAdoptProject = Join-Path $sandboxDir "update-adopt-project"
 New-Item -ItemType Directory -Path "$updateAdoptProject\.claude\rules" -Force | Out-Null
@@ -991,8 +991,8 @@ $adoptHash34 = (Get-FileHash -Algorithm SHA256 -LiteralPath ".claude\rules\secur
 $knownHashes34 = Get-Content -LiteralPath "$repoDir\.qa-instinct-known-hashes" -Encoding UTF8
 if (-not ($knownHashes34 -match "^$adoptHash34\s")) { throw "Test setup error: v2.2.0's security-qa.md hash is not in the known-hash list" }
 
-# The user's own file, sitting at another path this package also ships - update must leave it
-# alone; its hash proves nothing, so it is never adopted on the strength of its path alone.
+# The user's own file, sitting at another path this package also ships. Its hash proves nothing, so
+# it is never adopted on the strength of its path alone: it is backed up, as init would (plan 069).
 $userContent34 = "MY OWN NOTES - NOT PACKAGE CONTENT"
 Set-Content -Path ".claude\rules\accessibility-qa.md" -Value $userContent34 -Encoding utf8
 
@@ -1009,11 +1009,22 @@ $adoptBackups34 = Get-ChildItem -Path ".claude\rules" -Filter 'security-qa.md.qa
 if ($adoptBackups34) { throw "A file matching a previous release was backed up instead of adopted" }
 if ($updateText34 -notmatch [regex]::Escape("Adopted .claude/rules/security-qa.md")) { throw "update did not report adopting the pre-manifest file. Output was: $updateText34" }
 
-Write-Host "Verifying the user's own file at another shipped path survived untouched..." -ForegroundColor Cyan
-if ((Get-Content -Raw ".claude\rules\accessibility-qa.md").Trim() -ne $userContent34) { throw "update touched the user's own file at a shipped path" }
+Write-Host "Verifying the rest of the release was added in the same run..." -ForegroundColor Cyan
+if (-not (Test-Path -LiteralPath ".claude\skills\qa-reference\SKILL.md" -PathType Leaf)) { throw "update left a pre-manifest install without the files this release ships" }
+
+Write-Host "Verifying the user's own file at another shipped path was kept in a backup..." -ForegroundColor Cyan
+$userBackup34 = Get-ChildItem -Path ".claude\rules" -Filter 'accessibility-qa.md.qa-instinct-backup-*' -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $userBackup34) { throw "update replaced the user's own file at a shipped path without a backup" }
+if ((Get-Content -Raw -LiteralPath $userBackup34.FullName).Trim() -ne $userContent34) { throw "the backup does not hold the user's own file" }
+
+Write-Host "Verifying the closing note names the running version and both ways to update..." -ForegroundColor Cyan
+$version34 = (Get-Content -Raw "$repoDir\package.json" | ConvertFrom-Json).version
+if ($updateText34 -notmatch [regex]::Escape("these are qa-instinct $version34's files")) { throw "the closing note does not name the running version. Output was: $updateText34" }
+if ($updateText34 -notmatch [regex]::Escape("npx qa-instinct@latest update")) { throw "the closing note does not name the npx route" }
+if ($updateText34 -notmatch [regex]::Escape("npm update -g qa-instinct")) { throw "the closing note does not name the npm -g route" }
 
 Set-Location -Path $repoDir
-Write-Host "[OK] Test 34 passed successfully! A pre-manifest install was adopted and the user's own files survived." -ForegroundColor Green
+Write-Host "[OK] Test 34 passed successfully! A pre-manifest install was finished in one run and the user's own file was kept." -ForegroundColor Green
 
 # -----------------------------------------------------------------------------
 # TEST 35: `qa-instinct update` installs nothing when nothing is installed

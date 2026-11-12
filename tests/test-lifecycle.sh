@@ -569,8 +569,8 @@ USER_HASH=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
 grep -q "^$USER_HASH  " "$REPO_DIR/.qa-instinct-known-hashes" && { printf '%b\n' "${RED}✘ Test setup error: the user-edit content collides with a known release hash${NC}"; exit 1; }
 rm -f ".qa-instinct-manifest"
 
-# A reinstall, not --update: with no manifest, update adopts only files a release shipped and
-# leaves this one alone (plan 033 item 3), so only install reaches the backup path.
+# A reinstall: this test is about install's backup path. Update takes the same path once it has
+# adopted a file (plan 069); Test 35 covers that.
 "$REPO_DIR/install.sh" --target project --editor claude --non-interactive
 
 echo "Verifying the user's edit was backed up, not silently discarded..."
@@ -957,11 +957,11 @@ cd "$REPO_DIR"
 printf '%b\n' "${GREEN}✔ Test 34 passed successfully! A dropped file was removed when unmodified and kept when modified.${NC}"
 
 # -----------------------------------------------------------------------------
-# TEST 35: `qa-instinct update` adopts a pre-manifest install, and never
-# touches the user's own files at another shipped path (plan 013, item 3)
+# TEST 35: `qa-instinct update` adopts a pre-manifest install and finishes it in
+# one run, keeping the user's own file at a shipped path in a backup (plans 013, 069)
 # -----------------------------------------------------------------------------
 echo ""
-echo "Running Test 35: A pre-manifest install is picked up and adopted, and the user's own files survive it..."
+echo "Running Test 35: A pre-manifest install is adopted and finished in one run, and the user's own file is kept..."
 
 mkdir -p "$SANDBOX_DIR/update-adopt-project"
 cd "$SANDBOX_DIR/update-adopt-project"
@@ -973,8 +973,8 @@ cp "$V220_DIR/security-qa.md" ".claude/rules/security-qa.md"
 ADOPT_HASH_35=$(sha256sum ".claude/rules/security-qa.md" | awk '{print $1}')
 grep -q "^$ADOPT_HASH_35  " "$REPO_DIR/.qa-instinct-known-hashes" || { printf '%b\n' "${RED}✘ Test setup error: v2.2.0's security-qa.md hash is not in the known-hash list${NC}"; exit 1; }
 
-# The user's own file, sitting at another path this package also ships - update must leave it
-# alone; its hash proves nothing, so it is never adopted on the strength of its path alone.
+# The user's own file, sitting at another path this package also ships. Its hash proves nothing, so
+# it is never adopted on the strength of its path alone: it is backed up, as init would (plan 069).
 USER_CONTENT_35="MY OWN NOTES - NOT PACKAGE CONTENT"
 echo "$USER_CONTENT_35" > ".claude/rules/accessibility-qa.md"
 
@@ -988,11 +988,22 @@ ADOPT_BACKUPS_35=$(find .claude/rules -name 'security-qa.md.qa-instinct-backup-*
 [ -z "$ADOPT_BACKUPS_35" ] || { printf '%b\n' "${RED}✘ A file matching a previous release was backed up instead of adopted${NC}"; exit 1; }
 grep -q "Adopted .claude/rules/security-qa.md" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ update did not report adopting the pre-manifest file${NC}"; exit 1; }
 
-echo "Verifying the user's own file at another shipped path survived untouched..."
-[ "$(cat ".claude/rules/accessibility-qa.md")" = "$USER_CONTENT_35" ] || { printf '%b\n' "${RED}✘ update touched the user's own file at a shipped path${NC}"; exit 1; }
+echo "Verifying the rest of the release was added in the same run..."
+cmp -s "$REPO_DIR/.claude/skills/qa-reference/SKILL.md" ".claude/skills/qa-reference/SKILL.md" || { printf '%b\n' "${RED}✘ update left a pre-manifest install without the files this release ships${NC}"; exit 1; }
+
+echo "Verifying the user's own file at another shipped path was kept in a backup..."
+USER_BACKUP_35=$(find .claude/rules -name 'accessibility-qa.md.qa-instinct-backup-*' | head -1)
+[ -n "$USER_BACKUP_35" ] || { printf '%b\n' "${RED}✘ update replaced the user's own file at a shipped path without a backup${NC}"; exit 1; }
+[ "$(cat "$USER_BACKUP_35")" = "$USER_CONTENT_35" ] || { printf '%b\n' "${RED}✘ the backup does not hold the user's own file${NC}"; exit 1; }
+
+echo "Verifying the closing note names the running version and both ways to update..."
+VERSION_35=$(node -p "require('$REPO_DIR/package.json').version")
+grep -qF "these are qa-instinct $VERSION_35's files" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ the closing note does not name the running version${NC}"; exit 1; }
+grep -qF "npx qa-instinct@latest update" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ the closing note does not name the npx route${NC}"; exit 1; }
+grep -qF "npm update -g qa-instinct" "$SANDBOX_DIR/test35.log" || { printf '%b\n' "${RED}✘ the closing note does not name the npm -g route${NC}"; exit 1; }
 
 cd "$REPO_DIR"
-printf '%b\n' "${GREEN}✔ Test 35 passed successfully! A pre-manifest install was adopted and the user's own files survived.${NC}"
+printf '%b\n' "${GREEN}✔ Test 35 passed successfully! A pre-manifest install was finished in one run and the user's own file was kept.${NC}"
 
 # -----------------------------------------------------------------------------
 # TEST 36: `qa-instinct update` installs nothing when nothing is installed
