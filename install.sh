@@ -354,9 +354,14 @@ project_hooks_dir() {
 
 # The global hook block is fenced by two exact marker lines so install and uninstall only ever
 # touch their own lines of a hook that may be the user's. The old "Added by" line stays inside
-# the block, and so does the old end line, so an older uninstaller still recognises it.
-GLOBAL_HOOK_BEGIN="# >>> bem-te-vi global pre-commit >>>"
-GLOBAL_HOOK_END="# <<< bem-te-vi global pre-commit <<<"
+# the block, and so does the old end line, so an older uninstaller still recognises it; one from
+# before plan 070 then leaves the two fence lines, which are comments.
+GLOBAL_HOOK_BEGIN="# >>> qa-instinct global pre-commit >>>"
+GLOBAL_HOOK_END="# <<< qa-instinct global pre-commit <<<"
+# The fence releases up to 4.5.x wrote under the former package name (plan 070); uninstall still
+# finds it.
+GLOBAL_HOOK_OLD_BEGIN="# >>> bem-te-vi global pre-commit >>>"
+GLOBAL_HOOK_OLD_END_FENCE="# <<< bem-te-vi global pre-commit <<<"
 GLOBAL_HOOK_OLD_MARKER="# Added by qa-skills global installer"
 GLOBAL_HOOK_OLD_END="# GLOBAL_PRECOMMIT_APPEND"
 GLOBAL_HOOK_FRESH_HEADER="# Global pre-commit hook to validate test cases in qa-instinct"
@@ -368,7 +373,7 @@ SH_SHEBANG_RE='^#![[:space:]]*(/[^[:space:]]*/)?(env[[:space:]]+)?(ba)?sh([[:spa
 
 global_hook_block() {
     cat << 'GLOBAL_PRECOMMIT_BLOCK'
-# >>> bem-te-vi global pre-commit >>>
+# >>> qa-instinct global pre-commit >>>
 # Added by qa-skills global installer
 GLOBAL_VALIDATOR="$HOME/.claude/hooks/validate-tc-format.sh"
 if [ -f "$GLOBAL_VALIDATOR" ]; then
@@ -386,23 +391,26 @@ if [ -f "$GLOBAL_VALIDATOR" ]; then
         done' bash "$GLOBAL_VALIDATOR" || exit 1
 fi
 # GLOBAL_PRECOMMIT_APPEND
-# <<< bem-te-vi global pre-commit <<<
+# <<< qa-instinct global pre-commit <<<
 GLOBAL_PRECOMMIT_BLOCK
 }
 
-# Prints $1 without the bem-te-vi block. The block is the lines between the two markers; for a hook
-# written by an older release it runs from the old "Added by" line (or, for a fresh hook written by
-# install.ps1, the header comment) to the first line that is exactly "fi", which is how the old
+# Prints $1 without the QA Instinct block. The block is the lines between the two markers, the
+# current ones or the former name's (each begin marker pairs only with its own end marker); for a
+# hook written before the markers it runs from the old "Added by" line (or, for a fresh hook written
+# by install.ps1, the header comment) to the first line that is exactly "fi", which is how the old
 # block ends. One blank line right before the block, the separator the installer added, goes too.
 # Exit status 3: no block found. Exit status 4: a block starts but its end cannot be found, so
 # nothing is printed and the caller must leave the file alone.
 strip_global_hook_block() {
     awk -v B="$GLOBAL_HOOK_BEGIN" -v E="$GLOBAL_HOOK_END" -v O="$GLOBAL_HOOK_OLD_MARKER" \
-        -v A="$GLOBAL_HOOK_OLD_END" -v H="$GLOBAL_HOOK_OLD_FRESH_HEADER" '
+        -v A="$GLOBAL_HOOK_OLD_END" -v H="$GLOBAL_HOOK_OLD_FRESH_HEADER" \
+        -v OB="$GLOBAL_HOOK_OLD_BEGIN" -v OE="$GLOBAL_HOOK_OLD_END_FENCE" '
         { line[NR] = $0; t = $0; sub(/\r$/, "", t); trim[NR] = t }
         END {
             s = 0; old = 0
             for (i = 1; i <= NR && !s; i++) if (trim[i] == B) s = i
+            if (!s) { for (i = 1; i <= NR && !s; i++) if (trim[i] == OB) s = i; if (s) E = OE }
             if (!s) { old = 1; for (i = 1; i <= NR && !s; i++) if (trim[i] == O) s = i }
             if (!s) { for (i = 1; i <= NR && !s; i++) if (trim[i] == H) s = i }
             if (!s) exit 3
@@ -1410,7 +1418,7 @@ purge_git_hook() {
                         printf '%b\n' "${CYAN}  i Removed empty global hook file.${NC}"
                     fi
                 else
-                    printf '%b\n' "${YELLOW}  ! Kept global pre-commit hook — could not find the bem-te-vi block to remove: $HOOK_FILE${NC}"
+                    printf '%b\n' "${YELLOW}  ! Kept global pre-commit hook — could not find the block QA Instinct added: $HOOK_FILE${NC}"
                 fi
                 rm -f "$STRIPPED"
             fi

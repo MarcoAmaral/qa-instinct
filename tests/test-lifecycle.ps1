@@ -1258,7 +1258,7 @@ git config --global init.templateDir "$home40a/their-templates"
 $env:GIT_CONFIG_GLOBAL = $null
 Invoke-GlobalInstall40 $home40a $false | Out-Null
 $appended40a = [System.IO.File]::ReadAllText($hook40a)
-if (-not $appended40a.Contains('# >>> bem-te-vi global pre-commit >>>')) { throw "global install did not append its block to the user's hook" }
+if (-not $appended40a.Contains('# >>> qa-instinct global pre-commit >>>')) { throw "global install did not append its block to the user's hook" }
 if ($appended40a.Contains("`r")) { throw "the appended global hook contains a CR; bash would reject it" }
 $env:GIT_CONFIG_GLOBAL = (Join-Path $home40a '.gitconfig')
 $templateDir40a = (git config --global init.templateDir)

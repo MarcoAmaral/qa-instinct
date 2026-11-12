@@ -1,0 +1,53 @@
+# Lines outside the historical record that still name the former package, Bem-te-vi, on purpose.
+# tests/test-old-name.sh fails on any other line, and on an entry here that matches no line.
+# Each entry is "<path>:<the exact line>", as `git grep` prints it. Plan 070 classified every one.
+
+# History inside documents still in use: what was true when it happened, kept as written.
+benchmark/DEVIATIONS.md:- **What the methodology says.** Condition D invokes `/bem-te-vi:<command or skill>` and loads
+benchmark/DEVIATIONS.md:- **What was done.** Marco renamed the package Bem-te-vi to QA Instinct on 2026-10-25
+benchmark/DEVIATIONS.md:  (`plans/065-qa-instinct-rename.md`), and the Claude Code plugin from `bem-te-vi` to
+benchmark/DEVIATIONS.md:  of nine tasks collected under `/bem-te-vi:`, finishes from its pinned checkout of `9381269` under
+benchmark/DEVIATIONS.md:  `/bem-te-vi:`.
+benchmark/METHODOLOGY.md:  before it (three throwaway cases that showed `plugins:` loads the bare, placebo and Bem-te-vi
+benchmark/METHODOLOGY.md:  anything here: under `/bem-te-vi:qa-defect` the model filled Root Cause with the developer's guess
+benchmark/METHODOLOGY.md:  instead of leaving it `N/A` as the command asks; under `/bem-te-vi:qa-cases` one case's Source read
+demo/README.md:  previous recordings wrote nine cases (2026-10-20, Claude Sonnet 5.5, under the name Bem-te-vi)
+
+# The fence lines of the global pre-commit hook releases up to 4.5.x wrote. Install now writes
+# "qa-instinct" (plan 070, option B); uninstall still finds the old fence by these exact lines, so a
+# hook installed before the rename can be removed.
+install.ps1:$Script:GlobalHookOldBegin = '# >>> bem-te-vi global pre-commit >>>'
+install.ps1:$Script:GlobalHookOldEndFence = '# <<< bem-te-vi global pre-commit <<<'
+install.sh:GLOBAL_HOOK_OLD_BEGIN="# >>> bem-te-vi global pre-commit >>>"
+install.sh:GLOBAL_HOOK_OLD_END_FENCE="# <<< bem-te-vi global pre-commit <<<"
+
+# .bem-te-vi/, the reference folder plan 043 installed and plan 047 retired: update and uninstall
+# must still find and remove it in an old install.
+cli/qa-instinct.js:  // every other recorded path, the old merged adapters and .bem-te-vi/ included, is not.
+install.ps1:    # every other recorded path, the old merged adapters and .bem-te-vi/ included, is not.
+install.sh:    # every other recorded path, the old merged adapters and .bem-te-vi/ included, is not.
+tests/conformance/cases/026-non-claude-install-ships-references/case.conf:# Plan 043 installed the qa-reference files under .bem-te-vi/<editor>/; plan 047 installs them
+tests/conformance/cases/026-non-claude-install-ships-references/case.conf:expect-absent: project:.bem-te-vi
+tests/conformance/cases/026-non-claude-install-ships-references/case.conf:expect-absent: home:.bem-te-vi
+tests/conformance/cases/030-uninstall-leaves-no-reference-folder/case.conf:expect-absent: project:.bem-te-vi
+tests/conformance/cases/050-native-project-layout-for-every-editor/case.conf:# recorded under that editor. The merged adapters and plan 043's .bem-te-vi/ folder are not written.
+tests/conformance/cases/050-native-project-layout-for-every-editor/case.conf:expect-absent: project:.bem-te-vi
+tests/conformance/cases/051-native-global-layout-skills-only/case.conf:expect-absent: home:.bem-te-vi
+tests/conformance/cases/052-update-moves-an-old-project-install-to-the-native-layout/case.conf:# under .bem-te-vi/ (development installs have one), each recorded. Update removes and forgets
+tests/conformance/cases/052-update-moves-an-old-project-install-to-the-native-layout/case.conf:seed: project:.bem-te-vi/cursor/qa-reference/references/testing-design.md = OLD REFERENCE
+tests/conformance/cases/052-update-moves-an-old-project-install-to-the-native-layout/case.conf:seed-manifest: project cursor .bem-te-vi/cursor/qa-reference/references/testing-design.md
+tests/conformance/cases/052-update-moves-an-old-project-install-to-the-native-layout/case.conf:expect-absent: project:.bem-te-vi
+tests/conformance/cases/052-update-moves-an-old-project-install-to-the-native-layout/case.conf:expect-no-manifest: project cursor .bem-te-vi/cursor/qa-reference/references/testing-design.md
+tests/conformance/cases/056-uninstall-of-an-old-install-follows-the-manifest/case.conf:seed: project:.bem-te-vi/cursor/retired-skill/references/old.md = OLD REFERENCE
+tests/conformance/cases/056-uninstall-of-an-old-install-follows-the-manifest/case.conf:seed-manifest: project cursor .bem-te-vi/cursor/retired-skill/references/old.md
+tests/conformance/cases/056-uninstall-of-an-old-install-follows-the-manifest/case.conf:expect-absent: project:.bem-te-vi
+tests/test-lifecycle.sh:# .bem-te-vi/ never shipped in a release; conformance cases 052 and 056 cover it.
+
+# Placeholder text for the adapters a 4.0.1 install wrote, released under the former name.
+tests/test-lifecycle.ps1:        [System.IO.File]::WriteAllText($file, "BEM-TE-VI 4.0.1 $Editor ADAPTER`n", $utf8NoBom50)
+
+# The CLI's file name in releases 4.0.1 to 4.1.x: the conformance suite runs old package trees.
+tests/conformance/run.ps1:# The CLI moved from bin\cli.js to cli\bem-te-vi.js after 4.0.1 (plan 051), and to
+tests/conformance/run.ps1:if (-not (Test-Path -LiteralPath $cli)) { $cli = Join-Path $pkg 'cli\bem-te-vi.js' }
+tests/conformance/run.sh:# The CLI moved from bin/cli.js to cli/bem-te-vi.js after 4.0.1 (plan 051), and to
+tests/conformance/run.sh:[ -f "$cli" ] || cli="$pkg/cli/bem-te-vi.js"

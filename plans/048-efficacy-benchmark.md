@@ -10,6 +10,11 @@
 > **Drift check (run first)**: `git diff --stat 8487bd6..HEAD -- evals .claude/commands/qa-cases.md .claude/commands/qa-defect.md .claude/commands/qa-bdd.md .claude/skills/qa-plan .claude/skills/qa-api .claude/skills/qa-a11y .claude/skills/qa-flaky .claude-plugin package.json`
 > A change to a command or skill under test since planning changes what condition D loads: re-read
 > it, and re-check the placebo's size parity (CONTROL.md) before the pilot.
+>
+> **Note, 2026-10-29.** Written when the package was named Bem-te-vi. Plan 065 renamed it QA
+> Instinct on 2026-10-25, and condition D now runs `/qa-instinct:<command or skill>` (methodology
+> 1.1, `benchmark/METHODOLOGY.md`). The text below is kept as written; `benchmark/` is the current
+> account of the method.
 
 ## Status
 

@@ -60,10 +60,10 @@ if [ "$failed" -eq 0 ]; then
   # The recognition strings are written literally here, so editing them in both installers at once
   # still fails this check.
   [ "$(sed -n 2p "$TMP/project.sh")" = "# Pre-commit hook to validate test cases in qa-instinct" ] || fail "the project hook's second line is not the marker line"
-  [ "$(sed -n 1p "$TMP/global.sh")" = "# >>> bem-te-vi global pre-commit >>>" ] || fail "the global block's first line is not the opening fence"
+  [ "$(sed -n 1p "$TMP/global.sh")" = "# >>> qa-instinct global pre-commit >>>" ] || fail "the global block's first line is not the opening fence"
   [ "$(sed -n 2p "$TMP/global.sh")" = "# Added by qa-skills global installer" ] || fail "the global block's second line is not the old marker"
   [ "$(tail -n 2 "$TMP/global.sh" | sed -n 1p)" = "# GLOBAL_PRECOMMIT_APPEND" ] || fail "the global block's next-to-last line is not the old end line"
-  [ "$(tail -n 1 "$TMP/global.sh")" = "# <<< bem-te-vi global pre-commit <<<" ] || fail "the global block's last line is not the closing fence"
+  [ "$(tail -n 1 "$TMP/global.sh")" = "# <<< qa-instinct global pre-commit <<<" ] || fail "the global block's last line is not the closing fence"
 fi
 
 check_constant() {   # label sh-assignment-regex ps-assignment-regex
@@ -81,6 +81,8 @@ check_constant GLOBAL_HOOK_BEGIN '^GLOBAL_HOOK_BEGIN=' '^\$Script:GlobalHookBegi
 check_constant GLOBAL_HOOK_END '^GLOBAL_HOOK_END=' '^\$Script:GlobalHookEnd = '
 check_constant GLOBAL_HOOK_OLD_MARKER '^GLOBAL_HOOK_OLD_MARKER=' '^\$Script:GlobalHookOldMarker = '
 check_constant GLOBAL_HOOK_OLD_END '^GLOBAL_HOOK_OLD_END=' '^\$Script:GlobalHookOldEnd = '
+check_constant GLOBAL_HOOK_OLD_BEGIN '^GLOBAL_HOOK_OLD_BEGIN=' '^\$Script:GlobalHookOldBegin = '
+check_constant GLOBAL_HOOK_OLD_END_FENCE '^GLOBAL_HOOK_OLD_END_FENCE=' '^\$Script:GlobalHookOldEndFence = '
 check_constant PROJECT_HOOK_OLD_MARKER '^PROJECT_HOOK_OLD_MARKER=' '^\$Script:ProjectHookOldMarker = '
 check_constant GLOBAL_HOOK_OLD_FRESH_HEADER '^GLOBAL_HOOK_OLD_FRESH_HEADER=' '^\$Script:GlobalHookOldFreshHeader = '
 check_constant GLOBAL_HOOK_FRESH_HEADER '^GLOBAL_HOOK_FRESH_HEADER=' '^\$Script:GlobalHookFreshHeader = '

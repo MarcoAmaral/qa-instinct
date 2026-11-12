@@ -60,7 +60,7 @@
     "lint": "eslint . && prettier --check .",
     "prepare": "husky",
     "prepublishOnly": "./generate-adapters.sh --clean",
-    "test": "bash tests/test-frontmatter.sh && bash tests/test-ctfl-citations.sh && bash tests/test-plan-format.sh && bash tests/test-llms-txt.sh && bash tests/test-tc-contracts.sh && bash tests/test-validate-tc-format.sh && bash tests/test-hook-parity.sh && bash tests/test-check-test-evidence.sh && bash tests/plugin/verify-plugin.sh && bash tests/test-rules-size.sh && bash tests/test-reference-links.sh && bash tests/test-qa-trace.sh && bash tests/test-dedupe-changelog.sh && bash tests/test-node-engines.sh && bash tests/test-docs-drift.sh && bash tests/test-ts-samples.sh && node benchmark/build.js --check && node benchmark/analysis/analyze.js --self-test"
+    "test": "bash tests/test-frontmatter.sh && bash tests/test-ctfl-citations.sh && bash tests/test-plan-format.sh && bash tests/test-llms-txt.sh && bash tests/test-tc-contracts.sh && bash tests/test-validate-tc-format.sh && bash tests/test-hook-parity.sh && bash tests/test-check-test-evidence.sh && bash tests/plugin/verify-plugin.sh && bash tests/test-rules-size.sh && bash tests/test-reference-links.sh && bash tests/test-qa-trace.sh && bash tests/test-dedupe-changelog.sh && bash tests/test-node-engines.sh && bash tests/test-docs-drift.sh && bash tests/test-old-name.sh && bash tests/test-ts-samples.sh && node benchmark/build.js --check && node benchmark/analysis/analyze.js --self-test"
   },
   "lint-staged": {
     "*.js": [

@@ -11,6 +11,10 @@ per the repo owner's explicit confirmation of "true multi-agent" direction
 (separate `.claude/agents/` subagents dispatched in sequence, not a single
 chained-prompt command).
 
+> **Note, 2026-10-29 (plan 070).** The package was named qa-skills, then Bem-te-vi (plan 020), and
+> is QA Instinct since plan 065. Plans are records and keep the name in use when they were written;
+> `tests/test-old-name.sh` keeps the former name out of everything else.
+
 ## Execution order & status
 
 | Plan | Title | Priority | Effort | Depends on | Status |
@@ -81,7 +85,8 @@ chained-prompt command).
 | 066 | Rename the installers' internal `qa-skills` names, migrating every existing install | P2 | L | 009-012, 016, 064, 065 | DONE (PR #16, CI green on Linux, Windows and macOS; PR #17 set the version; 4.3.0 published to npm on 2026-10-26) |
 | 067 | Ship the `qa-rules` skill in the Claude Code plugin | P2 | S | 022, 047, 060 | IN REVIEW (branch `feat/plugin-ships-qa-rules`) |
 | 068 | The `qa-static-analysis` skill: triage what a static analysis tool reports | P3 | S | 037, 038, 040, 047 | DONE (PR #22, released in 4.5.0; evals run 2026-10-31 on SWARE: the skill is found, 3 of 3 in plain words, but the plugin scored 1.00 without it, so they show no gain; see the plan's note) |
-| 069 | `update` finishes a pre-manifest install in one run, and its closing note names the right command | P2 | M | 009-013, 016, 033, 066 | IN REVIEW (branch `fix/update-pre-manifest-install`; 148 conformance runs and 62 lifecycle tests green locally; PowerShell suites run only in CI) |
+| 069 | `update` finishes a pre-manifest install in one run, and its closing note names the right command | P2 | M | 009-013, 016, 033, 066 | DONE (PR #30 the plan, PR #32 the fix, CI green on Linux, Windows and macOS; merged 2026-11-12, not yet released) |
+| 070 | Audit the former name, Bem-te-vi, and keep it out of everything but the record | P3 | S | 065, 066 | IN REVIEW (branch `chore/name-audit`; check, message, link and notes done; the hook fence lines renamed, option B, which Marco chose 2026-11-12) |
 
 ¹ These SHAs changed on 2026-09-14, when an AI co-author trailer was removed
 from two commit messages before opening PR #11. File contents are unchanged.

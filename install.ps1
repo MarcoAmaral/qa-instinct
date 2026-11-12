@@ -312,9 +312,14 @@ function Test-IsLink {
 
 # The global hook block is fenced by two exact marker lines so install and uninstall only ever
 # touch their own lines of a hook that may be the user's. The old "Added by" line stays inside
-# the block, and so does the old end line, so an older uninstaller still recognises it.
-$Script:GlobalHookBegin = '# >>> bem-te-vi global pre-commit >>>'
-$Script:GlobalHookEnd = '# <<< bem-te-vi global pre-commit <<<'
+# the block, and so does the old end line, so an older uninstaller still recognises it; one from
+# before plan 070 then leaves the two fence lines, which are comments.
+$Script:GlobalHookBegin = '# >>> qa-instinct global pre-commit >>>'
+$Script:GlobalHookEnd = '# <<< qa-instinct global pre-commit <<<'
+# The fence releases up to 4.5.x wrote under the former package name (plan 070); uninstall still
+# finds it.
+$Script:GlobalHookOldBegin = '# >>> bem-te-vi global pre-commit >>>'
+$Script:GlobalHookOldEndFence = '# <<< bem-te-vi global pre-commit <<<'
 $Script:GlobalHookOldMarker = '# Added by qa-skills global installer'
 $Script:GlobalHookOldEnd = '# GLOBAL_PRECOMMIT_APPEND'
 $Script:GlobalHookFreshHeader = '# Global pre-commit hook to validate test cases in qa-instinct'
@@ -325,7 +330,7 @@ $Script:GlobalHookOldFreshHeader = '# Global pre-commit hook to validate test ca
 $Script:ShShebangPattern = '^#!\s*(/\S*/)?(env\s+)?(ba)?sh(\s|$)'
 
 $Script:GlobalHookBlock = ((@'
-# >>> bem-te-vi global pre-commit >>>
+# >>> qa-instinct global pre-commit >>>
 # Added by qa-skills global installer
 GLOBAL_VALIDATOR="$HOME/.claude/hooks/validate-tc-format.sh"
 if [ -f "$GLOBAL_VALIDATOR" ]; then
@@ -343,11 +348,12 @@ if [ -f "$GLOBAL_VALIDATOR" ]; then
         done' bash "$GLOBAL_VALIDATOR" || exit 1
 fi
 # GLOBAL_PRECOMMIT_APPEND
-# <<< bem-te-vi global pre-commit <<<
+# <<< qa-instinct global pre-commit <<<
 '@) -replace "`r`n", "`n") + "`n"
 
-# Returns $Content without the bem-te-vi block, or $null when the block cannot be located safely.
-# The block is the lines between the two markers; for a hook written by an older release it runs
+# Returns $Content without the QA Instinct block, or $null when the block cannot be located safely.
+# The block is the lines between the two markers, the current ones or the former name's (each begin
+# marker pairs only with its own end marker); for a hook written before the markers it runs
 # from the old "Added by" line (or, for a fresh hook written by an older install.ps1, the header
 # comment) to the first line that is exactly "fi", which is how the old block ends. One blank line
 # right before the block, the separator the installer added, goes too. Splitting on LF only keeps
@@ -359,6 +365,11 @@ function Remove-GlobalHookBlock {
     $trim = @($lines | ForEach-Object { $_.TrimEnd("`r") })
 
     $start = [array]::IndexOf($trim, $Script:GlobalHookBegin)
+    $endFence = $Script:GlobalHookEnd
+    if ($start -lt 0) {
+        $start = [array]::IndexOf($trim, $Script:GlobalHookOldBegin)
+        $endFence = $Script:GlobalHookOldEndFence
+    }
     $old = $false
     if ($start -lt 0) {
         $old = $true
@@ -367,7 +378,7 @@ function Remove-GlobalHookBlock {
     if ($start -lt 0) { $start = [array]::IndexOf($trim, $Script:GlobalHookOldFreshHeader) }
     if ($start -lt 0) { return $null }
 
-    $want = if ($old) { 'fi' } else { $Script:GlobalHookEnd }
+    $want = if ($old) { 'fi' } else { $endFence }
     $end = -1
     for ($i = $start + 1; $i -lt $trim.Count; $i++) {
         if ($trim[$i] -eq $want) { $end = $i; break }
@@ -561,7 +572,7 @@ function Purge-GitHook {
                 # Strip only our own block, leaving every other line of the hook as it was.
                 $cleanContent = Remove-GlobalHookBlock $content
                 if ($null -eq $cleanContent) {
-                    Write-Info "Kept global pre-commit hook - could not find the bem-te-vi block to remove: $hookFile"
+                    Write-Info "Kept global pre-commit hook - could not find the block QA Instinct added: $hookFile"
                 }
                 else {
                     # Remove if nothing is left but the shebang and our own header comments
