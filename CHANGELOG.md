@@ -16,11 +16,10 @@ the links to that repository's commits and comparisons were removed, as they are
 
 ## [4.5.1](https://github.com/MarcoAmaral/qa-instinct/compare/v4.5.0...v4.5.1) (2026-11-12)
 
-
 ### Bug Fixes
 
-* **cli:** name the running version in update's closing note ([143da12](https://github.com/MarcoAmaral/qa-instinct/commit/143da12dbb1ca5b069a7e2e840cb713bfbe197e5))
-* **update:** finish a pre-manifest install in one run ([b706b5e](https://github.com/MarcoAmaral/qa-instinct/commit/b706b5e0f86264fa96f5d034af3625fadd7224fa))
+- **cli:** name the running version in update's closing note ([143da12](https://github.com/MarcoAmaral/qa-instinct/commit/143da12dbb1ca5b069a7e2e840cb713bfbe197e5))
+- **update:** finish a pre-manifest install in one run ([b706b5e](https://github.com/MarcoAmaral/qa-instinct/commit/b706b5e0f86264fa96f5d034af3625fadd7224fa))
 
 ## [4.5.0](https://github.com/MarcoAmaral/qa-instinct/compare/v4.4.0...v4.5.0) (2026-10-28)
 
