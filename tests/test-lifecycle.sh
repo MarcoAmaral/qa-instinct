@@ -1540,7 +1540,7 @@ printf '#!/usr/bin/env bash\necho before\n' > "$HOOK_41A"
 chmod +x "$HOOK_41A"
 GIT_CONFIG_GLOBAL="$HOME_41A/.gitconfig" git config --global init.templateDir "$HOME_41A/their-templates"
 global_install_41 "$HOME_41A" install > /dev/null
-grep -qF "# >>> bem-te-vi global pre-commit >>>" "$HOOK_41A" || { printf '%b\n' "${RED}✘ global install did not append its block to the user's hook${NC}"; exit 1; }
+grep -qF "# >>> qa-instinct global pre-commit >>>" "$HOOK_41A" || { printf '%b\n' "${RED}✘ global install did not append its block to the user's hook${NC}"; exit 1; }
 bash -n "$HOOK_41A" || { printf '%b\n' "${RED}✘ the appended global hook is not valid bash${NC}"; exit 1; }
 [ "$(GIT_CONFIG_GLOBAL="$HOME_41A/.gitconfig" git config --global init.templateDir)" = "$HOME_41A/their-templates" ] || { printf '%b\n' "${RED}✘ global install replaced the user's init.templateDir${NC}"; exit 1; }
 printf 'echo after\n' >> "$HOOK_41A"
